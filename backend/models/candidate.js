@@ -53,8 +53,12 @@ const candidateSchema = new mongoose.Schema(
       default: "",
     },
     layoutType: {
-      type: String, // layout option
-      default: "",
+      type: Number,
+      default: 1,
+    },
+    profileId: {
+      type: String,
+      unique: true,
     },
     tagline: {
       type: String, // tagline of the candidate
@@ -64,36 +68,40 @@ const candidateSchema = new mongoose.Schema(
         type: String, // 
         default: "",
       },
-      services: [
+      services: {
+        type: [
+          {
+            heading: { type: String, trim: true },
+            description: { type: String, trim: true },
+          },
+        ],
+        default: [],
+      },
+      skills: {
+        type: [String],
+        default: [],
+      },
+      education: {
+        type: [educationSchema],
+        default: [],
+      },
+      experience: {
+        type: [experienceSchema],
+        default: [],
+      },       // array of work experience
+    lookingVacancy: {
+      type: [String],
+      default: [],
+    },
+    appliedJobs: {
+      type: [
         {
-          heading: {
-            type: String,
-            trim: true,
-          },
-          description: {
-            type: String,
-            trim: true,
-          },
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "JobPost",
         },
       ],
-    skills: [
-      {
-        type: String, // e.g. ["JavaScript", "React", "Node.js"]
-      },
-    ],
-    education: [educationSchema], // array of qualifications
-    experience: [experienceSchema],        // array of work experience
-    lookingVacancy: [
-      {
-        type: String, // e.g. ["Software Engineer", "Frontend Developer"]
-      },
-    ],
-    appliedJobs: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "JobPost",
-      },
-    ],
+      default: [],
+    },
     isActive: {
       type: Boolean,
       default: true,

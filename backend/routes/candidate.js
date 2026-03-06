@@ -10,6 +10,7 @@ router.put("/change-password/:candidateId", candidateController.changePassword);
 // Profile
 router.put("/update/:candidateId", candidateController.updateProfile);
 router.get("/search/by-name", candidateController.searchCandidateByName);
+router.get("/search/by-username", candidateController.searchCandidateByProfileId);
 // Get
 router.get("/", candidateController.getAllCandidates);
 router.get("/:candidateId", candidateController.getCandidateById);

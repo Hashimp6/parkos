@@ -17,6 +17,12 @@ import PersonalPortfolio2 from "../components/ProfileLayout2";
 import PersonalPortfolio3 from "../components/ProfileLayout3";
 import PersonalPortfolio4 from "../components/ProfileLayout4";
 import ProfilePage from "../components/ProfileLayout";
+import JobListings from "../pages/public/JobList";
+import CompanyWebsite from "../components/CompanyLayout1";
+import CompanyWebsite1 from "../components/CompanyLayout1";
+import CompanyWebsite3 from "../components/CompanyLayout2";
+import CandidateProfileForm from "../pages/candidate/ProfileForm";
+import ProfileCard from "../pages/candidate/Profile";
 
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
@@ -37,11 +43,14 @@ function AppRoutes() {
       {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
-      <Route path="/profile/name" element={<ProfilePage />} />
+      <Route path="/form" element={<CandidateProfileForm />} />
+      <Route path="/profile" element={<ProfileCard/>} />
+      <Route path="/company" element={<CompanyWebsite3 />} />
       <Route path="/profile/form" element={<ProfileFormPage />} />
       <Route path="/profile/4" element={<PersonalPortfolio4 />} />
-      <Route path="/profile/2" element={<PersonalPortfolio2 />} />
+      <Route path="/profile/3" element={<PersonalPortfolio2 />} />
+      <Route path="/jobslist" element={<JobListings />} />
+     
       {/* Dashboard (Protected Later) */}
       {/* <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<DashboardHome />} />

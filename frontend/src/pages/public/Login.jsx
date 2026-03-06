@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useUser } from "../../context/UserContext";
 
 export default function LoginPage() {
+  
   const navigate = useNavigate();
+  const { loginUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -10,9 +14,34 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = () => {
-    setLoading(true);
-    setTimeout(() => { setLoading(false); setSuccess(true); }, 1800);
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+  
+      const res = await axios.post(
+        "http://192.168.1.27:5006/api/candidate/login",
+        { email, password }
+      );
+  
+      const { token, data } = res.data;
+  
+      // save token
+      localStorage.setItem("token", token);
+  
+      // save user to context + localStorage
+      loginUser(data);
+  
+      setLoading(false);
+      setSuccess(true);
+  
+      setTimeout(() => {
+        navigate("/profile/form");
+      }, 1200);
+  
+    } catch (error) {
+      setLoading(false);
+      alert(error.response?.data?.message || "Login failed");
+    }
   };
 
   const inputClass = (field) =>

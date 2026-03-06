@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-
+import axios from "axios";
+import { toast } from "react-toastify";
 /* ─── Theme ────────────────────────────────────────────────────────── */
 const th = {
   bg:           "#f2f2ef",
@@ -454,7 +455,6 @@ function EducationSection({ education, setEdu, addEdu, removeEdu, isMobile }) {
 }
 
 function ServicesSection({ services, setService, addService, removeService, isMobile }) {
-  const col = isMobile ? "1fr" : "1fr 1fr";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
       <p style={{ fontSize: 12, color: th.sub, margin: 0 }}>
@@ -611,10 +611,26 @@ function SaveButton({ onSave, loading, saved, mode, fullWidth }) {
   );
 }
 
+/* ─── Helper: read candidate from localStorage ──────────────────────── */
+function getStoredCandidate() {
+  try {
+    const raw = localStorage.getItem("candidate");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 /* ─── Main Form ─────────────────────────────────────────────────────── */
 export default function ProfileFormPage({ mode = "create", initialData = null, onSubmit }) {
+  // ── Read candidate from localStorage once on mount ──
+  // localStorage data takes priority over initialData prop if both exist.
+  const storedCandidate = getStoredCandidate();
+  
+  const seed = storedCandidate || initialData;
+
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
-  const [layout, setLayout] = useState(() => initialData?.layoutType || "dark");
+  const [layout, setLayout] = useState(() => seed?.layoutType || "dark");
   const [enabled, setEnabled] = useState(() =>
     new Set(mode === "edit" ? SECTIONS.map((s) => s.key) : ["basic"])
   );
@@ -633,33 +649,33 @@ export default function ProfileFormPage({ mode = "create", initialData = null, o
     return () => window.removeEventListener("resize", h);
   }, []);
 
-  /* ── Form State ── */
+  /* ── Form State — seeded from localStorage candidate ── */
   const [basic, setBasicState] = useState(() => ({
-    name:          initialData?.name          || "",
-    email:         initialData?.email         || "",
-    phone:         initialData?.phone         || "",
-    place:         initialData?.place         || "",
-    qualification: initialData?.qualification || "",
+    name:          seed?.name          || "",
+    email:         seed?.email         || "",
+    phone:         seed?.phone         || "",
+    place:         seed?.place         || "",
+    qualification: seed?.qualification || "",
   }));
-  const [photo,    setPhoto]    = useState(() => initialData?.profilePhoto || "");
-  const [cv,       setCv]       = useState(() => initialData?.cv           || "");
-  const [about,    setAbout]    = useState(() => initialData?.about        || "");
-  const [tagline,  setTagline]  = useState(() => initialData?.tagline      || "");
-  const [skills,   setSkillsState]   = useState(() => initialData?.skills?.length    ? initialData.skills    : [""]);
-  const [looking,  setLookingState]  = useState(() => initialData?.lookingVacancy?.length ? initialData.lookingVacancy : [""]);
+  const [photo,    setPhoto]    = useState(() => seed?.profilePhoto || "");
+  const [cv,       setCv]       = useState(() => seed?.cv           || "");
+  const [about,    setAbout]    = useState(() => seed?.about        || "");
+  const [tagline,  setTagline]  = useState(() => seed?.tagline      || "");
+  const [skills,   setSkillsState]   = useState(() => seed?.skills?.length    ? seed.skills    : [""]);
+  const [looking,  setLookingState]  = useState(() => seed?.lookingVacancy?.length ? seed.lookingVacancy : [""]);
   const [experience, setExperienceState] = useState(() =>
-    initialData?.experience?.length
-      ? initialData.experience.map((e) => ({ ...e, current: !e.endDate }))
+    seed?.experience?.length
+      ? seed.experience.map((e) => ({ ...e, current: !e.endDate }))
       : [{ jobTitle: "", company: "", startDate: "", endDate: "", current: false }]
   );
   const [education, setEducationState] = useState(() =>
-    initialData?.education?.length
-      ? initialData.education
+    seed?.education?.length
+      ? seed.education
       : [{ education: "", institution: "", year: "", percentage: "" }]
   );
   const [services, setServicesState] = useState(() =>
-    initialData?.services?.length
-      ? initialData.services
+    seed?.services?.length
+      ? seed.services
       : [{ heading: "", description: "" }]
   );
 
@@ -735,32 +751,59 @@ export default function ProfileFormPage({ mode = "create", initialData = null, o
   }, [handleScroll]);
 
   /* ── Save ── */
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     setLoading(true);
-    const payload = {
+  
+    const profilePayload = {
       ...basic,
-      profilePhoto: photo,
+      profilePhoto:   photo,
       cv,
       about,
       tagline,
-      layoutType: layout,
-      skills:          skills.filter(Boolean),
-      lookingVacancy:  looking.filter(Boolean),
-      experience:      experience.map(({ current, ...e }) => ({ ...e, endDate: current ? null : e.endDate })),
+      layoutType:     layout,
+      skills:         skills.filter(Boolean),
+      lookingVacancy: looking.filter(Boolean),
+      experience:     experience.map(({ current, ...e }) => ({
+        ...e,
+        endDate: current ? null : e.endDate,
+      })),
       education,
       services,
     };
-    if (onSubmit) {
-      Promise.resolve(onSubmit(payload))
-        .finally(() => { setLoading(false); setSaved(true); setTimeout(() => setSaved(false), 3000); });
-    } else {
-      setTimeout(() => {
-        console.log("Profile payload:", payload);
-        setLoading(false); setSaved(true); setTimeout(() => setSaved(false), 3000);
-      }, 1200);
+  
+    const mergedCandidate = {
+      ...storedCandidate,
+      ...profilePayload,
+    };
+  
+    // Persist to localStorage
+    try {
+      localStorage.setItem("candidate", JSON.stringify(mergedCandidate));
+    } catch (err) {
+      console.warn("Could not write to localStorage:", err);
     }
-  }, [basic, photo, cv, about, tagline, layout, skills, looking, experience, education, services, onSubmit]);
-
+  
+    // API call
+    try {
+      const candidateId = storedCandidate?._id;
+      console.log("cnidate id",candidateId,profilePayload);
+      
+      await axios.put(
+        `http://192.168.1.27:5006/api/update/${candidateId}`,
+        profilePayload
+      );
+      toast.success("Profile updated successfully!");
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error("Update failed:", error);
+      toast.error(error?.response?.data?.message || "Failed to update profile.");
+    } finally {
+      setLoading(false);
+    }
+  
+  }, [basic, photo, cv, about, tagline, layout, skills, looking, experience, education, services, storedCandidate]);
+  
   /* ── Render section content ── */
   const renderSection = (key) => {
     switch (key) {
@@ -780,7 +823,7 @@ export default function ProfileFormPage({ mode = "create", initialData = null, o
   const activeSections = SECTIONS.filter((s) => enabled.has(s.key));
   const progress = Math.round((enabled.size / SECTIONS.length) * 100);
 
-  const topBarHeight   = 58;
+  const topBarHeight    = 58;
   const bottomBarHeight = isMobile ? 64 : 0;
 
   return (
@@ -847,7 +890,7 @@ export default function ProfileFormPage({ mode = "create", initialData = null, o
       {!isMobile ? (
         <div style={{ display: "flex", alignItems: "flex-start" }}>
 
-          {/* SIDEBAR — sticky, scrolls independently */}
+          {/* SIDEBAR */}
           <div style={{
             width: 236, flexShrink: 0,
             position: "sticky", top: topBarHeight,
@@ -916,7 +959,7 @@ export default function ProfileFormPage({ mode = "create", initialData = null, o
               <LayoutPicker layout={layout} onChange={setLayout} />
             </div>
 
-            {/* Progress pinned to bottom of sidebar */}
+            {/* Progress */}
             <div style={{ padding: "12px 16px", borderTop: `1px solid ${th.divider}`, flexShrink: 0, background: th.sidebar }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                 <span style={{ fontSize: 10, color: th.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
@@ -933,7 +976,7 @@ export default function ProfileFormPage({ mode = "create", initialData = null, o
             </div>
           </div>
 
-          {/* MAIN CONTENT — natural block flow, page itself scrolls */}
+          {/* MAIN CONTENT */}
           <div
             ref={scrollRef}
             style={{ flex: 1, padding: "24px 28px 60px", minWidth: 0 }}
@@ -964,7 +1007,6 @@ export default function ProfileFormPage({ mode = "create", initialData = null, o
       ) : (
         /* ── MOBILE ── */
         <div style={{ padding: "14px 14px", paddingBottom: bottomBarHeight + 16 }}>
-          {/* Tab bar */}
           <div style={{
             display: "flex", background: th.card, borderRadius: 12,
             padding: 4, border: `1px solid ${th.cardBorder}`, gap: 4,
@@ -1030,7 +1072,7 @@ export default function ProfileFormPage({ mode = "create", initialData = null, o
         </div>
       )}
 
-      {/* ── MOBILE BOTTOM BAR (fixed) ── */}
+      {/* ── MOBILE BOTTOM BAR ── */}
       {isMobile && (
         <div style={{
           position: "fixed", bottom: 0, left: 0, right: 0,
