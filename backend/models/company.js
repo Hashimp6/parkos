@@ -22,6 +22,13 @@ const memberSchema = new mongoose.Schema({
   url:      { type: String, default: "" },  // personal / portfolio website
 });
 
+// ─── Projects ───────────────────────────────────────────────────────────────
+const projectSchema = new mongoose.Schema({
+  name:        { type: String, default: "" },
+  description: { type: String, default: "" },
+  link:        { type: String, default: "" }, // project website / github / demo
+});
+
 // ─── Service ─────────────────────────────────────────────────────────────────
 // title and description only
 const serviceSchema = new mongoose.Schema({
@@ -102,6 +109,7 @@ const companySchema = new mongoose.Schema(
     // ── Mini-Website Sections ─────────────────────────────────────────────────
     members:  [memberSchema],
     services: [serviceSchema],
+    projects: [projectSchema], 
     gallery:  [gallerySchema],
     clients:  [clientSchema],
     // jobs live in the separate Job collection (linked via company ObjectId)

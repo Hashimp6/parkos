@@ -15,7 +15,7 @@ app.use(express.json());
 app.use("/api/candidate", require("./routes/candidate"));
 // app.use("/api/employer", require("./routes/employerRoutes"));
 // app.use("/api/jobs", require("./routes/jobRoutes"));
-// app.use("/api/company", require("./routes/companyRoutes")); // Mini website profiles
+app.use("/api/companies", require("./routes/company")); // Mini website profiles
 
 // Health check
 app.get("/", (req, res) => {

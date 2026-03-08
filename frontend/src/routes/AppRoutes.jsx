@@ -11,7 +11,6 @@ import JobDetails from "../pages/public/JobDetails";
 // Auth Pages
 import Login from "../pages/public/Login";
 import Register from "../pages/public/Register";
-import ProfileFormPage from "../pages/candidate/ProfileDetails";
 import PersonalPortfolio from "../components/ProfileLayout1";
 import PersonalPortfolio2 from "../components/ProfileLayout2";
 import PersonalPortfolio3 from "../components/ProfileLayout3";
@@ -23,6 +22,12 @@ import CompanyWebsite1 from "../components/CompanyLayout1";
 import CompanyWebsite3 from "../components/CompanyLayout2";
 import CandidateProfileForm from "../pages/candidate/ProfileForm";
 import ProfileCard from "../pages/candidate/Profile";
+import CompanyRegisterPage from "../pages/company/Register";
+import CompanyLoginPage from "../pages/company/Login";
+import CompanyHome from "../pages/company/CompanyHome";
+import CompanyProfileForm from "../pages/company/ProfileForm";
+import HomeSection from "../pages/candidate/Profile";
+import CandidateHomeSection from "../pages/company/CompanyHome";
 
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
@@ -43,10 +48,14 @@ function AppRoutes() {
       {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/form" element={<CandidateProfileForm />} />
+      <Route path="/home" element={<CandidateHomeSection/>} />
+      <Route path="/company/login" element={<CompanyLoginPage />} />
+      <Route path="/company/register" element={<CompanyRegisterPage />} />
+      <Route path="/company/Home" element={<CompanyHome/>} />
+      <Route path="/company/form" element={<CompanyProfileForm/>} />
+      <Route path="/profile/form" element={<CandidateProfileForm />} />
       <Route path="/profile" element={<ProfileCard/>} />
       <Route path="/company" element={<CompanyWebsite3 />} />
-      <Route path="/profile/form" element={<ProfileFormPage />} />
       <Route path="/profile/4" element={<PersonalPortfolio4 />} />
       <Route path="/profile/3" element={<PersonalPortfolio2 />} />
       <Route path="/jobslist" element={<JobListings />} />

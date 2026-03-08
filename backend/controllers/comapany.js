@@ -166,77 +166,54 @@ exports.getMe = async (req, res) => {
 // Full profile update — send only the fields you want to change.
 // Nested objects (address, contacts) are merged, not replaced.
 // ─────────────────────────────────────────────────────────────────────────────
+// @route   PATCH /api/companies/:id
 exports.updateCompany = async (req, res) => {
-  try {
-    // Fields that must NOT be changed via this endpoint
-    const restricted = ["password", "email", "isVerified", "isActive"];
-    restricted.forEach((f) => delete req.body[f]);
-
-    // Merge nested objects instead of overwriting them wholesale
-    const update = { ...req.body };
-    if (req.body.address) {
-      update.$set = {};
-      Object.entries(req.body.address).forEach(([k, v]) => {
-        update.$set[`address.${k}`] = v;
+    try {
+      const { id } = req.params;
+  
+      // Fields that should never be updated here
+      const restricted = [
+        "password",
+        "email",
+        "isVerified",
+        "isActive",
+        "_id",
+        "createdAt",
+        "updatedAt"
+      ];
+  
+      // Remove restricted fields if someone sends them
+      restricted.forEach((field) => delete req.body[field]);
+  
+      const updatedCompany = await Company.findByIdAndUpdate(
+        id,
+        { $set: req.body },   // only updates provided fields
+        {
+          new: true,
+          runValidators: true
+        }
+      );
+  
+      if (!updatedCompany) {
+        return res.status(404).json({
+          success: false,
+          message: "Company not found"
+        });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: "Company updated successfully",
+        data: updatedCompany
       });
-      delete update.address;
-    }
-    if (req.body.contacts) {
-      update.$set = update.$set || {};
-      Object.entries(req.body.contacts).forEach(([k, v]) => {
-        update.$set[`contacts.${k}`] = v;
+  
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
       });
-      delete update.contacts;
     }
-
-    const company = await Company.findByIdAndUpdate(
-      req.company._id,
-      update,
-      { new: true, runValidators: true }
-    );
-
-    res.status(200).json({ success: true, data: company });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// @route   PATCH /api/companies/me/field
-// @access  Private
-// Update a SINGLE top-level field (or one nested key).
-// Body: { "field": "tagline", "value": "We build great things" }
-//   or  { "field": "address.city", "value": "Kochi" }
-//   or  { "field": "contacts.linkedin", "value": "https://..." }
-// ─────────────────────────────────────────────────────────────────────────────
-exports.updateField = async (req, res) => {
-  try {
-    const { field, value } = req.body;
-
-    if (!field || value === undefined) {
-      return res
-        .status(400)
-        .json({ success: false, message: '"field" and "value" are required.' });
-    }
-
-    const restricted = ["password", "email", "isVerified", "isActive", "_id"];
-    if (restricted.some((r) => field.startsWith(r))) {
-      return res
-        .status(403)
-        .json({ success: false, message: `Field "${field}" cannot be updated here.` });
-    }
-
-    const company = await Company.findByIdAndUpdate(
-      req.company._id,
-      { $set: { [field]: value } },
-      { new: true, runValidators: true }
-    );
-
-    res.status(200).json({ success: true, data: company });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
+  };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @route   PUT /api/companies/me/password

@@ -1,5 +1,6 @@
 const Candidate = require("../models/candidate");
 const jwt = require("jsonwebtoken");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 // =======================================
 // UTILITIES
@@ -98,11 +99,13 @@ exports.loginCandidate = async (req, res) => {
 // 3️⃣ UPDATE PROFILE
 // Route: PUT /update/:candidateId
 // =======================================
+
 exports.updateProfile = async (req, res) => {
   try {
     const { candidateId } = req.params;
+console.log("ceed");
+console.log("candidateId:", candidateId);
 
-    // Fields that cannot be updated
     const PROTECTED = ["password", "email", "_id", "profileId", "appliedJobs"];
     PROTECTED.forEach((field) => delete req.body[field]);
 
@@ -114,8 +117,6 @@ exports.updateProfile = async (req, res) => {
       tagline,
       qualification,
       layoutType,
-      profilePhoto,
-      cv,
       skills,
       lookingVacancy,
       education,
@@ -125,15 +126,12 @@ exports.updateProfile = async (req, res) => {
 
     const setPayload = {};
 
-    // Helper: set only if defined
     const setIfDefined = (key, value) => {
       if (value !== undefined) setPayload[key] = value;
     };
 
-    // Helper: clean arrays (remove empty values)
     const cleanArray = (arr) => {
       if (!Array.isArray(arr)) return undefined;
-
       return arr.filter((item) => {
         if (typeof item === "string") return item.trim() !== "";
         if (typeof item === "object") return Object.keys(item).length > 0;
@@ -141,7 +139,24 @@ exports.updateProfile = async (req, res) => {
       });
     };
 
-    // ── Scalars ─────────────────────────────
+    // ── FILE UPLOADS ─────────────────
+    if (req.files?.profilePhoto) {
+      const result = await uploadToCloudinary(
+        req.files.profilePhoto[0].buffer,
+        "profile_photos"
+      );
+      setPayload.profilePhoto = result.secure_url;
+    }
+
+    if (req.files?.cv) {
+      const result = await uploadToCloudinary(
+        req.files.cv[0].buffer,
+        "candidate_cvs"
+      );
+      setPayload.cv = result.secure_url;
+    }
+
+    // ── Scalars ─────────────────
     setIfDefined("name", name);
     setIfDefined("phone", phone);
     setIfDefined("place", place);
@@ -149,17 +164,15 @@ exports.updateProfile = async (req, res) => {
     setIfDefined("tagline", tagline);
     setIfDefined("qualification", qualification);
     setIfDefined("layoutType", layoutType);
-    setIfDefined("profilePhoto", profilePhoto);
-    setIfDefined("cv", cv);
 
-    // ── Arrays (clean before saving) ─────────────────────────────
-    setIfDefined("skills", cleanArray(skills));
-    setIfDefined("lookingVacancy", cleanArray(lookingVacancy));
-    setIfDefined("education", cleanArray(education));
-    setIfDefined("experience", cleanArray(experience));
-    setIfDefined("services", cleanArray(services));
+    // ── Arrays ─────────────────
+// ── Arrays ─────────────────
+setIfDefined("skills", cleanArray(skills));
+setIfDefined("lookingVacancy", cleanArray(lookingVacancy));
+setIfDefined("education", cleanArray(education));
+setIfDefined("experience", cleanArray(experience));
+setIfDefined("services", cleanArray(services));
 
-    // Nothing to update
     if (!Object.keys(setPayload).length) {
       return res.status(400).json({
         success: false,
@@ -170,10 +183,7 @@ exports.updateProfile = async (req, res) => {
     const updated = await Candidate.findByIdAndUpdate(
       candidateId,
       { $set: setPayload },
-      {
-        new: true,
-        runValidators: true,
-      }
+      { returnDocument: "after", runValidators: true }
     ).lean();
 
     if (!updated) {
@@ -183,7 +193,6 @@ exports.updateProfile = async (req, res) => {
       });
     }
 
-    // Ensure arrays always exist (important for React)
     updated.skills = updated.skills || [];
     updated.education = updated.education || [];
     updated.experience = updated.experience || [];

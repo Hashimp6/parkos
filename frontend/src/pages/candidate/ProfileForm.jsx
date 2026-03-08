@@ -64,35 +64,43 @@ function useToast() {
 // ── Round Avatar Upload ───────────────────────────────────────────────────────
 function AvatarUpload({ value, onChange }) {
   const ref = useRef();
+
+  const preview =
+    value instanceof File
+      ? URL.createObjectURL(value)
+      : typeof value === "string"
+      ? value
+      : "";
+
   return (
     <div className="relative w-24 h-24 mx-auto">
       <div className="w-24 h-24 rounded-full overflow-hidden bg-zinc-100 border-4 border-white shadow-md ring-2 ring-zinc-200">
-        {value?.startsWith("data:image") || (value && !value.startsWith("data:")) ? (
-          <img src={value} alt="avatar" className="w-full h-full object-cover" />
+        {preview ? (
+          <img src={preview} alt="avatar" className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-4xl select-none bg-gradient-to-br from-zinc-100 to-zinc-200">
             🧑
           </div>
         )}
       </div>
-      {/* + button */}
+
       <button
         type="button"
         onClick={() => ref.current?.click()}
-        className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-zinc-900 hover:bg-zinc-700 text-white text-lg flex items-center justify-center shadow-md transition-colors border-2 border-white"
-        title="Change photo"
+        className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-zinc-900 text-white"
       >
         +
       </button>
+
       <input
         ref={ref}
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={async (e) => {
+        onChange={(e) => {
           const file = e.target.files?.[0];
           if (!file) return;
-          onChange(await toBase64(file));
+          onChange(file);
         }}
       />
     </div>
@@ -131,11 +139,11 @@ function CVUpload({ value, fileName, onChange }) {
         type="file"
         accept=".pdf,.doc,.docx,application/pdf"
         className="hidden"
-        onChange={async (e) => {
-          const file = e.target.files?.[0];
-          if (!file) return;
-          onChange(await toBase64(file), file.name);
-        }}
+        onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            onChange(file);
+          }}
       />
     </div>
   );
@@ -300,10 +308,36 @@ export default function CandidateProfileForm() {
     try {
       const token = localStorage.getItem("token");
   
+      const formData = new FormData();
+
+      Object.keys(payload).forEach((key) => {
+        if (Array.isArray(payload[key]) || typeof payload[key] === "object") {
+          formData.append(key, JSON.stringify(payload[key]));
+        } else {
+          formData.append(key, payload[key]);
+        }
+      });
+      
+      if (form.profilePhoto instanceof File) {
+        formData.append("profilePhoto", form.profilePhoto);
+      }
+      
+      if (form.cv instanceof File) {
+        formData.append("cv", form.cv);
+      }
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      
       const { data } = await axios.put(
         `${API_BASE}/candidate/update/${candidateId}`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
   
       const updated = data.candidate;
@@ -403,7 +437,7 @@ export default function CandidateProfileForm() {
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                   {/* Round avatar */}
                   <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                    <AvatarUpload value={form.profilePhoto} onChange={(b64) => set("profilePhoto", b64)} />
+                  <AvatarUpload value={form.profilePhoto} onChange={(file) => set("profilePhoto", file)} />
                     <p className="text-[10px] text-zinc-400 font-semibold">Profile Photo</p>
                   </div>
 
@@ -414,8 +448,10 @@ export default function CandidateProfileForm() {
                       <CVUpload
                         value={form.cv}
                         fileName={form.cvFileName}
-                        onChange={(b64, name) => { set("cv", b64); set("cvFileName", name || ""); }}
-                      />
+                        onChange={(file, name) => { 
+                            set("cv", file); 
+                            set("cvFileName", name || ""); 
+                          }} />
                     </div>
                     <div>
                       <p className={labelCls}>Full Name</p>
