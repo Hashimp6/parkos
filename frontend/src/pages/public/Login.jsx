@@ -25,17 +25,13 @@ export default function LoginPage() {
   
       const { token, data } = res.data;
   
-      // save token
-      localStorage.setItem("token", token);
-  
-      // save user to context + localStorage
-      loginUser(data);
+      loginUser(data, token);
   
       setLoading(false);
       setSuccess(true);
   
       setTimeout(() => {
-        navigate("/profile/form");
+        navigate("/home");
       }, 1200);
   
     } catch (error) {

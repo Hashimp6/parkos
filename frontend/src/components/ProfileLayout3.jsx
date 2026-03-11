@@ -823,8 +823,8 @@ function Footer({ name }) {
  *   <PersonalPortfolio candidate={candidateFromAPI} />
  *   <PersonalPortfolio />   // renders demo data
  */
-export default function PersonalPortfolio3({ candidate = DEMO }) {
-  const c = candidate;
+export default function PersonalPortfolio3({ data}) {
+  const c = data || DEMO
   return (
     <div style={{ background: C.bg, color: C.ink, minHeight: "100vh", overflowX: "hidden" }}>
       <style>{CSS}</style>

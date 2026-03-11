@@ -27,7 +27,16 @@ import CompanyLoginPage from "../pages/company/Login";
 import CompanyHome from "../pages/company/CompanyHome";
 import CompanyProfileForm from "../pages/company/ProfileForm";
 import HomeSection from "../pages/candidate/Profile";
-import CandidateHomeSection from "../pages/company/CompanyHome";
+import ProfilePages from "../pages/public/Profile";
+import Profile5 from "../components/ProfileLayout5";
+import Profile6 from "../components/Profilelayout6";
+import Profile7 from "../components/ProfileLayout7";
+import Profile8 from "../components/ProfileLayout8";
+import Profile9 from "../components/ProfileLayout9";
+import Profile10 from "../components/ProfileLayout10";
+import CandidateHomeSection from "../pages/candidate/Profile";
+import Profile11 from "../components/ProfileLayout11";
+import Profile12 from "../components/ProfileLayout12";
 
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
@@ -41,7 +50,7 @@ function AppRoutes() {
       {/* Public Website */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/jobs" element={<Jobs />} />
+        <Route path="/jobs" element={<JobListings />} />
         <Route path="/jobs/:id" element={<JobDetails />} />
       </Route>
 
@@ -54,10 +63,12 @@ function AppRoutes() {
       <Route path="/company/Home" element={<CompanyHome/>} />
       <Route path="/company/form" element={<CompanyProfileForm/>} />
       <Route path="/profile/form" element={<CandidateProfileForm />} />
+      <Route path="/profile/:profileId" element={<ProfilePages />} />
       <Route path="/profile" element={<ProfileCard/>} />
       <Route path="/company" element={<CompanyWebsite3 />} />
-      <Route path="/profile/4" element={<PersonalPortfolio4 />} />
+      <Route path="/profile/5" element={<Profile5 />} />
       <Route path="/profile/3" element={<PersonalPortfolio2 />} />
+      <Route path="/profile/6" element={<Profile12 />} />
       <Route path="/jobslist" element={<JobListings />} />
      
       {/* Dashboard (Protected Later) */}

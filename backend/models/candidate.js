@@ -15,6 +15,21 @@ const educationSchema = new mongoose.Schema({
   percentage: { type: String }, // or CGPA
 });
 
+const projectSchema = new mongoose.Schema({
+  title: { type: String, trim: true },
+  description: { type: String, trim: true },
+  link: { type: String, trim: true }
+});
+
+const contactSchema = new mongoose.Schema({
+  instagram: { type: String, trim: true, default: "" },
+  facebook: { type: String, trim: true, default: "" },
+  linkedin: { type: String, trim: true, default: "" },
+  twitter: { type: String, trim: true, default: "" },
+  github: { type: String, trim: true, default: "" },
+  website: { type: String, trim: true, default: "" }
+});
+
 const candidateSchema = new mongoose.Schema(
   {
     name: {
@@ -89,6 +104,14 @@ const candidateSchema = new mongoose.Schema(
         type: [experienceSchema],
         default: [],
       },       // array of work experience
+      socials: {
+        type: [contactSchema],
+        default: []
+      },
+      projects: {
+        type: [projectSchema],
+        default: []
+      },
     lookingVacancy: {
       type: [String],
       default: [],

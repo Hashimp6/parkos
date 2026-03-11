@@ -654,8 +654,8 @@ function Divider() {
  * Usage:
  *   <PersonalPortfolio candidate={candidateData} />
  */
-export default function PersonalPortfolio({ candidate = DEMO_CANDIDATE }) {
-  const c = candidate;
+export default function PersonalPortfolio({ data }) {
+  const c = data ||DEMO_CANDIDATE;
   const [activeNav, setActiveNav] = useState("About");
 
   const navItems = [

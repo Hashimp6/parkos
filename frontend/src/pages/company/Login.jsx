@@ -235,7 +235,7 @@ export default function CompanyLoginPage() {
             <p className="text-xs text-gray-400 text-center">
               Don't have an account?{" "}
               <button
-                onClick={() => navigate("/register")}
+                onClick={() => navigate("/company/register")}
                 className="font-semibold text-black hover:underline bg-transparent border-none cursor-pointer text-xs"
               >
                 Sign up

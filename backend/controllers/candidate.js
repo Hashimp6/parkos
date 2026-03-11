@@ -122,6 +122,8 @@ console.log("candidateId:", candidateId);
       education,
       experience,
       services,
+      socials,      // NEW
+      projects 
     } = req.body;
 
     const setPayload = {};
@@ -137,6 +139,21 @@ console.log("candidateId:", candidateId);
         if (typeof item === "object") return Object.keys(item).length > 0;
         return true;
       });
+    };
+    const parseArray = (data) => {
+      if (!data) return undefined;
+    
+      if (Array.isArray(data)) return data;
+    
+      if (typeof data === "string") {
+        try {
+          return JSON.parse(data);
+        } catch {
+          return undefined;
+        }
+      }
+    
+      return undefined;
     };
 
     // ── FILE UPLOADS ─────────────────
@@ -155,7 +172,7 @@ console.log("candidateId:", candidateId);
       );
       setPayload.cv = result.secure_url;
     }
-
+ 
     // ── Scalars ─────────────────
     setIfDefined("name", name);
     setIfDefined("phone", phone);
@@ -167,12 +184,13 @@ console.log("candidateId:", candidateId);
 
     // ── Arrays ─────────────────
 // ── Arrays ─────────────────
-setIfDefined("skills", cleanArray(skills));
-setIfDefined("lookingVacancy", cleanArray(lookingVacancy));
-setIfDefined("education", cleanArray(education));
-setIfDefined("experience", cleanArray(experience));
-setIfDefined("services", cleanArray(services));
-
+setIfDefined("skills", cleanArray(parseArray(skills)));
+setIfDefined("lookingVacancy", cleanArray(parseArray(lookingVacancy)));
+setIfDefined("education", cleanArray(parseArray(education)));
+setIfDefined("experience", cleanArray(parseArray(experience)));
+setIfDefined("services", cleanArray(parseArray(services)));
+setIfDefined("socials", cleanArray(parseArray(socials)));
+setIfDefined("projects", cleanArray(parseArray(projects)));
     if (!Object.keys(setPayload).length) {
       return res.status(400).json({
         success: false,
@@ -198,6 +216,8 @@ setIfDefined("services", cleanArray(services));
     updated.experience = updated.experience || [];
     updated.services = updated.services || [];
     updated.lookingVacancy = updated.lookingVacancy || [];
+    updated.socials = updated.socials || [];
+updated.projects = updated.projects || [];
 
     res.status(200).json({
       success: true,

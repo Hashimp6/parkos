@@ -10,10 +10,18 @@ export const CompanyProvider = ({ children }) => {
   useEffect(() => {
     const storedCompany = localStorage.getItem("company");
     const storedToken = localStorage.getItem("companyToken");
-
-    if (storedCompany && storedToken) {
-      setCompany(JSON.parse(storedCompany));
-      setToken(storedToken);
+  
+    try {
+      if (storedCompany && storedCompany !== "undefined") {
+        setCompany(JSON.parse(storedCompany));
+      }
+  
+      if (storedToken) {
+        setToken(storedToken);
+      }
+    } catch (error) {
+      console.error("LocalStorage parse error:", error);
+      localStorage.removeItem("company");
     }
   }, []);
 
@@ -37,7 +45,7 @@ export const CompanyProvider = ({ children }) => {
 
   // Update company data
   const updateCompany = (newData) => {
-    const updated = { ...company, ...newData };
+    const updated = { ...(company || {}), ...newData };
     setCompany(updated);
     localStorage.setItem("company", JSON.stringify(updated));
   };

@@ -3,38 +3,51 @@ import { createContext, useContext, useState, useEffect } from "react";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
 
-  // load user from localStorage
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("candidate");
-      if (stored) {
-        setUser(JSON.parse(stored));
-      }
+      const storedUser = localStorage.getItem("candidate");
+      const storedToken = localStorage.getItem("token");
+  
+      if (storedUser && storedUser !== "undefined") setUser(JSON.parse(storedUser));
+      if (storedToken && storedToken !== "undefined") setToken(storedToken);
+  
     } catch (err) {
-      console.error("Failed to parse user");
+      console.error("Failed to load user:", err);
+      localStorage.removeItem("candidate"); // clear bad data
+      localStorage.removeItem("token");
     }
   }, []);
 
-  const loginUser = (data) => {
-    setUser(data);
+  const loginUser = (data, token) => {
 
-    try {
-      localStorage.setItem("candidate", JSON.stringify(data));
-    } catch {
-      console.error("Failed to save user");
-    }
+    setUser(data);
+    setToken(token);
+
+    localStorage.setItem("candidate", JSON.stringify(data));
+    localStorage.setItem("token", token);
   };
 
+  const updateUser = (data) => {
+    setUser(data);
+    localStorage.setItem("candidate", JSON.stringify(data));
+  };
   const logoutUser = () => {
+
     setUser(null);
+    setToken(null);
+
     localStorage.removeItem("candidate");
     localStorage.removeItem("token");
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, loginUser, logoutUser }}>
+    <UserContext.Provider
+      value={{ user, token,updateUser, loginUser, logoutUser }}
+    >
       {children}
     </UserContext.Provider>
   );

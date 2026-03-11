@@ -1,5 +1,6 @@
 const Company = require("../models/company");
 const jwt = require("jsonwebtoken");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 // ─── Helper: generate JWT ─────────────────────────────────────────────────────
 const generateToken = (id) =>
@@ -167,53 +168,114 @@ exports.getMe = async (req, res) => {
 // Nested objects (address, contacts) are merged, not replaced.
 // ─────────────────────────────────────────────────────────────────────────────
 // @route   PATCH /api/companies/:id
+// companyController.js  —  updateCompany
+
 exports.updateCompany = async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      // Fields that should never be updated here
-      const restricted = [
-        "password",
-        "email",
-        "isVerified",
-        "isActive",
-        "_id",
-        "createdAt",
-        "updatedAt"
-      ];
-  
-      // Remove restricted fields if someone sends them
-      restricted.forEach((field) => delete req.body[field]);
-  
-      const updatedCompany = await Company.findByIdAndUpdate(
-        id,
-        { $set: req.body },   // only updates provided fields
-        {
-          new: true,
-          runValidators: true
-        }
-      );
-  
-      if (!updatedCompany) {
-        return res.status(404).json({
-          success: false,
-          message: "Company not found"
-        });
+  try {
+    console.log("hiii");
+    
+    const { id } = req.params;
+    console.log("FILES:", req.files);
+    console.log("BODY:", req.body);
+    // Strip fields that must never be updated via this endpoint
+    const restrictedFields = ["password", "email", "_id", "isVerified", "isActive", "createdAt", "updatedAt"];
+    restrictedFields.forEach((field) => delete req.body[field]);
+
+    let updateData = { ...req.body };
+
+    // ── Parse JSON fields sent via FormData ──────────────────────────────────
+    const jsonFields = ["tags", "members", "services", "projects", "gallery", "clients", "contacts", "address"];
+    jsonFields.forEach((key) => {
+      if (typeof updateData[key] === "string") {
+        try { updateData[key] = JSON.parse(updateData[key]); } catch {}
       }
-  
-      res.status(200).json({
-        success: true,
-        message: "Company updated successfully",
-        data: updatedCompany
-      });
-  
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message
-      });
+    });
+
+    // ── Top-level image uploads (logo, banner) ───────────────────────────────
+    if (req.files?.logo) {
+      const result = await uploadToCloudinary(req.files.logo[0].buffer, "companies/logos");
+      updateData.logo = result.secure_url;
     }
-  };
+
+    if (req.files?.banner) {
+      const result = await uploadToCloudinary(req.files.banner[0].buffer, "companies/banners");
+      updateData.banner = result.secure_url;
+    }
+
+    // ── Nested image uploads ─────────────────────────────────────────────────
+    // Frontend sends files as:
+    //   member_image_0, member_image_1, …   → members[i].image
+    //   gallery_image_0, gallery_image_1, … → gallery[i].imageUrl
+    //   client_logo_0,  client_logo_1,  …   → clients[i].logo
+
+    if (req.files) {
+      // Helper: upload a buffer and return the secure_url
+      const upload = (buffer, folder) => uploadToCloudinary(buffer, folder);
+
+      // ── Members ──
+      if (Array.isArray(updateData.members)) {
+        const memberFiles = Object.entries(req.files)
+          .filter(([key]) => key.startsWith("member_image_"));
+
+        for (const [key, fileArr] of memberFiles) {
+          const idx = parseInt(key.replace("member_image_", ""), 10);
+          if (!isNaN(idx) && updateData.members[idx] && fileArr[0]?.buffer) {
+            const result = await upload(fileArr[0].buffer, "companies/members");
+            updateData.members[idx].image = result.secure_url;
+          }
+        }
+      }
+
+      // ── Gallery ──
+      if (Array.isArray(updateData.gallery)) {
+        const galleryFiles = Object.entries(req.files)
+          .filter(([key]) => key.startsWith("gallery_image_"));
+
+        for (const [key, fileArr] of galleryFiles) {
+          const idx = parseInt(key.replace("gallery_image_", ""), 10);
+          if (!isNaN(idx) && updateData.gallery[idx] && fileArr[0]?.buffer) {
+            const result = await upload(fileArr[0].buffer, "companies/gallery");
+            updateData.gallery[idx].imageUrl = result.secure_url;
+          }
+        }
+      }
+
+      // ── Clients ──
+      if (Array.isArray(updateData.clients)) {
+        const clientFiles = Object.entries(req.files)
+          .filter(([key]) => key.startsWith("client_logo_"));
+
+        for (const [key, fileArr] of clientFiles) {
+          const idx = parseInt(key.replace("client_logo_", ""), 10);
+          if (!isNaN(idx) && updateData.clients[idx] && fileArr[0]?.buffer) {
+            const result = await upload(fileArr[0].buffer, "companies/clients");
+            updateData.clients[idx].logo = result.secure_url;
+          }
+        }
+      }
+    }
+
+    // ── Persist ──────────────────────────────────────────────────────────────
+    const updatedCompany = await Company.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCompany) {
+      return res.status(404).json({ success: false, message: "Company not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Company updated successfully",
+      company: updatedCompany,
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @route   PUT /api/companies/me/password

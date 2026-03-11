@@ -953,8 +953,8 @@ function Footer({ name }) {
 }
 
 /* ─────────────────────────── ROOT ──────────────────────────────── */
-export default function PersonalPortfolio4({ candidate = DEMO }) {
-  const c = candidate;
+export default function PersonalPortfolio4({data }) {
+  const c = data || DEMO
   return (
     <div style={{ background: "#050510", color: "#fff", minHeight: "100vh", overflowX: "hidden", cursor: "none" }}>
       <style>{CSS}</style>

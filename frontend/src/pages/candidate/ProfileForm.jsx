@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useCompany } from "../../context/CompanyContext";
 import { useUser } from "../../context/UserContext";
 
 
@@ -222,11 +223,25 @@ const blank = {
   services: [{ heading: "", description: "" }],
   education: [{ education: "", institution: "", year: "", percentage: "" }],
   experience: [{ jobTitle: "", company: "", startDate: "", endDate: "" }],
+  socials: [{
+    instagram: "",
+    facebook: "",
+    linkedin: "",
+    twitter: "",
+    github: "",
+    website: ""
+  }],
+
+  projects: [{
+    title: "",
+    description: "",
+    link: ""
+  }]
 };
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function CandidateProfileForm() {
-  const { user, loginUser } = useUser();
+  const { user,updateUser } = useUser();
   const [form, setForm] = useState(blank);
   const [tab, setTab] = useState("basic");
   const [loading, setLoading] = useState(false);
@@ -238,14 +253,16 @@ export default function CandidateProfileForm() {
       setForm((prev) => ({
         ...prev,
         ...user,
-        skills: user.skills || [],
-        lookingVacancy: user.lookingVacancy || [],
-        education: user.education || [],
-        experience: user.experience || [],
-        services: user.services || [],
+        skills: company.skills || [],
+        lookingVacancy: company.lookingVacancy || [],
+        education: company.education || [],
+        experience: company.experience || [],
+        services: company.services || [],
+        socials: company.socials || [],
+        projects: company.projects || []
       }));
     }
-  }, [user]);
+  }, [company]);
 
   const progress = Math.round(
     [form.name, form.email, form.phone, form.profilePhoto,
@@ -264,73 +281,61 @@ export default function CandidateProfileForm() {
 
   // ── Save handler ─────────────────────────────────────────────────────────
   const handleSave = async () => {
-    const candidateId = form._id || user?._id;
-  
-    if (!candidateId) {
-      toast.error("No candidate ID found. Please log in.");
+    const companyId = form._id || company?._id;
+
+    if (!companyId) {
+      toast.error("No company ID found. Please log in.");
       return;
     }
-  
-    const payload = {
-      name: form.name,
-      phone: form.phone,
-      place: form.place,
-      about: form.about,
-      tagline: form.tagline,
-      qualification: form.qualification,
-      layoutType: form.layoutType,
-      profilePhoto: form.profilePhoto,
-      cv: form.cv,
-  
-      skills: form.skills.filter((s) => s?.trim()),
-      lookingVacancy: form.lookingVacancy.filter((v) => v?.trim()),
-  
-      education: form.education.filter(
-        (e) => e.education || e.institution || e.year || e.percentage
-      ),
-  
-      experience: form.experience
-        .filter((e) => e.jobTitle || e.company)
-        .map((e) => ({
-          ...e,
-          endDate: e.endDate || null,
-        })),
-  
-      services: form.services.filter(
-        (s) => s.heading || s.description
-      ),
-    };
-  
-    delete payload.cvFileName;
   
     setLoading(true);
   
     try {
       const token = localStorage.getItem("token");
-  
       const formData = new FormData();
-
-      Object.keys(payload).forEach((key) => {
-        if (Array.isArray(payload[key]) || typeof payload[key] === "object") {
-          formData.append(key, JSON.stringify(payload[key]));
-        } else {
-          formData.append(key, payload[key]);
-        }
-      });
-      
+  
+      // Append files if they are File objects
       if (form.profilePhoto instanceof File) {
         formData.append("profilePhoto", form.profilePhoto);
+      } else if (typeof form.profilePhoto === "string") {
+        formData.append("profilePhoto", form.profilePhoto);
       }
-      
+  
       if (form.cv instanceof File) {
         formData.append("cv", form.cv);
+      } else if (typeof form.cv === "string") {
+        formData.append("cv", form.cv);
       }
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
-      
-      const { data } = await axios.put(
-        `${API_BASE}/candidate/update/${candidateId}`,
+  
+      // Append all other fields
+      const payload = {
+        name: form.name,
+        phone: form.phone,
+        place: form.place,
+        about: form.about,
+        tagline: form.tagline,
+        qualification: form.qualification,
+        layoutType: form.layoutType,
+        socials: form.socials.filter(s => s.instagram || s.facebook || s.linkedin || s.twitter || s.github || s.website),
+        projects: form.projects.filter(p => p.title || p.description || p.link),
+        skills: form.skills.filter(s => s?.trim()),
+        lookingVacancy: form.lookingVacancy.filter(v => v?.trim()),
+        education: form.education.filter(e => e.education || e.institution || e.year || e.percentage),
+        experience: form.experience.filter(e => e.jobTitle || e.company).map(e => ({ ...e, endDate: e.endDate || null })),
+        services: form.services.filter(s => s.heading || s.description),
+      };
+  
+      Object.keys(payload).forEach((key) => {
+        const value = payload[key];
+        if (Array.isArray(value) || typeof value === "object") {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value ?? "");
+        }
+      });
+  
+      const { data } = await axios.patch(
+       `${API_BASE}/companies/update/${companyId}`,  // ← correct endpoint
         formData,
         {
           headers: {
@@ -340,11 +345,9 @@ export default function CandidateProfileForm() {
         }
       );
   
-      const updated = data.candidate;
-  
-      loginUser(updated);
+      const updated = data.company || data.data;
+      updateUser(updated);
       setForm(updated);
-  
       toast.success("Profile updated successfully!");
     } catch (err) {
       const msg = err?.response?.data?.message || "Update failed.";
@@ -478,7 +481,87 @@ export default function CandidateProfileForm() {
                     </div>
                   ))}
                 </div>
+          
               </Card>
+              <Card>
+  <CardTitle>Social Links</CardTitle>
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+    <div>
+      <label className={labelCls}>Instagram</label>
+      <input
+        className={inputCls}
+        placeholder="https://instagram.com/username"
+        value={form.socials?.[0]?.instagram || ""}
+        onChange={(e) =>
+          set("socials", [{ ...form.socials?.[0], instagram: e.target.value }])
+        }
+      />
+    </div>
+
+    <div>
+      <label className={labelCls}>Facebook</label>
+      <input
+        className={inputCls}
+        placeholder="https://facebook.com/username"
+        value={form.socials?.[0]?.facebook || ""}
+        onChange={(e) =>
+          set("socials", [{ ...form.socials?.[0], facebook: e.target.value }])
+        }
+      />
+    </div>
+
+    <div>
+      <label className={labelCls}>LinkedIn</label>
+      <input
+        className={inputCls}
+        placeholder="https://linkedin.com/in/username"
+        value={form.socials?.[0]?.linkedin || ""}
+        onChange={(e) =>
+          set("socials", [{ ...form.socials?.[0], linkedin: e.target.value }])
+        }
+      />
+    </div>
+
+    <div>
+      <label className={labelCls}>Twitter</label>
+      <input
+        className={inputCls}
+        placeholder="https://twitter.com/username"
+        value={form.socials?.[0]?.twitter || ""}
+        onChange={(e) =>
+          set("socials", [{ ...form.socials?.[0], twitter: e.target.value }])
+        }
+      />
+    </div>
+
+    <div>
+      <label className={labelCls}>GitHub</label>
+      <input
+        className={inputCls}
+        placeholder="https://github.com/username"
+        value={form.socials?.[0]?.github || ""}
+        onChange={(e) =>
+          set("socials", [{ ...form.socials?.[0], github: e.target.value }])
+        }
+      />
+    </div>
+
+    <div className="sm:col-span-2">
+      <label className={labelCls}>Website</label>
+      <input
+        className={inputCls}
+        placeholder="https://yourwebsite.com"
+        value={form.socials?.[0]?.website || ""}
+        onChange={(e) =>
+          set("socials", [{ ...form.socials?.[0], website: e.target.value }])
+        }
+      />
+    </div>
+
+  </div>
+</Card>
             </>
           )}
 
@@ -581,6 +664,7 @@ export default function CandidateProfileForm() {
 
           {/* EXPERIENCE */}
           {tab === "experience" && (
+            <>
             <Card>
               <CardTitle>Work Experience</CardTitle>
               <DynArray
@@ -589,14 +673,29 @@ export default function CandidateProfileForm() {
                 fields={[
                   { key: "jobTitle",   label: "Job Title",  placeholder: "e.g. Frontend Developer" },
                   { key: "company",    label: "Company",    placeholder: "Acme Corp" },
-                  { key: "startDate",  label: "Start Date", type: "date" },
-                  { key: "endDate",    label: "End Date",   type: "date" },
                 ]}
                 onAdd={(t) => addArr("experience", t)}
                 onRemove={(i) => remArr("experience", i)}
                 onUpdate={(i, k, v) => updArr("experience", i, k, v)}
               />
             </Card>
+            <Card>
+            <CardTitle>Projects</CardTitle>
+          
+            <DynArray
+              items={form.projects}
+              template={{ title: "", description: "", link: "" }}
+              fields={[
+                { key: "title", label: "Project Title", placeholder: "Job Portal Platform" },
+                { key: "link", label: "Project Link", placeholder: "https://github.com/project" },
+                { key: "description", label: "Description", placeholder: "Explain what this project does...", textarea: true, full: true }
+              ]}
+              onAdd={(t) => addArr("projects", t)}
+              onRemove={(i) => remArr("projects", i)}
+              onUpdate={(i, k, v) => updArr("projects", i, k, v)}
+            />
+          </Card>
+          </>
           )}
 
           {/* SETTINGS */}

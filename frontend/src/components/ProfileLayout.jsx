@@ -37,9 +37,9 @@ function UnknownAvatar({ size, dark }) {
   );
 }
 
-export default function ProfilePage() {
+export default function ProfilePage({ data }) {
   const [dark, setDark] = useState(false);
-  const [c] = useState(mockCandidate);
+  const c = data || mockCandidate;
 
   const hasPhoto = !!c.profilePhoto;
   const hasAbout = !!c.about;

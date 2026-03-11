@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../context/UserContext";
 
 export default function RegisterPage() {
+  const { loginUser } = useUser();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [showPass, setShowPass] = useState(false);
@@ -22,12 +24,53 @@ export default function RegisterPage() {
     return e;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const e = validate();
-    if (Object.keys(e).length) { setErrors(e); return; }
+    if (Object.keys(e).length) {
+      setErrors(e);
+      return;
+    }
+  
     setErrors({});
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSuccess(true); }, 1800);
+  
+    try {
+      const res = await fetch("http://localhost:5006/api/candidate/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        }),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(data.message || "Register failed");
+      }
+  
+      // store user in context
+      loginUser(data.user);
+  
+      // save token
+      localStorage.setItem("token", data.token);
+  
+      setSuccess(true);
+  
+      setTimeout(() => {
+        navigate("/home");
+      }, 800);
+  
+    } catch (err) {
+      console.error(err);
+      setErrors({ email: err.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClass = (field) =>

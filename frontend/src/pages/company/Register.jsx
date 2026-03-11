@@ -56,10 +56,10 @@ export default function CompanyRegisterPage() {
           password: form.password,
         }
       );
-  console.log("comp det",res.data.company, res.data.token);
+  console.log("comp det",res.data, res.data.token);
   
       // 🔥 Save to context + localStorage
-      loginCompany(res.data.company, res.data.token);
+      loginCompany(res.data.data, res.data.token);
   
       setLoading(false);
       setSuccess(true);

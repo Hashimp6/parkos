@@ -30,16 +30,6 @@ const inputCls =
 const labelCls =
   "block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function toBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
-
 // ── Toast ─────────────────────────────────────────────────────────────────────
 function Toast({ toasts }) {
   return (
@@ -66,7 +56,7 @@ function useToast() {
 }
 
 // ── Image Upload Button ───────────────────────────────────────────────────────
-function ImageUpload({ value, onChange, label, shape = "square", placeholder = "📷" }) {
+function ImageUpload({ value, onChange, label, shape = "square", placeholder = "📷", onFileChange }) {
   const ref = useRef();
   const isRound = shape === "round";
   return (
@@ -87,7 +77,13 @@ function ImageUpload({ value, onChange, label, shape = "square", placeholder = "
       </button>
       {label && <p className="text-[10px] text-zinc-400 font-semibold text-center">{label}</p>}
       <input ref={ref} type="file" accept="image/*" className="hidden"
-        onChange={async (e) => { const f = e.target.files?.[0]; if (f) onChange(await toBase64(f)); }} />
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) {
+            onChange(URL.createObjectURL(f));
+            if (onFileChange) onFileChange(f);
+          }
+        }} />
     </div>
   );
 }
@@ -101,7 +97,7 @@ function CardTitle({ children }) {
 }
 
 // ── Dynamic Array Fields ──────────────────────────────────────────────────────
-function DynArray({ items, onAdd, onRemove, onUpdate, placeholder, template, fields }) {
+function DynArray({ items, onAdd, onRemove, onUpdate, placeholder, template, fields, onFileChange }) {
   if (!fields) {
     return (
       <div className="space-y-2">
@@ -133,9 +129,11 @@ function DynArray({ items, onAdd, onRemove, onUpdate, placeholder, template, fie
                 {f.type === "image" ? (
                   <ImageUpload
                     value={item[f.key] || ""}
-                    onChange={(b64) => onUpdate(i, f.key, b64)}
+                    onChange={(url) => onUpdate(i, f.key, url)}
                     placeholder="🖼"
                     shape="square"
+                    // pass file up with index so parent can track it
+                    onFileChange={(file) => onFileChange && onFileChange(i, f.key, file)}
                   />
                 ) : f.textarea ? (
                   <textarea className={`${inputCls} resize-none min-h-20`} placeholder={f.placeholder}
@@ -186,12 +184,23 @@ export default function CompanyProfileForm() {
   const [tab, setTab]   = useState("branding");
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const { company, setCompany } = useCompany();
+  const { company, updateCompany, token } = useCompany();
 
-  // Load from localStorage on mount
+  // Track all uploadable files:
+  // logo, banner          → single files
+  // members[i].image      → array of files indexed by position
+  // gallery[i].imageUrl   → array of files indexed by position
+  // clients[i].logo       → array of files indexed by position
+  const [files, setFiles] = useState({
+    logo: null,
+    banner: null,
+    members: {},   // { [index]: File }
+    gallery: {},   // { [index]: File }
+    clients: {},   // { [index]: File }
+  });
+
+  // Load company data on mount
   useEffect(() => {
-    console.log('cmpany',company);
-    
     if (company && company._id) {
       setForm((prev) => ({
         ...prev,
@@ -208,7 +217,7 @@ export default function CompanyProfileForm() {
     }
   }, [company]);
 
-  // Progress calculation
+  // Progress
   const progress = Math.round(
     [form.companyName, form.tagline, form.about, form.logo,
       form.industry, form.businessPark !== "Other",
@@ -221,43 +230,122 @@ export default function CompanyProfileForm() {
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
   const setNested = (parent, k, v) => setForm((p) => ({ ...p, [parent]: { ...p[parent], [k]: v } }));
   const addArr  = (k, t) => set(k, [...form[k], t]);
-  const remArr  = (k, i) => set(k, form[k].filter((_, x) => x !== i));
-  const updArr  = (k, i, key, val) =>
+  const remArr  = (k, i) => {
+    set(k, form[k].filter((_, x) => x !== i));
+    // Also clean up tracked file for removed index
+    if (["members", "gallery", "clients"].includes(k)) {
+      setFiles((p) => {
+        const updated = { ...p[k] };
+        delete updated[i];
+        // Re-index keys above removed index
+        const reindexed = {};
+        Object.entries(updated).forEach(([idx, file]) => {
+          const n = parseInt(idx);
+          reindexed[n > i ? n - 1 : n] = file;
+        });
+        return { ...p, [k]: reindexed };
+      });
+    }
+  };
+  const updArr = (k, i, key, val) =>
     set(k, form[k].map((item, x) => x === i ? (key === null ? val : { ...item, [key]: val }) : item));
+
+  // Store a nested image file (members, gallery, clients)
+  const setNestedFile = (arrayKey, index, file) => {
+    setFiles((p) => ({ ...p, [arrayKey]: { ...p[arrayKey], [index]: file } }));
+  };
 
   // ── Save ──────────────────────────────────────────────────────────────────
   const handleSave = async () => {
-    const company = (() => { try { return JSON.parse(localStorage.getItem("company") || "{}"); } catch { return {}; } })();
-    const id = form._id || company._id;
-    if (!id) { toast.error("No company ID. Please log in."); return; }
-
-    const payload = {
-      ...form,
-      tags:     form.tags.filter(t => t?.trim()),
-      members:  form.members.filter(m => m.name || m.position),
-      services: form.services.filter(s => s.title || s.description),
-      projects: form.projects.filter(p => p.name || p.description || p.link),
-      gallery:  form.gallery.filter(g => g.imageUrl || g.caption),
-      clients:  form.clients.filter(c => c.name || c.logo),
-      employeeCount: Number(form.employeeCount) || 0,
-      foundedYear:   Number(form.foundedYear)   || undefined,
-    };
-    delete payload._id; delete payload.__v; delete payload.createdAt; delete payload.updatedAt;
-    delete payload.password; delete payload.email; delete payload.isVerified; delete payload.isActive;
+    const companyId = form._id || company?._id;
+    if (!companyId) {
+      toast.error("No company ID found. Please log in.");
+      return;
+    }
 
     setLoading(true);
+
     try {
-      const token = localStorage.getItem("token");
+      const formData = new FormData();
+
+      // ── Top-level image files ──
+      if (files.logo)   formData.append("logo", files.logo);
+      if (files.banner) formData.append("banner", files.banner);
+
+      // ── Nested image files ──
+      // members[i].image  → field name: "member_image_0", "member_image_1", …
+      Object.entries(files.members).forEach(([idx, file]) => {
+        formData.append(`member_image_${idx}`, file);
+      });
+
+      // gallery[i].imageUrl → field name: "gallery_image_0", …
+      Object.entries(files.gallery).forEach(([idx, file]) => {
+        formData.append(`gallery_image_${idx}`, file);
+      });
+
+      // clients[i].logo → field name: "client_logo_0", …
+      Object.entries(files.clients).forEach(([idx, file]) => {
+        formData.append(`client_logo_${idx}`, file);
+      });
+
+      // ── JSON/text payload ──
+      const payload = {
+        companyName:   form.companyName,
+        tagline:       form.tagline,
+        about:         form.about,
+        industry:      form.industry,
+        companySize:   form.companySize,
+        employeeCount: form.employeeCount,
+        foundedYear:   form.foundedYear,
+        website:       form.website,
+        tags:          form.tags,
+        businessPark:  form.businessPark,
+        layout:        form.layout,
+        address:       form.address,
+        contacts:      form.contacts,
+        members:       form.members,
+        services:      form.services,
+        projects:      form.projects,
+        gallery:       form.gallery,
+        clients:       form.clients,
+        mapEmbedLink:  form.mapEmbedLink,
+      };
+
+      Object.entries(payload).forEach(([key, value]) => {
+        if (Array.isArray(value) || (typeof value === "object" && value !== null)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value ?? "");
+        }
+      });
+
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+      
+      console.log("Files state:", files);
+      console.log("-----------------------------");
       const { data } = await axios.patch(
-        `${API_BASE}/companies/update/${id}`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${API_BASE}/companies/update/${companyId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data", // ← ADD THIS
+          },
+        }
       );
-      localStorage.setItem("company", JSON.stringify(data.data));
-      setForm((p) => ({ ...p, ...data.data }));
-      toast.success("Company profile updated!");
+
+      updateCompany(data.company);
+      setForm((prev) => ({ ...prev, ...data.company }));
+
+      // Clear tracked files after successful save
+      setFiles({ logo: null, banner: null, members: {}, gallery: {}, clients: {} });
+
+      toast.success("Profile updated successfully!");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Update failed.");
+      const msg = err?.response?.data?.message || "Update failed.";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -283,30 +371,24 @@ export default function CompanyProfileForm() {
         {/* ── STICKY HEADER ── */}
         <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-zinc-100">
           <div className="max-w-2xl mx-auto px-4 pt-4 pb-0">
-
             <div className="flex items-center gap-3 mb-3">
-              {/* Logo preview */}
               <div className="w-11 h-11 rounded-2xl overflow-hidden bg-zinc-100 border-2 border-white shadow flex-shrink-0 ring-2 ring-zinc-200 flex items-center justify-center">
                 {form.logo
                   ? <img src={form.logo} alt="logo" className="w-full h-full object-cover" />
                   : <span className="text-xl">🏢</span>}
               </div>
-
               <div className="flex-1 min-w-0">
                 <p className="cpf-serif font-bold text-zinc-900 text-base leading-tight truncate">
                   {form.companyName || "Your Company"}
                 </p>
                 <p className="text-xs text-zinc-400 truncate">{form.tagline || "Add a tagline"}</p>
               </div>
-
-              {/* Progress */}
               <div className="flex items-center gap-2 mr-1">
                 <div className="w-20 h-1.5 bg-zinc-100 rounded-full overflow-hidden hidden sm:block">
                   <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progress}%`, background: pColor }} />
                 </div>
                 <span className="text-[11px] font-bold" style={{ color: pColor }}>{progress}%</span>
               </div>
-
               <button type="button" onClick={handleSave} disabled={loading}
                 className={`flex-shrink-0 flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-2xl transition-all
                   ${loading ? "bg-zinc-300 text-zinc-500 cursor-not-allowed" : "bg-zinc-900 hover:bg-zinc-700 text-white active:scale-95"}`}>
@@ -337,7 +419,6 @@ export default function CompanyProfileForm() {
             <>
               <Card>
                 <CardTitle>Logo & Banner</CardTitle>
-                {/* Banner full-width */}
                 <div className="mb-4">
                   <label className={labelCls}>Cover Banner</label>
                   <button type="button" onClick={() => document.getElementById("banner-input").click()}
@@ -355,12 +436,24 @@ export default function CompanyProfileForm() {
                     )}
                   </button>
                   <input id="banner-input" type="file" accept="image/*" className="hidden"
-                    onChange={async (e) => { const f = e.target.files?.[0]; if (f) set("banner", await toBase64(f)); }} />
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) {
+                        setFiles((p) => ({ ...p, banner: f }));
+                        set("banner", URL.createObjectURL(f));
+                      }
+                    }} />
                 </div>
 
-                {/* Logo + name row */}
                 <div className="flex items-start gap-5">
-                  <ImageUpload value={form.logo} onChange={(b) => set("logo", b)} label="Company Logo" shape="round" placeholder="🏢" />
+                  <ImageUpload
+                    value={form.logo}
+                    onChange={(url) => set("logo", url)}
+                    onFileChange={(f) => setFiles((p) => ({ ...p, logo: f }))}
+                    label="Company Logo"
+                    shape="round"
+                    placeholder="🏢"
+                  />
                   <div className="flex-1 space-y-3">
                     <div>
                       <label className={labelCls}>Company Name</label>
@@ -412,16 +505,6 @@ export default function CompanyProfileForm() {
                       {COMPANY_SIZES.map(s => <option key={s} value={s}>{s} employees</option>)}
                     </select>
                   </div>
-                  <div>
-                    <label className={labelCls}>Employee Count</label>
-                    <input className={inputCls} type="number" placeholder="e.g. 45" value={form.employeeCount}
-                      onChange={e => set("employeeCount", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Founded Year</label>
-                    <input className={inputCls} type="number" placeholder="e.g. 2015" value={form.foundedYear}
-                      onChange={e => set("foundedYear", e.target.value)} />
-                  </div>
                   <div className="sm:col-span-2">
                     <label className={labelCls}>Website</label>
                     <input className={inputCls} type="url" placeholder="https://yourcompany.com" value={form.website}
@@ -444,7 +527,7 @@ export default function CompanyProfileForm() {
           {tab === "location" && (
             <>
               <Card>
-                <CardTitle>Business Park</CardTitle>
+                <CardTitle>Park</CardTitle>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {BUSINESS_PARKS.map((bp) => (
                     <button key={bp} type="button" onClick={() => set("businessPark", bp)}
@@ -501,14 +584,16 @@ export default function CompanyProfileForm() {
                 items={form.members}
                 template={{ name: "", position: "", image: "", url: "" }}
                 fields={[
-                  { key: "image",    label: "Photo",    type: "image", full: false },
-                  { key: "name",     label: "Name",     placeholder: "Jane Doe" },
-                  { key: "position", label: "Position", placeholder: "Chief Executive Officer" },
+                  { key: "image",    label: "Photo",       type: "image" },
+                  { key: "name",     label: "Name",        placeholder: "Jane Doe" },
+                  { key: "position", label: "Position",    placeholder: "Chief Executive Officer" },
                   { key: "url",      label: "Profile URL", placeholder: "https://linkedin.com/in/…", full: true },
                 ]}
                 onAdd={(t) => addArr("members", t)}
                 onRemove={(i) => remArr("members", i)}
                 onUpdate={(i, k, v) => updArr("members", i, k, v)}
+                // ← wire nested file tracking
+                onFileChange={(i, _key, file) => setNestedFile("members", i, file)}
               />
             </Card>
           )}
@@ -531,25 +616,25 @@ export default function CompanyProfileForm() {
             </Card>
           )}
 
+          {/* ── PROJECTS ── */}
+          {tab === "projects" && (
+            <Card>
+              <CardTitle>Projects</CardTitle>
+              <DynArray
+                items={form.projects}
+                template={{ name: "", description: "", link: "" }}
+                fields={[
+                  { key: "name",        label: "Project Name",  placeholder: "Project Alpha" },
+                  { key: "description", label: "Description",   placeholder: "Short description...", textarea: true, full: true },
+                  { key: "link",        label: "Project Link",  placeholder: "https://project.com", type: "url", full: true },
+                ]}
+                onAdd={(t) => addArr("projects", t)}
+                onRemove={(i) => remArr("projects", i)}
+                onUpdate={(i, k, v) => updArr("projects", i, k, v)}
+              />
+            </Card>
+          )}
 
-{/* ── PROJECTS ── */}
-{tab === "projects" && (
-  <Card>
-    <CardTitle>Projects</CardTitle>
-    <DynArray
-      items={form.projects}
-      template={{ name: "", description: "", link: "" }}
-      fields={[
-        { key: "name", label: "Project Name", placeholder: "Project Alpha" },
-        { key: "description", label: "Description", placeholder: "Short description...", textarea: true, full: true },
-        { key: "link", label: "Project Link", placeholder: "https://project.com", type: "url", full: true },
-      ]}
-      onAdd={(t) => addArr("projects", t)}
-      onRemove={(i) => remArr("projects", i)}
-      onUpdate={(i, k, v) => updArr("projects", i, k, v)}
-    />
-  </Card>
-)}
           {/* ── GALLERY ── */}
           {tab === "gallery" && (
             <Card>
@@ -559,15 +644,21 @@ export default function CompanyProfileForm() {
                 {form.gallery.map((item, i) => (
                   <div key={i} className="bg-zinc-50 border border-zinc-100 rounded-2xl p-4 relative">
                     <div className="flex gap-4 items-start">
-                      {/* Image upload */}
                       <button type="button" onClick={() => document.getElementById(`gallery-img-${i}`).click()}
                         className="relative flex-shrink-0 w-24 h-20 rounded-xl overflow-hidden bg-zinc-200 border-2 border-dashed border-zinc-300 hover:border-zinc-500 transition-all group">
                         {item.imageUrl
                           ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
                           : <div className="w-full h-full flex items-center justify-center text-zinc-400 group-hover:text-zinc-600 text-2xl">🖼</div>}
                       </button>
+                      {/* Gallery file input — stores file + preview URL */}
                       <input id={`gallery-img-${i}`} type="file" accept="image/*" className="hidden"
-                        onChange={async (e) => { const f = e.target.files?.[0]; if (f) updArr("gallery", i, "imageUrl", await toBase64(f)); }} />
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) {
+                            updArr("gallery", i, "imageUrl", URL.createObjectURL(f));
+                            setNestedFile("gallery", i, f);
+                          }
+                        }} />
                       <div className="flex-1">
                         <label className={labelCls}>Caption</label>
                         <input className={inputCls} placeholder="e.g. Team outing 2024"
@@ -603,6 +694,8 @@ export default function CompanyProfileForm() {
                 onAdd={(t) => addArr("clients", t)}
                 onRemove={(i) => remArr("clients", i)}
                 onUpdate={(i, k, v) => updArr("clients", i, k, v)}
+                // ← wire nested file tracking
+                onFileChange={(i, _key, file) => setNestedFile("clients", i, file)}
               />
             </Card>
           )}
@@ -613,15 +706,15 @@ export default function CompanyProfileForm() {
               <CardTitle>Contact & Social Links</CardTitle>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { k: "email",     l: "Email",     p: "hello@company.com",    icon: "✉" },
-                  { k: "phone",     l: "Phone",     p: "+91 98765 43210",       icon: "☎" },
-                  { k: "whatsapp",  l: "WhatsApp",  p: "+91 98765 43210",       icon: "💬" },
-                  { k: "website",   l: "Website",   p: "https://company.com",   icon: "🌐" },
-                  { k: "linkedin",  l: "LinkedIn",  p: "linkedin.com/company/…",icon: "in" },
-                  { k: "instagram", l: "Instagram", p: "@yourcompany",          icon: "📷" },
-                  { k: "facebook",  l: "Facebook",  p: "facebook.com/…",        icon: "f" },
-                  { k: "twitter",   l: "Twitter / X", p: "@yourcompany",        icon: "𝕏" },
-                  { k: "youtube",   l: "YouTube",   p: "youtube.com/@…",        icon: "▶" },
+                  { k: "email",     l: "Email",       p: "hello@company.com",     icon: "✉" },
+                  { k: "phone",     l: "Phone",       p: "+91 98765 43210",        icon: "☎" },
+                  { k: "whatsapp",  l: "WhatsApp",    p: "+91 98765 43210",        icon: "💬" },
+                  { k: "website",   l: "Website",     p: "https://company.com",    icon: "🌐" },
+                  { k: "linkedin",  l: "LinkedIn",    p: "linkedin.com/company/…", icon: "in" },
+                  { k: "instagram", l: "Instagram",   p: "@yourcompany",           icon: "📷" },
+                  { k: "facebook",  l: "Facebook",    p: "facebook.com/…",         icon: "f" },
+                  { k: "twitter",   l: "Twitter / X", p: "@yourcompany",           icon: "𝕏" },
+                  { k: "youtube",   l: "YouTube",     p: "youtube.com/@…",         icon: "▶" },
                 ].map(f => (
                   <div key={f.k}>
                     <label className={labelCls}>
@@ -654,7 +747,7 @@ export default function CompanyProfileForm() {
                         : "border-zinc-200 hover:border-zinc-400 bg-white"}`}>
                     <div className="text-2xl mb-2">{l.icon}</div>
                     <div className="font-bold text-sm">{l.name}</div>
-                    <div className={`text-xs mt-0.5 ${form.layout === l.id ? "text-zinc-400" : "text-zinc-400"}`}>{l.desc}</div>
+                    <div className="text-xs mt-0.5 text-zinc-400">{l.desc}</div>
                   </button>
                 ))}
               </div>
