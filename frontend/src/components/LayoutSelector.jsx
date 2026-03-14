@@ -5,6 +5,11 @@ import Profile4 from "./ProfileLayout3";
 import Profile5 from "./ProfileLayout4";
 import Profile6 from "./ProfileLayout5";
 import Profile7 from "./Profilelayout6";
+import Profile8 from "./ProfileLayout7";
+import Profile9 from "./Profilelayout8";
+import Profile10 from "./Profilelayout9";
+import Profile11 from "./ProfileLayout10";
+import Profile12 from "./ProfileLayout11";
 import LayoutPreview from "./LayoutPreview";
 
 const templates = {
@@ -15,11 +20,14 @@ const templates = {
   5: Profile5,
   6: Profile6,
   7: Profile7,
+  8: Profile8,
+  10: Profile9,
+  11: Profile10,
 };
 
 export default function LayoutSelector({ value, onChange, data }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {Object.entries(templates).map(([id, Template]) => (
         <LayoutPreview
           key={id}

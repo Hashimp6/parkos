@@ -470,10 +470,7 @@ export default function CandidateHomeSection({ onNavigate }) {
                     </div>
                     <div className="hx-av-dot" />
                   </div>
-                  <div className="hx-pct-pill">
-                    <span className="hx-pct-n">{pctComplete}<span style={{fontSize:11,color:"#ccc"}}>%</span></span>
-                    <span className="hx-pct-l">Complete</span>
-                  </div>
+                 
                 </div>
 
                 <h2 className="hx-uname">{user.name || "Your Name"}</h2>
@@ -522,28 +519,12 @@ export default function CandidateHomeSection({ onNavigate }) {
   </svg>
   View
 </button>
-                  <button className="hx-btn hx-btn-ghost" onClick={()=>goto("/candidate/applications")}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    Apps
-                  </button>
+                
                 </div>
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="hx-stats hx-r3">
-              {[
-                { n: user.experience?.filter(e=>e.jobTitle).length||0, l:"Experience" },
-                { n: user.skills?.filter(Boolean).length||0, l:"Skills" },
-                { n: `${pctComplete}%`, l:"Strength" },
-              ].map((s,i)=>(
-                <div key={i} className="hx-stat" style={{animation:`riseIn .5s cubic-bezier(.16,1,.3,1) ${.2+i*.07}s both`}}>
-                  <div className="hx-stat-n">{s.n}</div>
-                  <div className="hx-stat-l">{s.l}</div>
-                  <div className="hx-stat-bar" />
-                </div>
-              ))}
-            </div>
+          
 
           </aside>
 
@@ -565,7 +546,11 @@ export default function CandidateHomeSection({ onNavigate }) {
                 <button
                   key={card.key}
                   className="hx-disc-card"
-                  onClick={()=>goto(`/discover/${card.key}`)}
+                  onClick={() => {
+                    if (card.key === "job") {
+                      goto("/jobs");
+                    } 
+                  }}
                   style={{animation:`riseIn .5s cubic-bezier(.16,1,.3,1) ${.15+i*.08}s both`}}
                 >
                   <div className="hx-disc-top">

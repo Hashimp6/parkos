@@ -1,42 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
-const D = {
-  name: "Arjun Menon", firstName: "Arjun", lastName: "Menon",
-  role: "Full‑Stack Engineer",
-  tagline: "Crafting digital products that perform beautifully.",
-  about: "7+ years turning complex ideas into fast, elegant web products. I work across the full stack — from database design to pixel-perfect interfaces.",
-  email: "arjun.menon@gmail.com", phone: "+91 98765 43210", place: "Kochi, Kerala",
-  profilePhoto: "https://i.pravatar.cc/900?img=68",
-  qualification: "B.Tech CS · NIT Calicut", cv: "/cv.pdf",
-  skills: ["React","Node.js","TypeScript","MongoDB","GraphQL","Docker","AWS","Figma","Python","Redis","Next.js","PostgreSQL"],
-  services: [
-    { heading: "Product Engineering", description: "End-to-end web apps built for speed, scale, and real humans.", icon: "⬡" },
-    { heading: "Interface Design", description: "Pixel-perfect UIs that feel inevitable. Every motion earned.", icon: "◈" },
-    { heading: "API & Backend", description: "Clean REST & GraphQL APIs with solid domain logic.", icon: "⬟" },
-    { heading: "Cloud & DevOps", description: "Containerised, automated infra on AWS & GCP.", icon: "◇" },
-  ],
-  experience: [
-    { jobTitle: "Senior Frontend Engineer", company: "Infosys Ltd.", startDate: "2022-06-01", endDate: null },
-    { jobTitle: "Full‑Stack Developer", company: "Zoho Corporation", startDate: "2019-08-01", endDate: "2022-05-31" },
-    { jobTitle: "Junior Developer", company: "TCS", startDate: "2017-07-01", endDate: "2019-07-31" },
-  ],
-  education: [
-    { education: "B.Tech — Computer Science", institution: "NIT Calicut", year: 2017, percentage: "8.7 CGPA" },
-    { education: "Higher Secondary", institution: "St. Joseph's HSS", year: 2013, percentage: "94%" },
-  ],
-  projects: [
-    { title: "DevBoard", description: "Real-time dev dashboard unifying GitHub, Jira & Slack.", link: "#", year: "2024" },
-    { title: "ShopSphere", description: "Multi-tenant e-commerce with live inventory & payments.", link: "#", year: "2023" },
-    { title: "AIResume", description: "AI resume scorer & rewriter. 2,000+ users in month one.", link: "#", year: "2023" },
-    { title: "NoteStack", description: "Collaborative markdown workspace with real-time sync.", link: null, year: "2022" },
-  ],
-  socials: [{ linkedin:"https://linkedin.com", github:"https://github.com", twitter:"https://twitter.com", website:"https://arjunmenon.dev" }],
-  lookingVacancy: ["Full-Stack Engineer","Frontend Lead","Co-founder"],
-};
 
-const soc = D.socials?.[0] || {};
-const fmt = d => !d ? "Present" : new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"});
-const expYrs = D.experience?.length ? new Date().getFullYear() - new Date(D.experience[D.experience.length-1].startDate).getFullYear() : 7;
+
 
 /* ══ CSS ══════════════════════════════════════════════════════════ */
 const CSS = `
@@ -311,7 +276,7 @@ function Ctr({to}) {
 }
 
 /* ── NAV ─────────────────────────────────── */
-function Nav() {
+function Nav({ D })  {
   const [s,setS] = useState(false), [open,setOpen] = useState(false);
   useEffect(()=>{ const h=()=>setS(window.scrollY>50); window.addEventListener("scroll",h); return()=>window.removeEventListener("scroll",h); },[]);
   const go = id => { setOpen(false); document.getElementById(id)?.scrollIntoView({behavior:"smooth"}); };
@@ -336,7 +301,7 @@ function Nav() {
 }
 
 /* ── HERO ─────────────────────────────────── */
-function Hero() {
+function Hero({ D, expYrs }){
   const [inn,setInn] = useState(false);
   useEffect(()=>{ setTimeout(()=>setInn(true),100); },[]);
   const a = (d=0) => ({opacity:inn?1:0,transform:inn?"none":"translateY(28px)",transition:`opacity .9s cubic-bezier(.16,1,.3,1) ${d}ms,transform .9s cubic-bezier(.16,1,.3,1) ${d}ms`});
@@ -399,7 +364,7 @@ function Hero() {
 }
 
 /* ── TICKER ─────────────────────────────── */
-function Ticker() {
+function Ticker({ D }) {
   const items = D.skills?.length ? [...D.skills,...D.skills,...D.skills,...D.skills] : [];
   return (
     <div className="ticker" style={{position:"relative",zIndex:2}}>
@@ -411,7 +376,7 @@ function Ticker() {
 }
 
 /* ── SERVICES ─────────────────────────────── */
-function Services() {
+function Services({ D })  {
   if (!D.services?.length) return null;
   return (
     <section id="services" className="sec">
@@ -435,7 +400,7 @@ function Services() {
 }
 
 /* ── SKILLS ───────────────────────────────── */
-function Skills() {
+function Skills({ D })  {
   if (!D.skills?.length) return null;
   return (
     <section className="sec" style={{paddingTop:40,paddingBottom:60}}>
@@ -450,7 +415,7 @@ function Skills() {
 }
 
 /* ── PROJECTS ─────────────────────────────── */
-function Projects() {
+function Projects({ D })  {
   if (!D.projects?.length) return null;
   return (
     <section id="projects" className="sec">
@@ -483,7 +448,7 @@ function Projects() {
 }
 
 /* ── JOURNEY ──────────────────────────────── */
-function Journey() {
+function Journey({ D, fmt }){
   const hE=D.experience?.length>0, hD=D.education?.length>0;
   if (!hE&&!hD) return null;
   return (
@@ -527,7 +492,7 @@ function Journey() {
 }
 
 /* ── CONTACT ──────────────────────────────── */
-function Contact() {
+function Contact({ D, soc }) {
   return (
     <section id="contact" className="sec">
       <div className="sec-inner">
@@ -566,21 +531,43 @@ function Contact() {
 }
 
 /* ── APP ─────────────────────────────────── */
-export default function Profile12() {
+export default function Profile12({ data }) {
+
+  const D = data || {};
+
+  const soc = D.socials?.[0] || {};
+
+  const fmt = d =>
+    !d
+      ? "Present"
+      : new Date(d).toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric"
+        });
+
+  const expYrs =
+    D.experience?.length
+      ? new Date().getFullYear() -
+        new Date(D.experience[D.experience.length - 1].startDate).getFullYear()
+      : 0;
+
   useReveal();
+
   return (
     <>
       <style>{CSS}</style>
       <MeshBg/>
       <Cursor/>
-      <Nav/>
-      <Hero/>
-      <Ticker/>
-      <Services/>
-      <Skills/>
-      <Projects/>
-      <Journey/>
-      <Contact/>
+
+      <Nav D={D}/>
+      <Hero D={D} expYrs={expYrs}/>
+      <Ticker D={D}/>
+      <Services D={D}/>
+      <Skills D={D}/>
+      <Projects D={D}/>
+      <Journey D={D} fmt={fmt}/>
+      <Contact D={D} soc={soc}/>
+
       <footer className="foot">
         <p>© {new Date().getFullYear()} {D.name} — All rights reserved</p>
         <p>{D.place}</p>

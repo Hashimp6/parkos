@@ -156,7 +156,7 @@ function Nav({ company }) {
           <div style={{ width: 12, height: 12, background: "white", borderRadius: 3 }} />
         </div>
         <span style={{ fontFamily: "'Epilogue',sans-serif", fontWeight: 800, fontSize: 18, color: C.dark, letterSpacing: "-0.03em" }}>
-          {company.name}
+          {company?.companyName}
         </span>
       </div>
 

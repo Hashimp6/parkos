@@ -3,43 +3,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 /* ══════════════════════════════════════════════════════════
    DATA  —  replace with your API response
 ══════════════════════════════════════════════════════════ */
-const DATA = {
-  name: "Arjun Menon",
-  tagline: "Full‑Stack Engineer",
-  about: "I craft fast, beautiful web products from the ground up. 7+ years turning ambitious ideas into polished, performant reality — across startups, agencies, and product companies.",
-  email: "arjun.menon@gmail.com",
-  phone: "+91 98765 43210",
-  place: "Kochi, Kerala",
-  profilePhoto: "https://i.pravatar.cc/800?img=68",
-  qualification: "B.Tech CS · NIT Calicut",
-  cv: "/cv.pdf",
-  skills: ["React","Node.js","TypeScript","MongoDB","GraphQL","Docker","AWS","Figma","Python","Redis","Next.js","PostgreSQL"],
-  services: [
-    { heading: "Product Engineering", description: "End-to-end web apps with clean architecture, top performance, and zero compromise on quality." },
-    { heading: "UI / UX Design", description: "Interfaces that feel inevitable — every interaction considered, every pixel earned." },
-    { heading: "API & Backend", description: "Scalable REST & GraphQL APIs. Solid domain logic, built for growth." },
-    { heading: "Cloud & DevOps", description: "CI/CD, containerisation, AWS/GCP deployments that just work." },
-  ],
-  experience: [
-    { jobTitle: "Senior Frontend Engineer", company: "Infosys", startDate: "2022-06-01", endDate: null },
-    { jobTitle: "Full‑Stack Developer", company: "Zoho Corporation", startDate: "2019-08-01", endDate: "2022-05-31" },
-    { jobTitle: "Junior Developer", company: "TCS", startDate: "2017-07-01", endDate: "2019-07-31" },
-  ],
-  education: [
-    { education: "B.Tech — Computer Science", institution: "NIT Calicut", year: 2017, percentage: "8.7 CGPA" },
-    { education: "Higher Secondary", institution: "St. Joseph's HSS", year: 2013, percentage: "94%" },
-  ],
-  projects: [
-    { title: "DevBoard", description: "Real-time dev dashboard aggregating GitHub, Jira & Slack. Used by 3 product teams daily.", link: "#", year: "2024" },
-    { title: "ShopSphere", description: "Multi-tenant e-commerce with live inventory & payment gateway integration.", link: "#", year: "2023" },
-    { title: "AIResume", description: "AI-powered resume scorer that rewrites CVs for ATS optimisation. 2K+ users.", link: "#", year: "2023" },
-    { title: "NoteStack", description: "Collaborative markdown workspace with real-time sync and version history.", link: null, year: "2022" },
-  ],
-  socials: [{ linkedin:"https://linkedin.com", github:"https://github.com", twitter:"https://twitter.com", website:"https://arjunmenon.dev" }],
-  lookingVacancy: ["Full-Stack Engineer","Frontend Lead","Technical Co-founder"],
-};
 
-const soc = DATA.socials?.[0] || {};
+
+
 function fmtD(d){ if(!d) return "Now"; return new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"}); }
 
 /* ══════════════════════════════════════════════════════════
@@ -297,7 +263,7 @@ function useReveal() {
 /* ══════════════════════════════════════════════════════════
    NAV
 ══════════════════════════════════════════════════════════ */
-function Nav({ active }) {
+function Nav({ active, DATA }) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 30);
@@ -328,7 +294,7 @@ function Nav({ active }) {
 /* ══════════════════════════════════════════════════════════
    HERO
 ══════════════════════════════════════════════════════════ */
-function Hero() {
+function Hero({ DATA }) {
   const expYears = DATA.experience?.length ? new Date().getFullYear() - new Date(DATA.experience[DATA.experience.length - 1].startDate).getFullYear() : null;
   return (
     <section id="about" className="hero">
@@ -375,7 +341,7 @@ function Hero() {
 /* ══════════════════════════════════════════════════════════
    MARQUEE
 ══════════════════════════════════════════════════════════ */
-function Marquee() {
+function Marquee({ DATA }) {
   if (!DATA.skills?.length) return null;
   const items = [...DATA.skills, ...DATA.skills];
   return (
@@ -395,7 +361,7 @@ function Marquee() {
 /* ══════════════════════════════════════════════════════════
    SERVICES
 ══════════════════════════════════════════════════════════ */
-function Services() {
+function Services({ DATA }) {
   if (!DATA.services?.length) return null;
   return (
     <section id="services" className="section">
@@ -421,7 +387,7 @@ function Services() {
 /* ══════════════════════════════════════════════════════════
    SKILLS
 ══════════════════════════════════════════════════════════ */
-function Skills() {
+function Skills({ DATA }) {
   if (!DATA.skills?.length) return null;
   return (
     <section className="section" style={{ paddingTop: 0 }}>
@@ -443,7 +409,7 @@ function Skills() {
 /* ══════════════════════════════════════════════════════════
    PROJECTS
 ══════════════════════════════════════════════════════════ */
-function Projects() {
+function Projects({ DATA }) {
   if (!DATA.projects?.length) return null;
   return (
     <section id="projects" className="section">
@@ -476,7 +442,7 @@ function Projects() {
 /* ══════════════════════════════════════════════════════════
    JOURNEY
 ══════════════════════════════════════════════════════════ */
-function Journey() {
+function Journey({ DATA }) {
   const hasExp = DATA.experience?.length > 0;
   const hasEdu = DATA.education?.length > 0;
   if (!hasExp && !hasEdu) return null;
@@ -531,7 +497,7 @@ function Journey() {
 /* ══════════════════════════════════════════════════════════
    CONTACT
 ══════════════════════════════════════════════════════════ */
-function Contact() {
+function Contact({ DATA, soc }) {
   return (
     <section id="contact" className="section">
       <div className="section-inner">
@@ -587,7 +553,7 @@ function Contact() {
 /* ══════════════════════════════════════════════════════════
    FOOTER
 ══════════════════════════════════════════════════════════ */
-function Footer() {
+function Footer({ DATA }) {
   return (
     <footer className="footer">
       <p>© {new Date().getFullYear()} {DATA.name} — All rights reserved</p>
@@ -611,17 +577,30 @@ const GlobeIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 /* ══════════════════════════════════════════════════════════
    APP
 ══════════════════════════════════════════════════════════ */
-export default function Profile5() {
+export default function Profile5({ data }) {
+
+  const DATA = data || {};
+  const soc = DATA.socials?.[0] || {};
+
   const [active, setActive] = useState("about");
+
   useReveal();
 
   useEffect(() => {
     const ids = ["about","services","projects","journey","contact"];
+
     const obs = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); }),
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) setActive(e.target.id);
+      }),
       { threshold: 0.2 }
     );
-    ids.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+
     return () => obs.disconnect();
   }, []);
 
@@ -630,17 +609,20 @@ export default function Profile5() {
       <style>{CSS}</style>
       <StarField />
       <Cursor />
-      <Nav active={active} />
+
+      <Nav active={active} DATA={DATA} />
+
       <main>
-        <Hero />
-        <Marquee />
-        <Services />
-        <Skills />
-        <Projects />
-        <Journey />
-        <Contact />
+        <Hero DATA={DATA} />
+        <Marquee DATA={DATA} />
+        <Services DATA={DATA} />
+        <Skills DATA={DATA} />
+        <Projects DATA={DATA} />
+        <Journey DATA={DATA} />
+        <Contact DATA={DATA} soc={soc} />
       </main>
-      <Footer />
+
+      <Footer DATA={DATA} />
     </>
   );
 }

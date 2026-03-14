@@ -1,182 +1,53 @@
+import axios from "axios";
 import { useState, useEffect } from "react";
+import { useUser } from "../../context/UserContext";
+import API_BASE from "../../../config";
 
-/* ─── Demo Data ─────────────────────────────────────────────────────── */
-const DEMO_JOBS = [
-  {
-    _id: "1",
-    title: "Senior Frontend Engineer",
-    company: "Stripe",
-    companyLogo: "https://logo.clearbit.com/stripe.com",
-    location: "San Francisco, CA",
-    workType: "Hybrid",
-    salaryMin: 140000, salaryMax: 190000, currency: "USD",
-    jobType: "Full-time",
-    tags: ["React", "TypeScript", "GraphQL", "Design Systems"],
-    postedAt: "2025-02-20T10:00:00Z",
-    isUrgent: true, isFeatured: true,
-    shortDescription: "Build the next generation of financial infrastructure UI with a world-class team.",
-    description: `We're looking for a Senior Frontend Engineer to join Stripe's Dashboard team, building products used by millions of businesses worldwide.
-
-**What you'll do:**
-- Architect and build high-quality React components for Stripe's core dashboard
-- Collaborate with designers and product managers to ship delightful experiences
-- Drive technical decisions on the frontend architecture
-- Mentor junior engineers and contribute to engineering culture
-
-**What we're looking for:**
-- 5+ years of experience building production React applications
-- Deep knowledge of TypeScript and modern JavaScript
-- Strong sense of UX and attention to detail
-
-**Benefits:**
-- Competitive salary + equity
-- Remote-friendly with flexible work arrangements
-- $2,000 annual learning budget`,
-  },
-  {
-    _id: "2",
-    title: "Product Designer",
-    company: "Notion",
-    companyLogo: "https://logo.clearbit.com/notion.so",
-    location: "Remote",
-    workType: "Remote",
-    jobType: "Full-time",
-    tags: ["Figma", "UX Research", "Prototyping"],
-    postedAt: "2025-02-22T09:00:00Z",
-    isFeatured: true,
-    shortDescription: "Shape the future of how people think and work — one pixel at a time.",
-    description: `Notion is looking for a Product Designer excited about rethinking how people organize knowledge and collaborate.
-
-**What you'll do:**
-- Own end-to-end design for key product areas
-- Conduct user research and synthesize insights into design decisions
-- Build and maintain scalable design system components
-
-**What we're looking for:**
-- 3+ years of product design experience
-- Expert-level Figma skills
-- Portfolio showing end-to-end product thinking`,
-  },
-  {
-    _id: "3",
-    title: "Backend Engineer — Infra",
-    company: "Vercel",
-    companyLogo: "https://logo.clearbit.com/vercel.com",
-    location: "New York, NY",
-    workType: "Onsite",
-    salaryMin: 160000, salaryMax: 220000, currency: "USD",
-    jobType: "Full-time",
-    tags: ["Node.js", "Rust", "Kubernetes", "AWS"],
-    postedAt: "2025-02-25T11:00:00Z",
-    isUrgent: true,
-    description: `Vercel's infrastructure team is hiring a Backend Engineer to help scale our deployment platform across 100+ regions globally.
-
-**What you'll do:**
-- Design and implement distributed systems handling millions of requests
-- Work on edge computing infrastructure globally
-- Improve reliability, latency, and scalability of our core platform
-
-**What we're looking for:**
-- 4+ years backend engineering experience
-- Experience with distributed systems and cloud infrastructure
-- Proficiency in Node.js, Go, or Rust`,
-  },
-  {
-    _id: "4",
-    title: "iOS Engineer",
-    company: "Linear",
-    companyLogo: "https://logo.clearbit.com/linear.app",
-    workType: "Hybrid",
-    tags: ["Swift", "SwiftUI", "UIKit"],
-    postedAt: "2025-02-28T08:00:00Z",
-    shortDescription: "Build the fastest project management app on iOS. Every millisecond matters.",
-    description: `Linear is hiring an iOS Engineer to build the best project management experience on mobile.
-
-**What you'll do:**
-- Build and maintain Linear's iOS app
-- Obsess over performance — sub-16ms render targets
-- Work closely with designers for pixel-perfect UI
-
-**What we're looking for:**
-- 3+ years of professional iOS development
-- Deep knowledge of Swift, SwiftUI, and UIKit`,
-  },
-  {
-    _id: "5",
-    title: "DevOps / Platform Engineer",
-    company: "Figma",
-    companyLogo: "https://logo.clearbit.com/figma.com",
-    location: "Austin, TX",
-    workType: "Remote",
-    salaryMin: 130000, salaryMax: 175000, currency: "USD",
-    jobType: "Contract",
-    postedAt: "2025-03-01T14:00:00Z",
-    shortDescription: "Empower engineers to ship faster with world-class platform tooling.",
-    description: `Figma's Platform team is looking for a DevOps Engineer to build internal systems that let engineering move fast with confidence.
-
-**What you'll do:**
-- Own and improve CI/CD pipelines and deployment systems
-- Build infrastructure-as-code using Terraform
-- Improve developer experience through automation
-
-**What we're looking for:**
-- 3+ years in DevOps, SRE, or Platform Engineering
-- Strong AWS and cloud infrastructure experience`,
-  },
-  {
-    _id: "6",
-    title: "Data Scientist",
-    company: "Airbnb",
-    companyLogo: "https://logo.clearbit.com/airbnb.com",
-    location: "Seattle, WA",
-    workType: "Hybrid",
-    salaryMin: 145000, salaryMax: 200000, currency: "USD",
-    jobType: "Full-time",
-    tags: ["Python", "SQL", "ML", "Spark"],
-    postedAt: "2025-03-02T10:00:00Z",
-    shortDescription: "Turn complex data into insights that shape how millions of people travel.",
-    description: `Airbnb's data science team is hiring to help understand our marketplace at scale.
-
-**What you'll do:**
-- Design and run experiments to measure product impact
-- Build predictive models for pricing and demand
-- Partner with product teams to turn insights into action
-
-**What we're looking for:**
-- MS or PhD in a quantitative field
-- Expert SQL and Python skills
-- Experience with A/B testing and causal inference`,
-  },
-];
+/* ─── Normalize API job to internal shape ───────────────────────────── */
+const normalizeJob = (j) => ({
+  ...j,
+  title:       j.role || j.title || "Untitled Role",
+  company:     typeof j.company === "object"
+                 ? (j.company?.companyName || j.company?.name || "")
+                 : (j.company || ""),
+  companyLogo: (typeof j.company === "object" ? j.company?.logo : null) || j.companyLogo || null,
+  workType:    j.workMode === "On-site" ? "Onsite" : (j.workMode || j.workType || ""),
+  salaryMin:   j.salaryFrom  ?? j.salaryMin  ?? null,
+  salaryMax:   j.salaryTo    ?? j.salaryMax  ?? null,
+  tags:        j.skills      || j.tags       || [],
+  postedAt:    j.postedDate  || j.postedAt   || null,
+});
 
 /* ─── Helpers ────────────────────────────────────────────────────────── */
 const timeAgo = (d) => {
   if (!d) return null;
   const days = Math.floor((Date.now() - new Date(d)) / 86400000);
-  if (days === 0) return "Today";
-  if (days === 1) return "1d ago";
-  if (days < 7)  return `${days}d ago`;
-  if (days < 30) return `${Math.floor(days / 7)}w ago`;
+  if (days === 0)  return "Today";
+  if (days === 1)  return "1d ago";
+  if (days < 7)   return `${days}d ago`;
+  if (days < 30)  return `${Math.floor(days / 7)}w ago`;
   return `${Math.floor(days / 30)}mo ago`;
 };
 
 const fmtSalary = (min, max, cur) => {
-  if (!min && min !== 0) return null;
-  const sym = cur === "GBP" ? "£" : cur === "EUR" ? "€" : "$";
-  const f   = n => `${sym}${Math.round(n / 1000)}k`;
-  return max && max !== min ? `${f(min)} – ${f(max)}` : f(min);
+  if (min === null || min === undefined) return null;
+  const sym = cur === "GBP" ? "£" : cur === "EUR" ? "€" : cur === "INR" ? "₹" : "$";
+  const f   = n => n >= 100000
+    ? `${sym}${(n / 100000).toFixed(n % 100000 === 0 ? 0 : 1)}L`
+    : `${sym}${Math.round(n / 1000)}k`;
+  return (max && max !== min) ? `${f(min)} – ${f(max)}` : f(min);
 };
 
 /* ─── Pure B&W theme ─────────────────────────────────────────────────── */
 const T = {
-  white:  "#FFFFFF",
-  bg:     "#F9F9F9",
-  g50:    "#F4F4F4",
-  g100:   "#EBEBEB",
-  g200:   "#D4D4D4",
-  g400:   "#9A9A9A",
-  g600:   "#555555",
-  black:  "#111111",
+  white: "#FFFFFF",
+  bg:    "#F9F9F9",
+  g50:   "#F4F4F4",
+  g100:  "#EBEBEB",
+  g200:  "#D4D4D4",
+  g400:  "#9A9A9A",
+  g600:  "#555555",
+  black: "#111111",
 };
 
 /* ─── useIsMobile ────────────────────────────────────────────────────── */
@@ -198,30 +69,57 @@ function RenderDesc({ text }) {
       {text.split("\n").map((line, i) => {
         if (!line.trim()) return <div key={i} style={{ height: 10 }} />;
         if (/^\*\*(.+)\*\*$/.test(line))
-          return <p key={i} style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 13, color: T.black, margin: "18px 0 8px", letterSpacing: "-0.01em" }}>{line.replace(/\*\*/g, "")}</p>;
+          return (
+            <p key={i} style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 13, color: T.black, margin: "18px 0 8px", letterSpacing: "-0.01em" }}>
+              {line.replace(/\*\*/g, "")}
+            </p>
+          );
         if (line.startsWith("- "))
           return (
             <div key={i} style={{ display: "flex", gap: 10, marginBottom: 6, alignItems: "flex-start" }}>
               <div style={{ width: 4, height: 4, borderRadius: "50%", background: T.g400, flexShrink: 0, marginTop: 8 }} />
-              <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: T.g600, lineHeight: 1.75, margin: 0 }}>{line.slice(2)}</p>
+              <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: T.g600, lineHeight: 1.75, margin: 0 }}>
+                {line.slice(2)}
+              </p>
             </div>
           );
-        return <p key={i} style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: T.g600, lineHeight: 1.8, margin: "0 0 4px" }}>{line}</p>;
+        return (
+          <p key={i} style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: T.g600, lineHeight: 1.8, margin: "0 0 4px" }}>
+            {line}
+          </p>
+        );
       })}
     </div>
   );
 }
 
 /* ─── Logo ───────────────────────────────────────────────────────────── */
-function Logo({ company, logo, size = 42 }) {
-  const [err, setErr] = useState(false);
-  const initials = (company || "?").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+function Logo({ company, logo, size = 44 }) {
+  const name     = typeof company === "string" ? company : "";
+  const initials = name.split(" ").filter(Boolean).map(w => w[0]).join("").toUpperCase().slice(0, 2) || "?";
+
+  if (logo) {
+    return (
+      <div style={{ width: size, height: size, borderRadius: 10, overflow: "hidden", flexShrink: 0, border: `1px solid ${T.g100}`, background: T.white }}>
+        <img
+          src={logo}
+          alt={`${name} logo`}
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          onError={e => { e.currentTarget.style.display = "none"; e.currentTarget.parentElement.textContent = initials; }}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div style={{ width: size, height: size, borderRadius: 10, overflow: "hidden", flexShrink: 0, background: T.g50, border: `1px solid ${T.g100}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      {logo && !err
-        ? <img src={logo} alt="" onError={() => setErr(true)} style={{ width: "100%", height: "100%", objectFit: "contain", padding: size * 0.14 }} />
-        : <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: size * 0.32, color: T.g400 }}>{initials}</span>
-      }
+    <div style={{
+      width: size, height: size, borderRadius: 10,
+      background: T.g50, border: `1px solid ${T.g100}`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800,
+      fontSize: Math.round(size * 0.32), color: T.g400, flexShrink: 0,
+    }}>
+      {initials}
     </div>
   );
 }
@@ -250,7 +148,12 @@ function WorkBadge({ type }) {
 /* ─── Skill tag ──────────────────────────────────────────────────────── */
 function Tag({ children }) {
   return (
-    <span style={{ padding: "3px 8px", borderRadius: 4, background: T.g50, border: `1px solid ${T.g100}`, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: T.g600, whiteSpace: "nowrap" }}>
+    <span style={{
+      padding: "3px 8px", borderRadius: 4,
+      background: T.g50, border: `1px solid ${T.g100}`,
+      fontFamily: "'Plus Jakarta Sans',sans-serif",
+      fontSize: 11, color: T.g600, whiteSpace: "nowrap",
+    }}>
       {children}
     </span>
   );
@@ -259,7 +162,15 @@ function Tag({ children }) {
 /* ─── Small inline pill ──────────────────────────────────────────────── */
 function Pill({ children, dark }) {
   return (
-    <span style={{ padding: "3px 8px", borderRadius: 4, background: dark ? T.black : T.g50, border: dark ? "none" : `1px solid ${T.g100}`, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, fontWeight: dark ? 700 : 400, color: dark ? T.white : T.g600, whiteSpace: "nowrap" }}>
+    <span style={{
+      padding: "3px 8px", borderRadius: 4,
+      background: dark ? T.black : T.g50,
+      border: dark ? "none" : `1px solid ${T.g100}`,
+      fontFamily: "'Plus Jakarta Sans',sans-serif",
+      fontSize: 11, fontWeight: dark ? 700 : 400,
+      color: dark ? T.white : T.g600,
+      whiteSpace: "nowrap",
+    }}>
       {children}
     </span>
   );
@@ -267,8 +178,8 @@ function Pill({ children, dark }) {
 
 /* ─── Detail Panel ───────────────────────────────────────────────────── */
 function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile }) {
-  const salary = fmtSalary(job.salaryMin, job.salaryMax, job.currency);
-  const posted = timeAgo(job.postedAt);
+  const salary = fmtSalary(job.salaryFrom ?? job.salaryMin, job.salaryTo ?? job.salaryMax, job.currency);
+  const posted = timeAgo(job.postedDate ?? job.postedAt);
 
   useEffect(() => {
     const fn = e => e.key === "Escape" && onClose();
@@ -276,37 +187,64 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
     return () => document.removeEventListener("keydown", fn);
   }, [onClose]);
 
+  // ── small helpers ──────────────────────────────────────────────────────────
+  const MetaRow = ({ icon, label, value }) =>
+    value ? (
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0", borderBottom: `1px solid ${T.g100}` }}>
+        <span style={{ fontSize: 16, width: 22, textAlign: "center", flexShrink: 0 }}>{icon}</span>
+        <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 12, color: T.g400, minWidth: 90, flexShrink: 0 }}>{label}</span>
+        <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, fontWeight: 600, color: T.black }}>{value}</span>
+      </div>
+    ) : null;
+
+  const SectionLabel = ({ children }) => (
+    <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: T.g400, margin: "0 0 12px" }}>
+      {children}
+    </p>
+  );
+
+  // ── body ───────────────────────────────────────────────────────────────────
   const body = (
     <>
-      {/* Header */}
-      <div style={{ padding: isMobile ? "20px 20px 18px" : "28px 32px 22px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
-          <Logo company={job.company} logo={job.companyLogo} size={isMobile ? 44 : 52} />
+      {/* ── HEADER ── */}
+      <div style={{ padding: isMobile ? "20px 20px 18px" : "26px 30px 20px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
+        {/* top row: logo + action buttons */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <Logo company={job.company} logo={job.company?.logo ?? job.companyLogo} size={isMobile ? 44 : 52} />
           <div style={{ display: "flex", gap: 8 }}>
             <button
               onClick={() => onToggleSave(job._id)}
+              title={isSaved ? "Unsave" : "Save"}
               style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${isSaved ? T.black : T.g200}`, background: isSaved ? T.black : T.white, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}
             >
               <span style={{ filter: isSaved ? "invert(1)" : "none" }}>🤍</span>
             </button>
-            <button onClick={onClose} style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${T.g200}`, background: T.white, cursor: "pointer", color: T.g400, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+            <button
+              onClick={onClose}
+              style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${T.g200}`, background: T.white, cursor: "pointer", color: T.g400, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center" }}
+            >
+              ✕
+            </button>
           </div>
         </div>
 
-        <h2 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 20 : 24, color: T.black, margin: "0 0 5px", letterSpacing: "-0.03em", lineHeight: 1.15 }}>
-          {job.title}
+        {/* job title */}
+        <h2 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 20 : 23, color: T.black, margin: "0 0 4px", letterSpacing: "-0.03em", lineHeight: 1.2 }}>
+          {job.title ?? `${job.role ? job.role.charAt(0).toUpperCase() + job.role.slice(1) : ""} Engineer`}
         </h2>
-        {(job.company || job.location) && (
-          <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: T.g400, margin: "0 0 16px" }}>
-            {[job.company, job.location].filter(Boolean).join("  ·  ")}
-          </p>
-        )}
 
+        {/* company · location */}
+        {(job.company?.name ?? job.company) || job.location ? (
+          <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: T.g400, margin: "0 0 16px" }}>
+            {[job.company?.name ?? (typeof job.company === "string" ? job.company : null), job.location].filter(Boolean).join("  ·  ")}
+          </p>
+        ) : null}
+
+        {/* status badges — just work mode + urgency on the header */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          <WorkBadge type={job.workType} />
+          <WorkBadge type={job.workMode ?? job.workType} />
           {job.jobType && <Pill>{job.jobType}</Pill>}
-          {salary      && <Pill dark>{salary}</Pill>}
-          {posted      && <Pill>{posted}</Pill>}
+          {job.department && <Pill>{job.department.toUpperCase()}</Pill>}
           {job.isUrgent && (
             <span style={{ padding: "3px 8px", borderRadius: 4, border: `1px solid ${T.black}`, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 10, fontWeight: 700, color: T.black, letterSpacing: "0.05em", textTransform: "uppercase" }}>
               Urgent
@@ -315,23 +253,61 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
         </div>
       </div>
 
-      {/* Tags */}
-      {job.tags?.length > 0 && (
-        <div style={{ padding: isMobile ? "12px 20px" : "14px 32px", borderBottom: `1px solid ${T.g100}`, display: "flex", flexWrap: "wrap", gap: 6, flexShrink: 0 }}>
-          {job.tags.map((t, i) => <Tag key={i}>{t}</Tag>)}
+      {/* ── JOB DETAILS GRID ── */}
+      <div style={{ padding: isMobile ? "18px 20px" : "20px 30px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
+        <SectionLabel>Job Details</SectionLabel>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
+          {/* column A */}
+          <div>
+            <MetaRow icon="💰" label="Salary"      value={salary} />
+            <MetaRow icon="📍" label="Location"    value={job.location} />
+            <MetaRow icon="🕐" label="Experience"  value={job.experienceRequired ? `${job.experienceRequired} yr${Number(job.experienceRequired) !== 1 ? "s" : ""}` : null} />
+          </div>
+          {/* column B */}
+          <div>
+            <MetaRow icon="💼" label="Type"        value={job.jobType} />
+            <MetaRow icon="🏢" label="Work mode"   value={job.workMode ?? job.workType} />
+            <MetaRow icon="👥" label="Openings"    value={job.openings ? `${job.openings} open${job.openings > 1 ? "ings" : "ing"}` : null} />
+          </div>
+        </div>
+
+        {/* posted + deadline as a subtle bar below the grid */}
+        <div style={{ display: "flex", gap: 16, marginTop: 4, flexWrap: "wrap" }}>
+          {posted && (
+            <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: T.g400 }}>
+              🕓 Posted {posted}
+            </span>
+          )}
+          {job.lastDateToApply && (
+            <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: T.g400 }}>
+              ⏳ Deadline {new Date(job.lastDateToApply).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ── TAGS / SKILLS ── */}
+      {(job.tags?.length > 0 || job.skills?.length > 0) && (
+        <div style={{ padding: isMobile ? "14px 20px" : "16px 30px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
+          <SectionLabel>Skills &amp; Tags</SectionLabel>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {(job.skills?.length ? job.skills : job.tags ?? []).map((t, i) => <Tag key={i}>{t}</Tag>)}
+          </div>
         </div>
       )}
 
-      {/* Description */}
-      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "18px 20px" : "24px 32px" }}>
+      {/* ── DESCRIPTION ── */}
+      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "18px 20px" : "22px 30px" }}>
+        <SectionLabel>About the role</SectionLabel>
         {(job.description || job.shortDescription)
           ? <RenderDesc text={job.description || job.shortDescription} />
           : <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: T.g400 }}>No description available.</p>
         }
       </div>
 
-      {/* Footer */}
-      <div style={{ padding: isMobile ? "14px 20px" : "20px 32px", borderTop: `1px solid ${T.g100}`, flexShrink: 0, background: T.white }}>
+      {/* ── FOOTER / CTA ── */}
+      <div style={{ padding: isMobile ? "14px 20px" : "18px 30px", borderTop: `1px solid ${T.g100}`, flexShrink: 0, background: T.white }}>
         <button
           onClick={() => onApply(job)}
           onMouseEnter={e => e.currentTarget.style.opacity = ".85"}
@@ -344,6 +320,7 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
     </>
   );
 
+  // ── mobile bottom-sheet ────────────────────────────────────────────────────
   if (isMobile) {
     return (
       <>
@@ -356,6 +333,7 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
     );
   }
 
+  // ── desktop side-panel ─────────────────────────────────────────────────────
   return (
     <>
       <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.25)", backdropFilter: "blur(3px)", animation: "fdIn .2s ease" }} />
@@ -369,7 +347,7 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
 /* ─── Job Row ────────────────────────────────────────────────────────── */
 function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, isSelected }) {
   const [hov, setHov] = useState(false);
-  const salary    = fmtSalary(job.salaryMin, job.salaryMax, job.currency);
+  const salary    = fmtSalary(job.salaryFrom, job.salaryTo, job.currency);
   const posted    = timeAgo(job.postedAt);
   const active    = isSelected || hov;
   const maxTags   = isMobile ? 2 : 3;
@@ -391,7 +369,7 @@ function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, 
         position: "relative",
       }}
     >
-      {/* Left black accent bar */}
+      {/* Left accent bar */}
       <div style={{ position: "absolute", left: 0, top: isMobile ? 14 : 12, bottom: isMobile ? 14 : 12, width: 3, borderRadius: "0 2px 2px 0", background: active ? T.black : "transparent", transition: "background .18s" }} />
 
       <Logo company={job.company} logo={job.companyLogo} size={isMobile ? 40 : 44} />
@@ -400,7 +378,7 @@ function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5, flexWrap: "wrap" }}>
           <h3 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: isMobile ? 14 : 15, color: T.black, margin: 0, letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-            {job.title || "Untitled Role"}
+            {job.title}
           </h3>
           {job.isFeatured && (
             <span style={{ padding: "1px 6px", borderRadius: 3, background: T.black, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 9, fontWeight: 700, color: T.white, letterSpacing: "0.07em", textTransform: "uppercase" }}>
@@ -417,7 +395,7 @@ function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, 
         {(job.company || job.location) && (
           <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 12, color: T.g400, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
             {job.company  && <span style={{ fontWeight: 600, color: T.g600 }}>{job.company}</span>}
-            {job.company && job.location && <span style={{ color: T.g200 }}>·</span>}
+            {job.company  && job.location && <span style={{ color: T.g200 }}>·</span>}
             {job.location && <span>{job.location}</span>}
           </p>
         )}
@@ -431,11 +409,7 @@ function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, 
 
       {/* Right: salary + date + buttons */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, flexShrink: 0 }}>
-        {salary && (
-          <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, fontWeight: 800, color: T.black, letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>
-            {salary}
-          </span>
-        )}
+       
         {posted && (
           <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: T.g400, whiteSpace: "nowrap" }}>
             {posted}
@@ -472,22 +446,34 @@ function FilterBar({ search, onSearch, activeType, onType, activeSort, onSort, i
       <div style={{ position: "relative" }}>
         <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: T.g400, fontSize: 14, pointerEvents: "none" }}>⌕</span>
         <input
-          value={search} onChange={e => onSearch(e.target.value)}
+          value={search}
+          onChange={e => onSearch(e.target.value)}
           placeholder="Search role, company or skill…"
-          onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           style={{ width: "100%", padding: "10px 32px 10px 30px", borderRadius: 8, fontSize: 13, fontFamily: "'Plus Jakarta Sans',sans-serif", color: T.black, background: T.white, border: `1.5px solid ${focused ? T.black : T.g200}`, outline: "none", boxSizing: "border-box", transition: "border-color .18s", boxShadow: focused ? "0 0 0 3px rgba(0,0,0,0.06)" : "none" }}
         />
-        {search && <button onClick={() => onSearch("")} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: T.g400, fontSize: 18, lineHeight: 1 }}>×</button>}
+        {search && (
+          <button onClick={() => onSearch("")} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: T.g400, fontSize: 18, lineHeight: 1 }}>×</button>
+        )}
       </div>
 
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
         {["All", "Remote", "Hybrid", "Onsite"].map(t => (
-          <button key={t} onClick={() => onType(t)} style={{ padding: isMobile ? "5px 12px" : "6px 14px", borderRadius: 6, fontSize: 12, fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, cursor: "pointer", transition: "all .15s", background: activeType === t ? T.black : T.white, color: activeType === t ? T.white : T.g600, border: `1px solid ${activeType === t ? T.black : T.g200}` }}>
+          <button
+            key={t}
+            onClick={() => onType(t)}
+            style={{ padding: isMobile ? "5px 12px" : "6px 14px", borderRadius: 6, fontSize: 12, fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, cursor: "pointer", transition: "all .15s", background: activeType === t ? T.black : T.white, color: activeType === t ? T.white : T.g600, border: `1px solid ${activeType === t ? T.black : T.g200}` }}
+          >
             {t}
           </button>
         ))}
         <div style={{ flex: 1 }} />
-        <select value={activeSort} onChange={e => onSort(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, fontSize: 12, fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, color: T.g600, background: T.white, border: `1px solid ${T.g200}`, outline: "none", cursor: "pointer" }}>
+        <select
+          value={activeSort}
+          onChange={e => onSort(e.target.value)}
+          style={{ padding: "6px 10px", borderRadius: 6, fontSize: 12, fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, color: T.g600, background: T.white, border: `1px solid ${T.g200}`, outline: "none", cursor: "pointer" }}
+        >
           <option>Newest</option>
           <option>Salary ↑</option>
           <option>Salary ↓</option>
@@ -516,7 +502,7 @@ function EmptyState({ hasSearch }) {
 function Skeleton() {
   return (
     <div>
-      {[1,2,3,4].map(i => (
+      {[1, 2, 3, 4].map(i => (
         <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "18px 24px", borderBottom: `1px solid ${T.g100}` }}>
           <div style={{ width: 44, height: 44, borderRadius: 10, background: T.g50, flexShrink: 0 }} />
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
@@ -562,16 +548,14 @@ function SectionLabel({ children }) {
  * JobListings
  *
  * Props:
- *   jobs       – array from your API  (uses demo data if omitted)
- *   onApply    – (job) => void
- *   isLoading  – boolean
- *   title      – string
+ *   onApply  – (job) => void   called when user clicks Apply
+ *   title    – string          header title (default "Open Positions")
+ *   apiUrl   – string          your jobs API endpoint
  */
 export default function JobListings({
-  jobs      = DEMO_JOBS,
   onApply,
-  isLoading = false,
-  title     = "Open Positions",
+  title  = "Open Positions",
+  apiUrl = `${API_BASE}/jobs`,
 }) {
   const isMobile = useIsMobile();
   const [search,     setSearch]  = useState("");
@@ -580,18 +564,72 @@ export default function JobListings({
   const [openJob,    setOpenJob] = useState(null);
   const [savedIds,   setSaved]   = useState(new Set());
   const [toast,      setToast]   = useState(null);
+  const [jobs,       setJobs]    = useState([]);
+  const [isLoading,  setLoading] = useState(true);
+  const [error,      setError]   = useState(null);
+ const { user } = useUser();
+ console.log("uus",user);
+ 
+  const toggleSave = id => setSaved(p => {
+    const n = new Set(p);
+    n.has(id) ? n.delete(id) : n.add(id);
+    return n;
+  });
 
-  const toggleSave = id => setSaved(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await axios.get(apiUrl);
+        const raw = res.data?.data || res.data?.jobs || res.data || [];
+        setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+        setError("Failed to load jobs. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, [apiUrl]);
 
-  const handleApply = job => {
-    if (onApply) onApply(job);
-    setOpenJob(null);
-    setToast(job);
+  const handleApply = async (job) => {
+    try {
+      console.log("uus",user);
+      if (!user?._id) {
+        alert("Please login to apply");
+        return;
+      }
+  
+      const res = await axios.post(
+        `${API_BASE}/jobs-application/apply`,
+        {
+          jobId: job._id,
+          candidateId: user._id,
+          coverLetter: "",
+     
+        }
+      );
+  
+      if (res.data.success) {
+        alert("Application submitted successfully");
+      }
+  
+    } catch (error) {
+      console.error(error);
+  
+      if (error.response?.status === 409) {
+        alert("You already applied for this job");
+      } else {
+        alert("Failed to apply");
+      }
+    }
   };
 
-  const filtered = (jobs || [])
+  const filtered = jobs
     .filter(j => {
-      const q = search.toLowerCase().trim();
+      const q      = search.toLowerCase().trim();
       const textOk = !q || [j.title, j.company, j.location, ...(j.tags || [])].some(v => v?.toLowerCase().includes(q));
       return textOk && (activeType === "All" || j.workType === activeType);
     })
@@ -609,21 +647,20 @@ export default function JobListings({
     <div style={{ background: T.white, minHeight: "100vh" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        @keyframes fdIn    { from{opacity:0}                                  to{opacity:1} }
-        @keyframes panelIn { from{transform:translateX(100%)}                 to{transform:none} }
-        @keyframes sheetUp { from{transform:translateY(100%)}                 to{transform:none} }
-        @keyframes rowIn   { from{opacity:0;transform:translateY(8px)}        to{opacity:1;transform:none} }
-        @keyframes toastPop{ from{transform:translate(-50%,10px);opacity:0}   to{transform:translate(-50%,0);opacity:1} }
+        @keyframes fdIn    { from{opacity:0}                                to{opacity:1} }
+        @keyframes panelIn { from{transform:translateX(100%)}               to{transform:none} }
+        @keyframes sheetUp { from{transform:translateY(100%)}               to{transform:none} }
+        @keyframes rowIn   { from{opacity:0;transform:translateY(8px)}      to{opacity:1;transform:none} }
+        @keyframes toastPop{ from{transform:translate(-50%,10px);opacity:0} to{transform:translate(-50%,0);opacity:1} }
         * { box-sizing: border-box; }
         button, select, input { font-family: inherit; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: ${T.g100}; border-radius: 99px; }
       `}</style>
 
-      {/* ── Sticky header ── */}
+      {/* Sticky header */}
       <div style={{ background: T.white, borderBottom: `1px solid ${T.g100}`, position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 860, margin: "0 auto", padding: isMobile ? "16px 16px 14px" : "24px 24px 18px" }}>
-          {/* Title + count */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <h1 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 22 : 28, color: T.black, margin: 0, letterSpacing: "-0.04em", lineHeight: 1 }}>
               {title}
@@ -635,13 +672,26 @@ export default function JobListings({
               </span>
             </div>
           </div>
-          <FilterBar search={search} onSearch={setSearch} activeType={activeType} onType={setType} activeSort={activeSort} onSort={setSort} isMobile={isMobile} />
+          <FilterBar
+            search={search} onSearch={setSearch}
+            activeType={activeType} onType={setType}
+            activeSort={activeSort} onSort={setSort}
+            isMobile={isMobile}
+          />
         </div>
       </div>
 
-      {/* ── List ── */}
+      {/* List */}
       <div style={{ maxWidth: 860, margin: "0 auto" }}>
-        {isLoading ? <Skeleton /> : filtered.length === 0 ? <EmptyState hasSearch={!!search} /> : (
+        {isLoading ? (
+          <Skeleton />
+        ) : error ? (
+          <div style={{ textAlign: "center", padding: "72px 24px" }}>
+            <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 14, color: T.g400 }}>{error}</p>
+          </div>
+        ) : filtered.length === 0 ? (
+          <EmptyState hasSearch={!!search} />
+        ) : (
           <>
             {featured.length > 0 && (
               <>
@@ -670,14 +720,16 @@ export default function JobListings({
         )}
       </div>
 
-      {/* ── Detail panel ── */}
+      {/* Detail panel */}
       {openJob && (
-        <DetailPanel job={openJob} isMobile={isMobile}
+        <DetailPanel
+          job={openJob} isMobile={isMobile}
           onClose={() => setOpenJob(null)} onApply={handleApply}
-          isSaved={savedIds.has(openJob._id)} onToggleSave={toggleSave} />
+          isSaved={savedIds.has(openJob._id)} onToggleSave={toggleSave}
+        />
       )}
 
-      {/* ── Toast ── */}
+      {/* Toast */}
       {toast && <Toast job={toast} onClose={() => setToast(null)} />}
     </div>
   );

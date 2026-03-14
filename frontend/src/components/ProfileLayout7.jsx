@@ -163,7 +163,7 @@ function Marquee({ items }) {
 }
 
 /* ─── NAV ────────────────────────────────────────────────────────────────────── */
-function Nav() {
+function Nav({ D }) {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -238,7 +238,7 @@ function Nav() {
 }
 
 /* ─── HERO ───────────────────────────────────────────────────────────────────── */
-function Hero() {
+function Hero({ D, expYrs }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
@@ -380,7 +380,7 @@ function Hero() {
 }
 
 /* ─── STATS STRIP ─────────────────────────────────────────────────────────────── */
-function Stats() {
+function Stats({ D, expYrs }) {
   return (
     <div style={{ background: "#1a1410", padding: "3.5rem clamp(1.5rem,5vw,5rem)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "2rem" }}>
@@ -394,7 +394,7 @@ function Stats() {
 }
 
 /* ─── ABOUT / SKILLS ──────────────────────────────────────────────────────────── */
-function About() {
+function About({ D }) {
   if (!D.skills?.length) return null;
   return (
     <section style={{ background: "#f7f3ed", padding: "120px clamp(1.5rem,5vw,5rem)" }}>
@@ -435,7 +435,7 @@ function SkillPill({ label, index }) {
 }
 
 /* ─── SERVICES ─────────────────────────────────────────────────────────────────── */
-function Services() {
+function Services({ D }) {
   if (!D.services?.length) return null;
   return (
     <section id="services" style={{ background: "#ede7dc", padding: "120px clamp(1.5rem,5vw,5rem)" }}>
@@ -471,7 +471,7 @@ function ServiceCard({ item, index }) {
 }
 
 /* ─── PROJECTS ──────────────────────────────────────────────────────────────────── */
-function Projects() {
+function Projects({ D }) {
   if (!D.projects?.length) return null;
   return (
     <section id="projects" style={{ background: "#f7f3ed", padding: "120px clamp(1.5rem,5vw,5rem)" }}>
@@ -528,7 +528,7 @@ function ProjectRow({ p, i }) {
 }
 
 /* ─── JOURNEY ───────────────────────────────────────────────────────────────────── */
-function Journey() {
+function Journey({ D, fmt }) {
   const hasExp = D.experience?.length > 0;
   const hasEdu = D.education?.length > 0;
   if (!hasExp && !hasEdu) return null;
@@ -576,7 +576,7 @@ function Journey() {
 }
 
 /* ─── CONTACT ───────────────────────────────────────────────────────────────────── */
-function Contact() {
+function Contact({ D, soc }) {
   return (
     <section id="contact" style={{ background: "#f7f3ed", padding: "120px clamp(1.5rem,5vw,5rem)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -633,7 +633,7 @@ function Contact() {
 }
 
 /* ─── FOOTER ─────────────────────────────────────────────────────────────────────── */
-function Footer() {
+function Footer({ D }) {
   return (
     <footer style={{ background: "#1a1410", padding: "2rem clamp(1.5rem,5vw,5rem)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: ".8rem" }}>
       <span style={{ fontFamily: "'Clash Display',sans-serif", fontSize: "1rem", fontWeight: 700, color: "rgba(247,243,237,.25)", letterSpacing: "-.01em" }}>{D.firstName} <span style={{ color: "#c9a84c" }}>{D.lastName}</span></span>
@@ -643,7 +643,25 @@ function Footer() {
 }
 
 /* ─── ROOT ────────────────────────────────────────────────────────────────────────── */
-export default function Profile7() {
+export default function Profile7({ data }) {
+
+  const D = data || {};
+
+  const soc = D.socials?.[0] || {};
+
+  const fmt = d =>
+    !d
+      ? "Present"
+      : new Date(d).toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        });
+
+  const expYrs =
+    D.experience?.length
+      ? new Date().getFullYear() -
+        new Date(D.experience[D.experience.length - 1].startDate).getFullYear()
+      : 0;
   return (
     <>
       <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600&f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet"/>
@@ -668,16 +686,16 @@ export default function Profile7() {
         }
       `}</style>
       <CursorGlow />
-      <Nav />
-      <Hero />
-      <Stats />
-      {D.skills?.length > 0 && <Marquee items={D.skills} />}
-      <About />
-      <Services />
-      <Projects />
-      <Journey />
-      <Contact />
-      <Footer />
+      <Nav D={D} />
+<Hero D={D} expYrs={expYrs} />
+<Stats D={D} expYrs={expYrs} />
+{D.skills?.length > 0 && <Marquee items={D.skills} />}
+<About D={D} />
+<Services D={D} />
+<Projects D={D} />
+<Journey D={D} fmt={fmt} />
+<Contact D={D} soc={soc} />
+<Footer D={D} />
     </>
   );
 }

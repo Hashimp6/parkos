@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useCompany } from "../../context/CompanyContext";
+import API_BASE from "../../../config";
 
 export default function CompanyLoginPage() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function CompanyLoginPage() {
   console.log("pddd",email, password);
   
       const res = await axios.post(
-        "http://192.168.1.27:5006/api/companies/login",
+        `${API_BASE}/companies/login`,
         { email, password }
       );
   

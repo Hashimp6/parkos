@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useCompany } from "../../context/CompanyContext";
+import API_BASE from "../../../config";
 
 export default function CompanyRegisterPage() {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function CompanyRegisterPage() {
       setLoading(true);
   
       const res = await axios.post(
-        "http://192.168.1.27:5006/api/companies/register",
+        `${API_BASE}/companies/register`,
         {
           companyName: form.companyName,
           email: form.email,

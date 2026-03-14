@@ -11,17 +11,17 @@ export default function LayoutPreview({ Template, data, selected, onClick }) {
       >
         {/* Preview container */}
         <div className="w-full aspect-[3/4] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-          <div
-            style={{
-              transform: "scale(0.22)",
-              transformOrigin: "top left",
-              width: "1000px",
-              height: "1400px",
-              pointerEvents: "none",
-            }}
-          >
-            <Template data={data} />
-          </div>
+        <div
+  style={{
+    transform: "scale(0.22)",
+    transformOrigin: "top left",
+    width: "1000px",
+    height: "1400px",
+    pointerEvents: "none",
+  }}
+>
+  <Template data={data} />
+</div>
         </div>
   
         {/* Hover overlay shimmer */}

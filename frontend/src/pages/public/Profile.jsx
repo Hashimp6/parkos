@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ProfileRenderer from "../../components/ProfileRender";
+import API_BASE from "../../../config";
 
 export default function ProfilePages() {
   const { profileId } = useParams();
@@ -11,7 +12,7 @@ export default function ProfilePages() {
     const fetchCandidate = async () => {
       try {
         const res = await axios.get(
-          "http://192.168.1.27:5006/api/candidate/search/by-username",
+          `${API_BASE}/candidate/search/by-username`,
           {
             params: { profileId }
           }

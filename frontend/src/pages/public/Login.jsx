@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../../context/UserContext";
+import API_BASE from "../../../config";
 
 export default function LoginPage() {
   
@@ -19,7 +20,7 @@ export default function LoginPage() {
       setLoading(true);
   
       const res = await axios.post(
-        "http://192.168.1.27:5006/api/candidate/login",
+        `${API_BASE}/candidate/login`,
         { email, password }
       );
   

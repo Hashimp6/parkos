@@ -1,42 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-const D = {
-  name: "Arjun Menon", firstName: "Arjun", lastName: "Menon",
-  role: "Full‑Stack Engineer & Product Builder",
-  tagline: "Turning ideas into\ndigital experiences.",
-  about: "7+ years at the intersection of engineering and design. I build fast, beautiful products that users love — from architecture to animation, pixel to production.",
-  email: "arjun.menon@gmail.com", phone: "+91 98765 43210", place: "Kochi, Kerala",
-  profilePhoto: "https://i.pravatar.cc/1200?img=68",
-  qualification: "B.Tech CS · NIT Calicut", cv: "/cv.pdf",
-  skills: ["React","Node.js","TypeScript","MongoDB","GraphQL","Docker","AWS","Figma","Python","Redis","Next.js","PostgreSQL","Prisma","Tailwind"],
-  services: [
-    { heading: "Product Engineering", description: "End-to-end web applications built with obsessive attention to performance, scalability, and maintainability.", icon: "⬡" },
-    { heading: "Interface Design", description: "Pixel-perfect interfaces that feel inevitable. Every micro-interaction earned, every animation purposeful.", icon: "◈" },
-    { heading: "API Architecture", description: "REST & GraphQL APIs with clean domain logic, robust auth, and room to grow.", icon: "⬟" },
-    { heading: "Cloud & DevOps", description: "Production infrastructure that just works — CI/CD, containers, AWS & GCP.", icon: "◇" },
-  ],
-  experience: [
-    { jobTitle: "Senior Frontend Engineer", company: "Infosys Ltd.", startDate: "2022-06-01", endDate: null },
-    { jobTitle: "Full‑Stack Developer", company: "Zoho Corporation", startDate: "2019-08-01", endDate: "2022-05-31" },
-    { jobTitle: "Junior Developer", company: "TCS", startDate: "2017-07-01", endDate: "2019-07-31" },
-  ],
-  education: [
-    { education: "B.Tech — Computer Science", institution: "NIT Calicut", year: 2017, percentage: "8.7 CGPA" },
-    { education: "Higher Secondary", institution: "St. Joseph's HSS", year: 2013, percentage: "94%" },
-  ],
-  projects: [
-    { title: "DevBoard", description: "Real-time developer dashboard — GitHub, Jira & Slack in one place.", link: "#", year: "2024", color: "#0ea5e9" },
-    { title: "ShopSphere", description: "Multi-tenant e-commerce with live inventory & Stripe integration.", link: "#", year: "2023", color: "#8b5cf6" },
-    { title: "AIResume", description: "AI resume scorer & rewriter optimised for ATS. 2K+ users.", link: "#", year: "2023", color: "#f59e0b" },
-    { title: "NoteStack", description: "Collaborative markdown workspace with real-time sync.", link: null, year: "2022", color: "#10b981" },
-  ],
-  socials: [{ linkedin:"https://linkedin.com", github:"https://github.com", twitter:"https://twitter.com", website:"https://arjunmenon.dev" }],
-  lookingVacancy: ["Full-Stack Engineer","Frontend Lead","Technical Co-founder"],
-};
 
-const soc = D.socials?.[0] || {};
-const fmt = d => !d ? "Present" : new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"});
-const expYrs = D.experience?.length ? new Date().getFullYear() - new Date(D.experience[D.experience.length-1].startDate).getFullYear() : 7;
+
 
 /* ── STYLES ─────────────────────────────────────────────── */
 const STYLE = `
@@ -268,7 +233,7 @@ function useReveal() {
 }
 
 /* ── NAV ── */
-function Nav() {
+function Nav({ D }) {
   const [solid, setSolid] = useState(false);
   const [mob, setMob] = useState(false);
   useEffect(() => { const h = () => setSolid(window.scrollY > 50); window.addEventListener("scroll", h); return () => window.removeEventListener("scroll", h); }, []);
@@ -297,7 +262,7 @@ function Nav() {
 }
 
 /* ── HERO ── */
-function Hero() {
+function Hero({ D, expYrs }) {
   const [in_, setIn] = useState(false);
   useEffect(() => { setTimeout(() => setIn(true), 80); }, []);
   const anim = (d=0) => ({ opacity: in_?1:0, transform: in_?"none":"translateY(50px)", transition: `opacity 1s cubic-bezier(.16,1,.3,1) ${d}ms, transform 1s cubic-bezier(.16,1,.3,1) ${d}ms` });
@@ -355,7 +320,7 @@ function Hero() {
 }
 
 /* ── SERVICES ── */
-function Services() {
+function Services({ D }){
   if (!D.services?.length) return null;
   return (
     <section id="services" className="sec" style={{ background:"var(--bg2)" }}>
@@ -376,7 +341,7 @@ function Services() {
 }
 
 /* ── SKILLS ── */
-function Skills() {
+function Skills({ D }){
   if (!D.skills?.length) return null;
   return (
     <>
@@ -399,7 +364,7 @@ function Skills() {
 }
 
 /* ── PROJECTS ── */
-function Projects() {
+function Projects({ D }) {
   if (!D.projects?.length) return null;
   return (
     <section id="projects" className="sec" style={{ background:"var(--bg2)" }}>
@@ -424,7 +389,7 @@ function Projects() {
 }
 
 /* ── JOURNEY ── */
-function Journey() {
+function Journey({ D, fmt }){
   const hE = D.experience?.length > 0, hD = D.education?.length > 0;
   if (!hE && !hD) return null;
   return (
@@ -465,7 +430,7 @@ function Journey() {
 }
 
 /* ── CONTACT ── */
-function Contact() {
+function Contact({ D, soc }){
   return (
     <section id="contact" className="sec" style={{ background:"var(--bg2)" }}>
       <div className="sec-inner">
@@ -505,19 +470,37 @@ function Contact() {
 }
 
 /* ── APP ── */
-export default function Profile8() {
+export default function Profile8({ data }) {
+
+  const D = data || {};
+  const soc = D.socials?.[0] || {};
+
+  const fmt = d =>
+    !d
+      ? "Present"
+      : new Date(d).toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric"
+        });
+
+  const expYrs =
+    D.experience?.length
+      ? new Date().getFullYear() -
+        new Date(D.experience[D.experience.length - 1].startDate).getFullYear()
+      : 0;
+
   useReveal();
   return (
     <>
       <style>{STYLE}</style>
       <Cursor />
-      <Nav />
-      <Hero />
-      <Services />
-      <Skills />
-      <Projects />
-      <Journey />
-      <Contact />
+      <Nav D={D} />
+<Hero D={D} expYrs={expYrs} />
+<Services D={D} />
+<Skills D={D} />
+<Projects D={D} />
+<Journey D={D} fmt={fmt} />
+<Contact D={D} soc={soc} />
       <footer className="footer">
         <p>© {new Date().getFullYear()} {D.name} — All rights reserved</p>
         <p>{D.place} · Built with precision</p>

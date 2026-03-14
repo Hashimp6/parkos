@@ -414,10 +414,7 @@ export default function CompanyHome({ onNavigate }) {
                       {company.logo ? <img src={company.logo} alt="" /> : firstLetter}
                     </div>
                   </div>
-                  <div className="cx-pct">
-                    <span className="cx-pct-n">{pctComplete}<span style={{fontSize:11,color:"#ccc"}}>%</span></span>
-                    <span className="cx-pct-l">Complete</span>
-                  </div>
+                 
                 </div>
 
                 <h2 className="cx-cname">{company.companyName || "Company Name"}</h2>
@@ -466,32 +463,16 @@ export default function CompanyHome({ onNavigate }) {
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     Edit
                   </button>
-                  <button className="cx-btn cx-btn-ghost" onClick={()=>goto("/company/jobs")}>
+                  <button className="cx-btn cx-btn-ghost" onClick={()=>goto("/companyjobs")}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
                     Jobs
                   </button>
-                  <button className="cx-btn cx-btn-ghost" onClick={()=>goto("/company/applications")}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    Applicants
-                  </button>
+                 
                 </div>
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="cx-stats cx-r3">
-              {[
-                { n: company.members?.length || 0,  l: "Members"  },
-                { n: company.services?.length || 0, l: "Services" },
-                { n: company.projects?.length || 0, l: "Projects" },
-              ].map((s,i)=>(
-                <div key={i} className="cx-stat" style={{animation:`riseIn .5s cubic-bezier(.16,1,.3,1) ${.2+i*.07}s both`}}>
-                  <div className="cx-stat-n">{s.n}</div>
-                  <div className="cx-stat-l">{s.l}</div>
-                  <div className="cx-stat-bar"/>
-                </div>
-              ))}
-            </div>
+    
 
           </aside>
 

@@ -1,45 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-/* ── DATA ── replace with your API ─────────────────────────── */
-const D = {
-  name: "Arjun Menon",
-  tagline: "Full‑Stack Engineer",
-  about: "I craft fast, beautiful web products from the ground up. 7+ years turning ambitious ideas into polished, performant reality — across startups, agencies, and product companies.",
-  email: "arjun.menon@gmail.com",
-  phone: "+91 98765 43210",
-  place: "Kochi, Kerala",
-  profilePhoto: "https://i.pravatar.cc/800?img=68",
-  qualification: "B.Tech CS · NIT Calicut",
-  cv: "/cv.pdf",
-  skills: ["React","Node.js","TypeScript","MongoDB","GraphQL","Docker","AWS","Figma","Python","Redis","Next.js","PostgreSQL"],
-  services: [
-    { heading: "Product Engineering", description: "End-to-end web apps built for performance, scale, and real users." },
-    { heading: "UI / UX Design", description: "Interfaces that feel inevitable — every pixel earned, every flow considered." },
-    { heading: "API & Backend", description: "Clean REST & GraphQL APIs. Solid data models, built for growth." },
-    { heading: "Cloud & DevOps", description: "CI/CD pipelines, containerisation, AWS & GCP deployments." },
-  ],
-  experience: [
-    { jobTitle: "Senior Frontend Engineer", company: "Infosys Ltd.", startDate: "2022-06-01", endDate: null },
-    { jobTitle: "Full‑Stack Developer", company: "Zoho Corporation", startDate: "2019-08-01", endDate: "2022-05-31" },
-    { jobTitle: "Junior Developer", company: "TCS", startDate: "2017-07-01", endDate: "2019-07-31" },
-  ],
-  education: [
-    { education: "B.Tech — Computer Science", institution: "NIT Calicut", year: 2017, percentage: "8.7 CGPA" },
-    { education: "Higher Secondary", institution: "St. Joseph's HSS", year: 2013, percentage: "94%" },
-  ],
-  projects: [
-    { title: "DevBoard", description: "Real-time dev dashboard aggregating GitHub, Jira & Slack. Used by 3 product teams daily.", link: "#", tech: ["React","Node","WS"] },
-    { title: "ShopSphere", description: "Multi-tenant e-commerce with live inventory & payment gateway integration.", link: "#", tech: ["Next.js","MongoDB","Stripe"] },
-    { title: "AIResume", description: "AI-powered resume scorer that rewrites CVs for ATS optimisation. 2K+ users.", link: "#", tech: ["Python","OpenAI","FastAPI"] },
-    { title: "NoteStack", description: "Collaborative markdown workspace with real-time sync and version history.", link: null, tech: ["React","Socket.io","Redis"] },
-  ],
-  socials: [{ linkedin:"https://linkedin.com", github:"https://github.com", twitter:"https://twitter.com", website:"https://arjunmenon.dev" }],
-  lookingVacancy: ["Full-Stack Engineer","Frontend Lead","Technical Co-founder"],
-};
 
-const soc = D.socials?.[0] || {};
-const fmt = d => !d ? "Present" : new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"});
-const expYears = D.experience?.length ? new Date().getFullYear() - new Date(D.experience[D.experience.length-1].startDate).getFullYear() : 0;
 
 /* ── ICONS ─────────────────────────────────────────────────── */
 const Ico = {
@@ -90,8 +51,24 @@ function useReveal() {
 /* ══════════════════════════════════════════════════════════════
    MAIN APP
 ══════════════════════════════════════════════════════════════ */
-export default function Profile6() {
+export default function Profile6({ data }) {
+
+  const D = data || {};
+
+  const soc = D.socials?.[0] || {};
+
+  const fmt = d =>
+    !d ? "Present" :
+    new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"});
+
+  const expYears =
+    D.experience?.length
+      ? new Date().getFullYear() -
+        new Date(D.experience[D.experience.length-1].startDate).getFullYear()
+      : 0;
+
   useReveal();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const go = id => { setMenuOpen(false); document.getElementById(id)?.scrollIntoView({ behavior:"smooth" }); };

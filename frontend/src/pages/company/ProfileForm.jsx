@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useCompany } from "../../context/CompanyContext";
+import API_BASE from "../../../config";
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-const API_BASE = "http://192.168.1.27:5006/api";
 
 const BUSINESS_PARKS = [
   "Cyberpark", "Technopark", "Infopark", "Smart City",

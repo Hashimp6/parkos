@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useCompany } from "../../context/CompanyContext";
 import { useUser } from "../../context/UserContext";
+import API_BASE from "../../../config";
+import LayoutSelector from "../../components/LayoutSelector";
+import { useNavigate } from "react-router-dom";
 
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-const API_BASE = "http://192.168.1.27:5006/api";
 
 const TABS = [
   { id: "basic",      label: "Identity",   sym: "✦" },
@@ -241,28 +242,28 @@ const blank = {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function CandidateProfileForm() {
-  const { user,updateUser } = useUser();
+  const { user,updateUser,token } = useUser();
   const [form, setForm] = useState(blank);
   const [tab, setTab] = useState("basic");
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-
+  const navigate = useNavigate();
   // Sync form from context / localStorage on mount
   useEffect(() => {
     if (user) {
       setForm((prev) => ({
         ...prev,
         ...user,
-        skills: company.skills || [],
-        lookingVacancy: company.lookingVacancy || [],
-        education: company.education || [],
-        experience: company.experience || [],
-        services: company.services || [],
-        socials: company.socials || [],
-        projects: company.projects || []
+        skills: user.skills || [],
+        lookingVacancy: user.lookingVacancy || [],
+        education: user.education || [],
+        experience: user.experience || [],
+        services: user.services || [],
+        socials: user.socials || [],
+        projects: user.projects || []
       }));
     }
-  }, [company]);
+  }, [user]);
 
   const progress = Math.round(
     [form.name, form.email, form.phone, form.profilePhoto,
@@ -281,9 +282,11 @@ export default function CandidateProfileForm() {
 
   // ── Save handler ─────────────────────────────────────────────────────────
   const handleSave = async () => {
-    const companyId = form._id || company?._id;
+    console.log("usssd",user,form);
+    
+    const candidateId = form._id || user?._id;
 
-    if (!companyId) {
+    if (!candidateId) {
       toast.error("No company ID found. Please log in.");
       return;
     }
@@ -291,7 +294,6 @@ export default function CandidateProfileForm() {
     setLoading(true);
   
     try {
-      const token = localStorage.getItem("token");
       const formData = new FormData();
   
       // Append files if they are File objects
@@ -334,8 +336,8 @@ export default function CandidateProfileForm() {
         }
       });
   
-      const { data } = await axios.patch(
-       `${API_BASE}/companies/update/${companyId}`,  // ← correct endpoint
+      const { data } = await axios.put(
+       `${API_BASE}/candidate/update/${candidateId}`,  // ← correct endpoint
         formData,
         {
           headers: {
@@ -344,12 +346,16 @@ export default function CandidateProfileForm() {
           },
         }
       );
+  console.log("kss",data);
   
-      const updated = data.company || data.data;
+      const updated = data.candidate || data.data;
       updateUser(updated);
       setForm(updated);
       toast.success("Profile updated successfully!");
-    } catch (err) {
+      setTimeout(() => {
+        navigate("/home");
+      }, 1000);
+     } catch (err) {
       const msg = err?.response?.data?.message || "Update failed.";
       toast.error(msg);
     } finally {
@@ -699,28 +705,16 @@ export default function CandidateProfileForm() {
           )}
 
           {/* SETTINGS */}
-          {tab === "settings" && (
-            <Card>
-              <CardTitle>Bio Page Layout</CardTitle>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { id: 1, icon: "📄", name: "Classic",  desc: "Professional" },
-                  { id: 2, icon: "🎨", name: "Modern",   desc: "Bold & fresh" },
-                  { id: 3, icon: "◻",  name: "Minimal",  desc: "Less is more" },
-                ].map((l) => (
-                  <button key={l.id} type="button" onClick={() => set("layoutType", l.id)}
-                    className={`p-4 rounded-2xl border-2 text-left transition-all
-                      ${form.layoutType === l.id
-                        ? "border-zinc-900 bg-zinc-900 text-white"
-                        : "border-zinc-200 hover:border-zinc-400 bg-white"}`}>
-                    <div className="text-2xl mb-2">{l.icon}</div>
-                    <div className="font-bold text-sm">{l.name}</div>
-                    <div className={`text-xs mt-0.5 ${form.layoutType === l.id ? "text-zinc-400" : "text-zinc-400"}`}>{l.desc}</div>
-                  </button>
-                ))}
-              </div>
-            </Card>
-          )}
+        {tab === "settings" && (
+  <Card>
+   
+    <LayoutSelector
+      value={form.layoutType}
+      onChange={(id) => set("layoutType", id)}
+      data={form}
+    />
+  </Card>
+)}
 
           {/* Bottom CTA */}
           <div className="flex items-center justify-between pt-2 pb-8">

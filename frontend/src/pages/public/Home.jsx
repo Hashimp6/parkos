@@ -13,8 +13,7 @@ export default function Home() {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-5">Select CV Layout</h2>
-     <BusinessCard/>
+      <LayoutSelector/>
     </div>
   );
 }

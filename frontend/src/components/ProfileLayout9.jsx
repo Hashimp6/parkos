@@ -309,7 +309,7 @@ function Ctr({to, suffix=""}) {
 }
 
 /* ── NAV ────────────────────────────────────────────────── */
-function Nav() {
+function Nav({ D }){
   const [s,setS] = useState(false), [open,setOpen] = useState(false);
   useEffect(() => { const h = () => setS(window.scrollY>40); window.addEventListener("scroll",h); return ()=>window.removeEventListener("scroll",h); },[]);
   const go = id => { setOpen(false); document.getElementById(id)?.scrollIntoView({behavior:"smooth"}); };
@@ -334,7 +334,7 @@ function Nav() {
 }
 
 /* ── HERO ────────────────────────────────────────────────── */
-function Hero() {
+function Hero({ D, expYrs }) {
   const [inn,setInn] = useState(false);
   const circleRef = useRef(null);
   useEffect(()=>{ setTimeout(()=>setInn(true),80); },[]);
@@ -425,7 +425,7 @@ function Hero() {
 }
 
 /* ── MARQUEE ─────────────────────────────────────────────── */
-function Marquee() {
+function Marquee({ D }) {
   const items = D.skills?.length ? [...D.skills,...D.skills,...D.skills,...D.skills] : [];
   return (
     <div className="mq-wrap">
@@ -437,7 +437,7 @@ function Marquee() {
 }
 
 /* ── SERVICES ────────────────────────────────────────────── */
-function Services() {
+function Services({ D }) {
   if (!D.services?.length) return null;
   return (
     <section id="services" className="sec" style={{background:"var(--w)"}}>
@@ -459,7 +459,7 @@ function Services() {
 }
 
 /* ── SKILLS ──────────────────────────────────────────────── */
-function Skills() {
+function Skills({ D }) {
   if (!D.skills?.length) return null;
   return (
     <section className="sec" style={{background:"#f0f0ed",paddingTop:60,paddingBottom:60}}>
@@ -474,7 +474,7 @@ function Skills() {
 }
 
 /* ── PROJECTS ────────────────────────────────────────────── */
-function Projects() {
+function Projects({ D }) {
   if (!D.projects?.length) return null;
   return (
     <section id="projects" className="sec" style={{background:"var(--w)"}}>
@@ -504,7 +504,7 @@ function Projects() {
 }
 
 /* ── JOURNEY ─────────────────────────────────────────────── */
-function Journey() {
+function Journey({ D, fmt }) {
   const hE=D.experience?.length>0, hD=D.education?.length>0;
   if (!hE&&!hD) return null;
   return (
@@ -545,7 +545,7 @@ function Journey() {
 }
 
 /* ── CONTACT ─────────────────────────────────────────────── */
-function Contact() {
+function Contact({ D, soc }) {
   return (
     <section id="contact" className="contact-sec">
       <div className="contact-inner rv">
@@ -570,24 +570,36 @@ function Contact() {
 }
 
 /* ── APP ─────────────────────────────────────────────────── */
-export default function Profile9() {
+export default function Profile9({ data }) {
+
+  const D = data || {};
+  const soc = D.socials?.[0] || {};
+
+  const fmt = d =>
+    !d ? "Now" :
+    new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"});
+
+  const expYrs =
+    D.experience?.length
+      ? new Date().getFullYear() -
+        new Date(D.experience[D.experience.length-1].startDate).getFullYear()
+      : 0;
+
   useReveal();
   return (
     <>
       <style>{CSS}</style>
       <Cursor/>
-      <Nav/>
-      <Hero/>
-      <Marquee/>
-      <Services/>
-      <Skills/>
-      <Projects/>
-      <Journey/>
-      <Contact/>
-      <footer className="foot">
-        <p>© {new Date().getFullYear()} {D.name} — ALL RIGHTS RESERVED</p>
-        <p>{D.place}</p>
-      </footer>
+      <Nav D={D}/>
+<Hero D={D} expYrs={expYrs}/>
+<Marquee D={D}/>
+<Services D={D}/>
+<Skills D={D}/>
+<Projects D={D}/>
+<Journey D={D} fmt={fmt}/>
+<Contact D={D} soc={soc}/>
+<p>© {new Date().getFullYear()} {D.name}</p>
+<p>{D.place}</p>
     </>
   );
 }

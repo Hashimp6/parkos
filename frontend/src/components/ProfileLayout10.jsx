@@ -1,41 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const D = {
-  name: "Arjun Menon", firstName: "Arjun", lastName: "Menon",
-  role: "Full‑Stack Engineer",
-  about: "I turn wild ideas into fast, beautiful web products. 7+ years of making the internet a bit more fun — one pixel at a time.",
-  email: "arjun.menon@gmail.com", phone: "+91 98765 43210", place: "Kochi, Kerala",
-  profilePhoto: "https://i.pravatar.cc/800?img=68",
-  qualification: "B.Tech CS · NIT Calicut", cv: "/cv.pdf",
-  skills: ["React","Node.js","TypeScript","MongoDB","GraphQL","Docker","AWS","Figma","Python","Redis","Next.js","PostgreSQL"],
-  services: [
-    { heading: "Product Engineering", description: "End-to-end apps built for speed, scale, and real humans — architecture to deployment.", emoji: "⚡" },
-    { heading: "Interface Design", description: "Interfaces that feel inevitable. Every interaction considered, every pixel earned.", emoji: "✦" },
-    { heading: "API & Backend", description: "Clean REST & GraphQL systems. Solid data models. Room to grow.", emoji: "🔗" },
-    { heading: "Cloud & DevOps", description: "Containerised, automated, cloud-ready. Infrastructure that just works.", emoji: "☁️" },
-  ],
-  experience: [
-    { jobTitle: "Senior Frontend Engineer", company: "Infosys Ltd.", startDate: "2022-06-01", endDate: null },
-    { jobTitle: "Full‑Stack Developer", company: "Zoho Corporation", startDate: "2019-08-01", endDate: "2022-05-31" },
-    { jobTitle: "Junior Developer", company: "TCS", startDate: "2017-07-01", endDate: "2019-07-31" },
-  ],
-  education: [
-    { education: "B.Tech — Computer Science", institution: "NIT Calicut", year: 2017, percentage: "8.7 CGPA" },
-    { education: "Higher Secondary", institution: "St. Joseph's HSS", year: 2013, percentage: "94%" },
-  ],
-  projects: [
-    { title: "DevBoard", description: "Real-time dev dashboard — GitHub, Jira & Slack unified. 3 teams adopted it.", link: "#", year: "2024", emoji: "📊" },
-    { title: "ShopSphere", description: "Multi-tenant e-commerce with live inventory & payments.", link: "#", year: "2023", emoji: "🛒" },
-    { title: "AIResume", description: "AI resume scorer & rewriter. 2,000+ users in month one.", link: "#", year: "2023", emoji: "🤖" },
-    { title: "NoteStack", description: "Collaborative markdown workspace with real-time sync.", link: null, year: "2022", emoji: "📝" },
-  ],
-  socials: [{ linkedin:"https://linkedin.com", github:"https://github.com", twitter:"https://twitter.com", website:"https://arjunmenon.dev" }],
-  lookingVacancy: ["Full-Stack Eng","Frontend Lead","Co-founder"],
-};
 
-const soc = D.socials?.[0] || {};
-const fmt = d => !d ? "Now" : new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"});
-const expYrs = D.experience?.length ? new Date().getFullYear() - new Date(D.experience[D.experience.length-1].startDate).getFullYear() : 7;
 
 /* ══ STYLES ═══════════════════════════════════════════════════ */
 const CSS = `
@@ -274,7 +239,7 @@ function Ctr({to, suffix=""}) {
 }
 
 /* ── NAV ─────────────────────────────────── */
-function Nav() {
+function Nav({ D }){
   const [s, setS] = useState(false), [open, setOpen] = useState(false);
   useEffect(() => { const h = () => setS(window.scrollY > 50); window.addEventListener("scroll", h); return () => window.removeEventListener("scroll", h); }, []);
   const go = id => { setOpen(false); document.getElementById(id)?.scrollIntoView({behavior:"smooth"}); };
@@ -307,7 +272,7 @@ function Nav() {
 }
 
 /* ── HERO ────────────────────────────────── */
-function Hero() {
+function Hero({ D, expYrs }) {
   const [inn, setInn] = useState(false);
   useEffect(() => { setTimeout(() => setInn(true), 100); }, []);
   const a = (d=0) => ({opacity:inn?1:0, transform:inn?"none":"translateY(24px)", transition:`opacity .8s cubic-bezier(.16,1,.3,1) ${d}ms, transform .8s cubic-bezier(.16,1,.3,1) ${d}ms`});
@@ -400,7 +365,7 @@ function Hero() {
 }
 
 /* ── MARQUEE ─────────────────────────────── */
-function Marquee() {
+function Marquee({ D }) {
   const items = D.skills?.length ? [...D.skills,...D.skills,...D.skills,...D.skills] : [];
   return (
     <div className="mq">
@@ -412,7 +377,7 @@ function Marquee() {
 }
 
 /* ── SERVICES ─────────────────────────────── */
-function Services() {
+function Services({ D }) {
   if (!D.services?.length) return null;
   return (
     <section id="services" className="sec" style={{background:"var(--off)"}}>
@@ -436,7 +401,7 @@ function Services() {
 }
 
 /* ── SKILLS ──────────────────────────────── */
-function Skills() {
+function Skills({ D }) {
   if (!D.skills?.length) return null;
   return (
     <section className="sec" style={{background:"#fff",paddingTop:60,paddingBottom:60}}>
@@ -451,7 +416,7 @@ function Skills() {
 }
 
 /* ── PROJECTS ─────────────────────────────── */
-function Projects() {
+function Projects({ D }) {
   if (!D.projects?.length) return null;
   return (
     <section id="projects" className="sec" style={{background:"var(--off)"}}>
@@ -482,7 +447,7 @@ function Projects() {
 }
 
 /* ── JOURNEY ──────────────────────────────── */
-function Journey() {
+function Journey({ D, fmt }){
   const hE = D.experience?.length > 0, hD = D.education?.length > 0;
   if (!hE && !hD) return null;
   return (
@@ -529,7 +494,7 @@ function Journey() {
 }
 
 /* ── CONTACT ──────────────────────────────── */
-function Contact() {
+function Contact({ D, soc }) {
   return (
     <section id="contact" className="sec" style={{background:"var(--off)"}}>
       <div className="sec-inner">
@@ -571,24 +536,42 @@ function Contact() {
 }
 
 /* ── APP ─────────────────────────────────── */
-export default function Profile10() {
+export default function Profile10({ data }) {
+
+  const D = data || {};
+  const soc = D.socials?.[0] || {};
+
+  const fmt = d =>
+    !d
+      ? "Present"
+      : new Date(d).toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric"
+        });
+
+  const expYrs =
+    D.experience?.length
+      ? new Date().getFullYear() -
+        new Date(D.experience[D.experience.length - 1].startDate).getFullYear()
+      : 0;
+
   useReveal();
   return (
     <>
       <style>{CSS}</style>
       <Cursor/>
-      <Nav/>
-      <Hero/>
-      <Marquee/>
-      <Services/>
-      <Skills/>
-      <Projects/>
-      <Journey/>
-      <Contact/>
-      <footer className="foot">
-        <p>© {new Date().getFullYear()} {D.name} — Made with ❤️</p>
-        <p>{D.place} 🌏</p>
-      </footer>
+      <Nav D={D}/>
+<Hero D={D} expYrs={expYrs}/>
+<Marquee D={D}/>
+<Services D={D}/>
+<Skills D={D}/>
+<Projects D={D}/>
+<Journey D={D} fmt={fmt}/>
+<Contact D={D} soc={soc}/>
+<footer className="foot">
+  <p>© {new Date().getFullYear()} {D.name} — Made with ❤️</p>
+  <p>{D.place} 🌏</p>
+</footer>
     </>
   );
 }
