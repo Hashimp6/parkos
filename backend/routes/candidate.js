@@ -4,7 +4,9 @@ const candidateController = require("../controllers/candidate");
 const { upload } = require("../middleware/upload");
 // Auth
 router.post("/register", candidateController.registerCandidate);
+router.post("/verify-otp", candidateController.verifyEmailOTP);
 router.post("/login", candidateController.loginCandidate);
+router.post("/resend-otp", candidateController.resendOTP);
 router.put("/change-password/:candidateId", candidateController.changePassword);
 
 // Profile

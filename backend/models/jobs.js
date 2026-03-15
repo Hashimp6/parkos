@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
-
+const BUSINESS_PARK_OPTIONS = [
+  "Cyberpark",
+  "Technopark",
+  "Infopark",
+  "Smart City",
+  "KINFRA Tech Park",
+  "Business Park",
+  "SEZ",
+  "Other",
+];
 const jobSchema = new mongoose.Schema(
   {
     company: {
@@ -80,6 +89,11 @@ const jobSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    businessPark: {
+      type: String,
+      enum: BUSINESS_PARK_OPTIONS,
+      default: "Other",
+    },
 
     openings: {
       type: Number,
@@ -116,5 +130,6 @@ jobSchema.index({ company: 1, isActive: 1 });
 jobSchema.index({ role: "text", description: "text", skills: "text" });
 jobSchema.index({ jobType: 1, workMode: 1, location: 1 });
 jobSchema.index({ postedDate: -1 });
+jobSchema.index({ businessPark: 1 });
 
 module.exports = mongoose.model("Job", jobSchema);

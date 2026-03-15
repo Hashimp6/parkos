@@ -2,82 +2,10 @@ import { useEffect, useState } from "react";
 import { useCompany } from "../../context/CompanyContext";
 import axios from "axios";
 import API_BASE from "../../../config";
+import { useNavigate } from "react-router-dom";
 
-const MOCK_JOBS = [
-  {
-    _id: "69b280cab4e78249d3c8ad4e",
-    role: "Senior Frontend Engineer",
-    department: "Engineering",
-    jobType: "Full-time",
-    workMode: "On-site",
-    location: "Bangalore",
-    salaryFrom: 2222,
-    salaryTo: 33327,
-    currency: "INR",
-    experienceRequired: "3",
-    openings: 1,
-    applicationsCount: 1,
-    lastDateToApply: "2026-03-15T00:00:00.000Z",
-    isActive: true,
-    postedDate: "2026-03-12T09:00:58.235Z",
-  },
-  {
-    _id: "69b24028e926c29d7f76032b",
-    role: "Product Designer",
-    department: "Design",
-    jobType: "Full-time",
-    workMode: "Hybrid",
-    location: "Mumbai",
-    salaryFrom: 1800,
-    salaryTo: 28000,
-    currency: "INR",
-    experienceRequired: "2",
-    openings: 2,
-    applicationsCount: 8,
-    lastDateToApply: "2026-03-20T00:00:00.000Z",
-    isActive: true,
-    postedDate: "2026-03-10T09:00:58.235Z",
-  },
-  {
-    _id: "69b24028e926c29d7f76033c",
-    role: "Backend Engineer",
-    department: "Engineering",
-    jobType: "Full-time",
-    workMode: "Remote",
-    location: "Remote",
-    salaryFrom: 2000,
-    salaryTo: 40000,
-    currency: "INR",
-    experienceRequired: "4",
-    openings: 3,
-    applicationsCount: 14,
-    lastDateToApply: "2026-04-01T00:00:00.000Z",
-    isActive: false,
-    postedDate: "2026-03-05T09:00:58.235Z",
-  },
-  {
-    _id: "69b24028e926c29d7f76034d",
-    role: "DevOps Engineer",
-    department: "Infrastructure",
-    jobType: "Contract",
-    workMode: "Remote",
-    location: "Remote",
-    salaryFrom: 3000,
-    salaryTo: 50000,
-    currency: "INR",
-    experienceRequired: "5",
-    openings: 1,
-    applicationsCount: 3,
-    lastDateToApply: "2026-04-10T00:00:00.000Z",
-    isActive: true,
-    postedDate: "2026-03-08T09:00:58.235Z",
-  },
-];
 
-const COMPANY = {
-  name: "TechCorp Solutions",
-  logo: "https://res.cloudinary.com/dhed9kuow/image/upload/v1773212613/companies/logos/oq84phqt5kfg4849jfxa.png",
-};
+
 
 const WORK_MODE_COLORS = {
   "On-site": "bg-blue-50 text-blue-700",
@@ -135,6 +63,7 @@ function DeleteModal({ job, onConfirm, onCancel }) {
 }
 
 export default function CompanyJobsAdmin() {
+  const navigate = useNavigate();
     const { company } = useCompany();
     const [jobs, setJobs] = useState([]);
   const [search, setSearch] = useState("");
@@ -240,21 +169,37 @@ export default function CompanyJobsAdmin() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl border border-white shadow overflow-hidden bg-white">
-              <img src={COMPANY.logo} alt={COMPANY.name} className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <h1 className="text-lg font-black text-slate-900 leading-none">{COMPANY.name}</h1>
-              <p className="text-xs text-slate-500 mt-0.5">Job Listings</p>
-            </div>
-          </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Add Job
-          </button>
+        <div className="flex items-center gap-3">
+  <div className="w-10 h-10 rounded-xl border border-white shadow overflow-hidden bg-slate-200 flex items-center justify-center">
+    {company?.logo ? (
+      <img
+        src={company.logo}
+        alt={company.companyName}
+        className="w-full h-full object-cover"
+      />
+    ) : (
+      <span className="text-slate-700 font-bold text-lg">
+        {company?.companyName?.charAt(0).toUpperCase()}
+      </span>
+    )}
+  </div>
+
+  <div>
+    <h1 className="text-lg font-black text-slate-900 leading-none">
+      {company?.companyName}
+    </h1>
+    <p className="text-xs text-slate-500 mt-0.5">Job Listings</p>
+  </div>
+</div>
+          <button
+  onClick={() => navigate("/company/jobs/create")}
+  className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 transition-colors"
+>
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+  </svg>
+  Add Job
+</button>
         </div>
 
         {/* Stats row */}
@@ -398,10 +343,13 @@ export default function CompanyJobsAdmin() {
                       {/* Actions */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1">
-                          <button
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
-                            title="Edit"
-                          >
+                        <button
+  onClick={() =>
+    navigate("/jobs/form", { state: { job } })
+  }
+  className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+  title="Edit"
+>
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>

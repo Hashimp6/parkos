@@ -125,6 +125,12 @@ const candidateSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    otp: String,
+otpExpires: Date,
+isVerified: {
+  type: Boolean,
+  default: false
+},
     isActive: {
       type: Boolean,
       default: true,

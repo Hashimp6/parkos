@@ -38,6 +38,7 @@ exports.createJob = async (req, res) => {
       openings,
       lastDateToApply,
       isActive,
+      businessPark
     } = req.body;
 
     if (!company || !role) {
@@ -76,6 +77,7 @@ exports.createJob = async (req, res) => {
       openings,
       lastDateToApply,
       isActive,
+      businessPark
     });
 
     return res.status(201).json({
@@ -124,6 +126,7 @@ exports.updateJob = async (req, res) => {
       openings,
       lastDateToApply,
       isActive,
+      businessPark
     } = req.body;
 
     if (salaryFrom !== undefined && salaryTo !== undefined) {
@@ -151,6 +154,7 @@ exports.updateJob = async (req, res) => {
       openings,
       lastDateToApply,
       isActive,
+      businessPark
     };
 
     // strip undefined keys
@@ -390,6 +394,7 @@ exports.getAllJobs = async (req, res) => {
       sortOrder = "desc",
       page,
       limit,
+      businessPark
     } = req.query;
 
     const { page: pg, limit: lmt, skip } = paginate({ page, limit });
@@ -412,7 +417,9 @@ exports.getAllJobs = async (req, res) => {
     if (workMode) filter.workMode = workMode;
     if (currency) filter.currency = currency.toUpperCase();
     if (isActive !== undefined) filter.isActive = isActive === "true";
-
+    if (businessPark) {
+      filter.businessPark = businessPark;
+    }
     // Partial text filters
     if (location) filter.location = { $regex: location.trim(), $options: "i" };
     if (department)
@@ -454,7 +461,7 @@ exports.getAllJobs = async (req, res) => {
 
     const [jobs, total] = await Promise.all([
       Job.find(filter)
-        .populate("company", "name logo location")
+        .populate("company", "companyName logo location")
         .sort({ [sortField]: sortDir })
         .skip(skip)
         .limit(lmt)

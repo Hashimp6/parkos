@@ -86,7 +86,12 @@ const companySchema = new mongoose.Schema(
     employeeCount:{ type: Number, default: 0 },
     foundedYear:  { type: Number },
     about:        { type: String, default: "" },
-
+    otp: String,
+    otpExpires: Date,
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
     // ── Tags ─────────────────────────────────────────────────────────────────
     tags: [{ type: String }],
 

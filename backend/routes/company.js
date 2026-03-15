@@ -6,7 +6,8 @@ const { uploadCompanyFields } = require("../middleware/upload");
 // PUBLIC ROUTES
 router.post("/register", companyController.register);
 router.post("/login", companyController.login);
-
+router.post("/verify-otp", companyController.verifyCompanyOTP);
+router.post("/resend-otp", companyController.resendOTP);
 router.get("/", companyController.getAllCompanies);
 router.get("/:id", companyController.getCompany);
 

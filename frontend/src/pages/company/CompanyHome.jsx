@@ -20,7 +20,7 @@ const DISCOVER = [
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
   },
   {
-    key: "job", label: "Post a Job", sub: "Hire from our talent pool", num: "05",
+    key: "jobs/form", label: "Post a Job", sub: "Hire from our talent pool", num: "05",
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>,
   },
   {
@@ -494,7 +494,7 @@ export default function CompanyHome({ onNavigate }) {
                 <p className="cx-quick-title">Post a Job Opening</p>
                 <p className="cx-quick-sub">Reach thousands of qualified candidates today</p>
               </div>
-              <button className="cx-quick-btn" onClick={()=>goto("/company/jobs/new")}>
+              <button className="cx-quick-btn" onClick={()=>goto("/jobs/form")}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Post Now
               </button>
@@ -506,7 +506,7 @@ export default function CompanyHome({ onNavigate }) {
                 <button
                   key={card.key}
                   className="cx-tile"
-                  onClick={()=>goto(`/discover/${card.key}`)}
+                  onClick={()=>goto(`/${card.key}`)}
                   style={{animation:`riseIn .5s cubic-bezier(.16,1,.3,1) ${.15+i*.07}s both`}}
                 >
                   <div className="cx-tile-top">

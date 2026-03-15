@@ -16,6 +16,7 @@ const normalizeJob = (j) => ({
   salaryMax:   j.salaryTo    ?? j.salaryMax  ?? null,
   tags:        j.skills      || j.tags       || [],
   postedAt:    j.postedDate  || j.postedAt   || null,
+  businessPark: j.businessPark || null,
 });
 
 /* ─── Helpers ────────────────────────────────────────────────────────── */
@@ -49,6 +50,9 @@ const T = {
   g600:  "#555555",
   black: "#111111",
 };
+
+/* ─── Business Park options ──────────────────────────────────────────── */
+const PARK_OPTIONS = ["Business Park", "Cyber Park", "All"];
 
 /* ─── useIsMobile ────────────────────────────────────────────────────── */
 function useIsMobile() {
@@ -178,8 +182,15 @@ function Pill({ children, dark }) {
 
 /* ─── Detail Panel ───────────────────────────────────────────────────── */
 function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile }) {
-  const salary = fmtSalary(job.salaryFrom ?? job.salaryMin, job.salaryTo ?? job.salaryMax, job.currency);
+  const min = job.salaryFrom ?? job.salaryMin;
+  const max = job.salaryTo ?? job.salaryMax;
+  
+  const salary =
+    !min && !max
+      ? "Not mentioned"
+      : fmtSalary(min, max, job.currency);
   const posted = timeAgo(job.postedDate ?? job.postedAt);
+console.log("jobbn",job);
 
   useEffect(() => {
     const fn = e => e.key === "Escape" && onClose();
@@ -187,7 +198,6 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
     return () => document.removeEventListener("keydown", fn);
   }, [onClose]);
 
-  // ── small helpers ──────────────────────────────────────────────────────────
   const MetaRow = ({ icon, label, value }) =>
     value ? (
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0", borderBottom: `1px solid ${T.g100}` }}>
@@ -203,12 +213,9 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
     </p>
   );
 
-  // ── body ───────────────────────────────────────────────────────────────────
   const body = (
     <>
-      {/* ── HEADER ── */}
       <div style={{ padding: isMobile ? "20px 20px 18px" : "26px 30px 20px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
-        {/* top row: logo + action buttons */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
           <Logo company={job.company} logo={job.company?.logo ?? job.companyLogo} size={isMobile ? 44 : 52} />
           <div style={{ display: "flex", gap: 8 }}>
@@ -228,23 +235,20 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
           </div>
         </div>
 
-        {/* job title */}
         <h2 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 20 : 23, color: T.black, margin: "0 0 4px", letterSpacing: "-0.03em", lineHeight: 1.2 }}>
           {job.title ?? `${job.role ? job.role.charAt(0).toUpperCase() + job.role.slice(1) : ""} Engineer`}
         </h2>
 
-        {/* company · location */}
         {(job.company?.name ?? job.company) || job.location ? (
           <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, color: T.g400, margin: "0 0 16px" }}>
             {[job.company?.name ?? (typeof job.company === "string" ? job.company : null), job.location].filter(Boolean).join("  ·  ")}
           </p>
         ) : null}
 
-        {/* status badges — just work mode + urgency on the header */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
           <WorkBadge type={job.workMode ?? job.workType} />
           {job.jobType && <Pill>{job.jobType}</Pill>}
-          {job.department && <Pill>{job.department.toUpperCase()}</Pill>}
+          {job.businessPark && <Pill>{job.businessPark}</Pill>}
           {job.isUrgent && (
             <span style={{ padding: "3px 8px", borderRadius: 4, border: `1px solid ${T.black}`, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 10, fontWeight: 700, color: T.black, letterSpacing: "0.05em", textTransform: "uppercase" }}>
               Urgent
@@ -253,26 +257,20 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
         </div>
       </div>
 
-      {/* ── JOB DETAILS GRID ── */}
       <div style={{ padding: isMobile ? "18px 20px" : "20px 30px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
         <SectionLabel>Job Details</SectionLabel>
-
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
-          {/* column A */}
           <div>
             <MetaRow icon="💰" label="Salary"      value={salary} />
-            <MetaRow icon="📍" label="Location"    value={job.location} />
-            <MetaRow icon="🕐" label="Experience"  value={job.experienceRequired ? `${job.experienceRequired} yr${Number(job.experienceRequired) !== 1 ? "s" : ""}` : null} />
-          </div>
-          {/* column B */}
-          <div>
             <MetaRow icon="💼" label="Type"        value={job.jobType} />
             <MetaRow icon="🏢" label="Work mode"   value={job.workMode ?? job.workType} />
-            <MetaRow icon="👥" label="Openings"    value={job.openings ? `${job.openings} open${job.openings > 1 ? "ings" : "ing"}` : null} />
+           </div>
+          <div>
+          <MetaRow icon="🕐" label="Experience"  value={job.experienceRequired ? `${job.experienceRequired} yr${Number(job.experienceRequired) !== 1 ? "s" : ""}` : null} />
+           <MetaRow icon="🏙️" label="Park"        value={job.businessPark} />
+            <MetaRow icon="📍" label="Location"    value={job.location} />
           </div>
         </div>
-
-        {/* posted + deadline as a subtle bar below the grid */}
         <div style={{ display: "flex", gap: 16, marginTop: 4, flexWrap: "wrap" }}>
           {posted && (
             <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: T.g400 }}>
@@ -287,7 +285,6 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
         </div>
       </div>
 
-      {/* ── TAGS / SKILLS ── */}
       {(job.tags?.length > 0 || job.skills?.length > 0) && (
         <div style={{ padding: isMobile ? "14px 20px" : "16px 30px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
           <SectionLabel>Skills &amp; Tags</SectionLabel>
@@ -297,7 +294,6 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
         </div>
       )}
 
-      {/* ── DESCRIPTION ── */}
       <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "18px 20px" : "22px 30px" }}>
         <SectionLabel>About the role</SectionLabel>
         {(job.description || job.shortDescription)
@@ -306,7 +302,6 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
         }
       </div>
 
-      {/* ── FOOTER / CTA ── */}
       <div style={{ padding: isMobile ? "14px 20px" : "18px 30px", borderTop: `1px solid ${T.g100}`, flexShrink: 0, background: T.white }}>
         <button
           onClick={() => onApply(job)}
@@ -320,7 +315,6 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
     </>
   );
 
-  // ── mobile bottom-sheet ────────────────────────────────────────────────────
   if (isMobile) {
     return (
       <>
@@ -333,7 +327,6 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
     );
   }
 
-  // ── desktop side-panel ─────────────────────────────────────────────────────
   return (
     <>
       <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.25)", backdropFilter: "blur(3px)", animation: "fdIn .2s ease" }} />
@@ -347,7 +340,6 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
 /* ─── Job Row ────────────────────────────────────────────────────────── */
 function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, isSelected }) {
   const [hov, setHov] = useState(false);
-  const salary    = fmtSalary(job.salaryFrom, job.salaryTo, job.currency);
   const posted    = timeAgo(job.postedAt);
   const active    = isSelected || hov;
   const maxTags   = isMobile ? 2 : 3;
@@ -369,12 +361,10 @@ function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, 
         position: "relative",
       }}
     >
-      {/* Left accent bar */}
       <div style={{ position: "absolute", left: 0, top: isMobile ? 14 : 12, bottom: isMobile ? 14 : 12, width: 3, borderRadius: "0 2px 2px 0", background: active ? T.black : "transparent", transition: "background .18s" }} />
 
       <Logo company={job.company} logo={job.companyLogo} size={isMobile ? 40 : 44} />
 
-      {/* Main info */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5, flexWrap: "wrap" }}>
           <h3 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: isMobile ? 14 : 15, color: T.black, margin: 0, letterSpacing: "-0.02em", lineHeight: 1.2 }}>
@@ -402,14 +392,13 @@ function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, 
 
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 5 }}>
           <WorkBadge type={job.workType} />
+          {job.businessPark && <Tag>{job.businessPark}</Tag>}
           {shownTags.map((t, i) => <Tag key={i}>{t}</Tag>)}
           {extra > 0 && <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: T.g400 }}>+{extra}</span>}
         </div>
       </div>
 
-      {/* Right: salary + date + buttons */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, flexShrink: 0 }}>
-       
         {posted && (
           <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 11, color: T.g400, whiteSpace: "nowrap" }}>
             {posted}
@@ -439,7 +428,7 @@ function JobRow({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, 
 }
 
 /* ─── Filter Bar ─────────────────────────────────────────────────────── */
-function FilterBar({ search, onSearch, activeType, onType, activeSort, onSort, isMobile }) {
+function FilterBar({ search, onSearch, activePark, onPark, isMobile }) {
   const [focused, setFocused] = useState(false);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -459,25 +448,23 @@ function FilterBar({ search, onSearch, activeType, onType, activeSort, onSort, i
       </div>
 
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-        {["All", "Remote", "Hybrid", "Onsite"].map(t => (
+        {PARK_OPTIONS.map(park => (
           <button
-            key={t}
-            onClick={() => onType(t)}
-            style={{ padding: isMobile ? "5px 12px" : "6px 14px", borderRadius: 6, fontSize: 12, fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, cursor: "pointer", transition: "all .15s", background: activeType === t ? T.black : T.white, color: activeType === t ? T.white : T.g600, border: `1px solid ${activeType === t ? T.black : T.g200}` }}
+            key={park}
+            onClick={() => onPark(park)}
+            style={{
+              padding: isMobile ? "5px 12px" : "6px 14px",
+              borderRadius: 6, fontSize: 12,
+              fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700,
+              cursor: "pointer", transition: "all .15s",
+              background: activePark === park ? T.black : T.white,
+              color: activePark === park ? T.white : T.g600,
+              border: `1px solid ${activePark === park ? T.black : T.g200}`,
+            }}
           >
-            {t}
+            {park}
           </button>
         ))}
-        <div style={{ flex: 1 }} />
-        <select
-          value={activeSort}
-          onChange={e => onSort(e.target.value)}
-          style={{ padding: "6px 10px", borderRadius: 6, fontSize: 12, fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, color: T.g600, background: T.white, border: `1px solid ${T.g200}`, outline: "none", cursor: "pointer" }}
-        >
-          <option>Newest</option>
-          <option>Salary ↑</option>
-          <option>Salary ↓</option>
-        </select>
       </div>
     </div>
   );
@@ -544,45 +531,43 @@ function SectionLabel({ children }) {
 }
 
 /* ─── Main Export ────────────────────────────────────────────────────── */
-/**
- * JobListings
- *
- * Props:
- *   onApply  – (job) => void   called when user clicks Apply
- *   title    – string          header title (default "Open Positions")
- *   apiUrl   – string          your jobs API endpoint
- */
 export default function JobListings({
   onApply,
   title  = "Open Positions",
   apiUrl = `${API_BASE}/jobs`,
 }) {
   const isMobile = useIsMobile();
+  const { user } = useUser();
+
   const [search,     setSearch]  = useState("");
-  const [activeType, setType]    = useState("All");
-  const [activeSort, setSort]    = useState("Newest");
+  const [activePark, setPark]    = useState("Business Park");
   const [openJob,    setOpenJob] = useState(null);
   const [savedIds,   setSaved]   = useState(new Set());
   const [toast,      setToast]   = useState(null);
   const [jobs,       setJobs]    = useState([]);
   const [isLoading,  setLoading] = useState(true);
   const [error,      setError]   = useState(null);
- const { user } = useUser();
- console.log("uus",user);
- 
+
   const toggleSave = id => setSaved(p => {
     const n = new Set(p);
     n.has(id) ? n.delete(id) : n.add(id);
     return n;
   });
 
+  /* ── Fetch jobs — passes businessPark param when not "All" ── */
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get(apiUrl);
+
+        const params = { sort: "newest" };
+        if (activePark !== "All") params.businessPark = activePark;
+
+        const res = await axios.get(apiUrl, { params });
         const raw = res.data?.data || res.data?.jobs || res.data || [];
+        console.log("kjjj",res.data?.data );
+        
         setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
       } catch (err) {
         console.error("Error fetching jobs:", err);
@@ -592,53 +577,31 @@ export default function JobListings({
       }
     };
     fetchJobs();
-  }, [apiUrl]);
+  }, [apiUrl, activePark]);
 
   const handleApply = async (job) => {
     try {
-      console.log("uus",user);
-      if (!user?._id) {
-        alert("Please login to apply");
-        return;
-      }
-  
-      const res = await axios.post(
-        `${API_BASE}/jobs-application/apply`,
-        {
-          jobId: job._id,
-          candidateId: user._id,
-          coverLetter: "",
-     
-        }
-      );
-  
-      if (res.data.success) {
-        alert("Application submitted successfully");
-      }
-  
+      if (!user?._id) { alert("Please login to apply"); return; }
+      const res = await axios.post(`${API_BASE}/jobs-application/apply`, {
+        jobId: job._id,
+        candidateId: user._id,
+        coverLetter: "",
+      });
+      if (res.data.success) alert("Application submitted successfully");
     } catch (error) {
       console.error(error);
-  
-      if (error.response?.status === 409) {
-        alert("You already applied for this job");
-      } else {
-        alert("Failed to apply");
-      }
+      if (error.response?.status === 409) alert("You already applied for this job");
+      else alert("Failed to apply");
     }
   };
 
+  /* ── Client-side search filter only (park filter handled by API) ── */
   const filtered = jobs
     .filter(j => {
-      const q      = search.toLowerCase().trim();
-      const textOk = !q || [j.title, j.company, j.location, ...(j.tags || [])].some(v => v?.toLowerCase().includes(q));
-      return textOk && (activeType === "All" || j.workType === activeType);
+      const q = search.toLowerCase().trim();
+      return !q || [j.title, j.company, j.location, ...(j.tags || [])].some(v => v?.toLowerCase().includes(q));
     })
-    .sort((a, b) => {
-      if (activeSort === "Newest")   return new Date(b.postedAt || 0) - new Date(a.postedAt || 0);
-      if (activeSort === "Salary ↑") return (a.salaryMin || 0) - (b.salaryMin || 0);
-      if (activeSort === "Salary ↓") return (b.salaryMin || 0) - (a.salaryMin || 0);
-      return 0;
-    });
+    .sort((a, b) => new Date(b.postedAt || 0) - new Date(a.postedAt || 0));
 
   const featured = filtered.filter(j => j.isFeatured);
   const regular  = filtered.filter(j => !j.isFeatured);
@@ -674,8 +637,7 @@ export default function JobListings({
           </div>
           <FilterBar
             search={search} onSearch={setSearch}
-            activeType={activeType} onType={setType}
-            activeSort={activeSort} onSort={setSort}
+            activePark={activePark} onPark={setPark}
             isMobile={isMobile}
           />
         </div>
@@ -720,7 +682,6 @@ export default function JobListings({
         )}
       </div>
 
-      {/* Detail panel */}
       {openJob && (
         <DetailPanel
           job={openJob} isMobile={isMobile}
@@ -729,7 +690,6 @@ export default function JobListings({
         />
       )}
 
-      {/* Toast */}
       {toast && <Toast job={toast} onClose={() => setToast(null)} />}
     </div>
   );

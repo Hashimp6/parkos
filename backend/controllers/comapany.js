@@ -1,7 +1,10 @@
 const Company = require("../models/company");
 const jwt = require("jsonwebtoken");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
-
+const { sendMail } = require("../config/nodemailer");
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
 // ─── Helper: generate JWT ─────────────────────────────────────────────────────
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -24,20 +27,132 @@ exports.register = async (req, res) => {
     const { companyName, email, phone, password } = req.body;
 
     if (!companyName || !email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "companyName, email and password are required." });
+      return res.status(400).json({
+        success: false,
+        message: "companyName, email and password are required.",
+      });
     }
 
-    const existing = await Company.findOne({ email: email.toLowerCase() });
-    if (existing) {
-      return res
-        .status(409)
-        .json({ success: false, message: "Email is already registered." });
+    let company = await Company.findOne({ email: email.toLowerCase() });
+
+    if (company && company.isVerified) {
+      return res.status(409).json({
+        success: false,
+        message: "Email already registered",
+      });
     }
 
-    const company = await Company.create({ companyName, email, phone, password });
-    sendToken(company, 201, res);
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 30 * 60 * 1000);
+
+    if (!company) {
+      company = new Company({
+        companyName,
+        email,
+        phone,
+        password,
+        otp,
+        otpExpires,
+      });
+    } else {
+      company.otp = otp;
+      company.otpExpires = otpExpires;
+    }
+
+    await company.save();
+
+    await sendMail(email, otp);
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent to email",
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+exports.verifyCompanyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const company = await Company.findOne({ email });
+
+    if (!company) {
+      return res.status(404).json({
+        success: false,
+        message: "Company not found",
+      });
+    }
+
+    if (company.otp !== otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    if (company.otpExpires < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired",
+      });
+    }
+
+    company.isVerified = true;
+    company.otp = null;
+    company.otpExpires = null;
+
+    await company.save();
+
+    const token = generateToken(company._id);
+
+    res.status(200).json({
+      success: true,
+      message: "Email verified",
+      token,
+      data: company,
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+exports.resendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const company = await Company.findOne({ email });
+
+    if (!company) {
+      return res.status(404).json({
+        success: false,
+        message: "Company not found",
+      });
+    }
+
+    if (company.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already verified",
+      });
+    }
+
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 30 * 60 * 1000);
+
+    company.otp = otp;
+    company.otpExpires = otpExpires;
+
+    await company.save();
+
+    await sendMail(email, otp);
+
+    res.status(200).json({
+      success: true,
+      message: "OTP resent",
+    });
+
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

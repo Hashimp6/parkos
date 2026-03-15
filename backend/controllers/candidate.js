@@ -1,7 +1,10 @@
 const Candidate = require("../models/candidate");
 const jwt = require("jsonwebtoken");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
-
+const { sendMail } = require("../config/nodemailer");
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit
+};
 // =======================================
 // UTILITIES
 // =======================================
@@ -23,29 +26,150 @@ exports.registerCandidate = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
     }
 
-    const existingUser = await Candidate.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({ success: false, message: "Email already registered" });
+    let candidate = await Candidate.findOne({ email });
+
+    if (candidate && candidate.isVerified) {
+      return res.status(409).json({
+        success: false,
+        message: "Email already registered",
+      });
     }
 
-    // Generate unique profileId with collision retry
-    let profileId;
-    let isUnique = false;
-    while (!isUnique) {
-      profileId = generateProfileId(name);
-      const existing = await Candidate.findOne({ profileId });
-      if (!existing) isUnique = true;
+    const otp = generateOTP();
+
+    const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 min
+
+    if (!candidate) {
+      // Generate unique profileId
+      let profileId;
+      let isUnique = false;
+
+      while (!isUnique) {
+        profileId = generateProfileId(name);
+        const existing = await Candidate.findOne({ profileId });
+        if (!existing) isUnique = true;
+      }
+
+      candidate = new Candidate({
+        name,
+        email,
+        password,
+        profileId,
+        otp,
+        otpExpires,
+      });
+
+    } else {
+      candidate.otp = otp;
+      candidate.otpExpires = otpExpires;
     }
 
-    const candidate = await Candidate.create({ name, email, password, profileId });
+    await candidate.save();
+
+    await sendMail(email, otp);
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent to email",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// =======================================
+// 3️⃣ RESEND OTP
+// =======================================
+exports.resendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const candidate = await Candidate.findOne({ email });
+
+    if (!candidate) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (candidate.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already verified",
+      });
+    }
+
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+
+    candidate.otp = otp;
+    candidate.otpExpires = otpExpires;
+
+    await candidate.save();
+
+    await sendMail(email, otp);
+
+    res.status(200).json({
+      success: true,
+      message: "OTP resent successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.verifyEmailOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const candidate = await Candidate.findOne({ email });
+
+    if (!candidate) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (candidate.otp !== otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    if (candidate.otpExpires < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired",
+      });
+    }
+
+    candidate.isVerified = true;
+    candidate.otp = null;
+    candidate.otpExpires = null;
+
+    await candidate.save();
+
     const token = generateToken(candidate._id);
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      message: "Account created successfully",
+      message: "Email verified successfully",
       token,
       data: {
         id: candidate._id,
@@ -54,11 +178,14 @@ exports.registerCandidate = async (req, res) => {
         profileId: candidate.profileId,
       },
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
-
 // =======================================
 // 2️⃣ LOGIN
 // =======================================

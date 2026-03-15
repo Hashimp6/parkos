@@ -26,7 +26,7 @@ export default function CandidateHomeSection({ onNavigate }) {
   const navigate = useNavigate();
   const { user, logoutUser } = useUser();
   const [showCard, setShowCard] = useState(false);
-
+  console.log("User from context:", user);
   const goto = (path) => { if (onNavigate) onNavigate(path); else navigate(path); };
 
   const greeting = () => {
@@ -36,7 +36,7 @@ export default function CandidateHomeSection({ onNavigate }) {
     return "Evening";
   };
 
-  const handleLogout = () => { logoutUser(); navigate("/candidate/login"); };
+  const handleLogout = () => { logoutUser(); navigate("/login"); };
   const firstLetter = user?.name ? user.name.charAt(0).toUpperCase() : "?";
 
   const pctComplete = (() => {

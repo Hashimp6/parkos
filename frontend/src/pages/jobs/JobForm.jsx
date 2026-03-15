@@ -2,13 +2,24 @@ import { useState } from "react";
 import { useCompany } from "../../context/CompanyContext";
 import axios from "axios";
 import API_BASE from "../../../config";
-
+import { useLocation, useNavigate } from "react-router-dom";
+const BUSINESS_PARKS = [
+  "Cyberpark",
+  "Technopark",
+  "Infopark",
+  "Smart City",
+  "KINFRA Tech Park",
+  "Business Park",
+  "SEZ",
+  "Other"
+];
 const INITIAL_FORM = {
   role: "", department: "", jobCode: "", description: "",
   skills: [], skillInput: "",
   salaryFrom: "", salaryTo: "", currency: "INR",
   jobType: "Full-time", workMode: "On-site",
   experienceRequired: "", location: "",
+  businessPark: "Other",
   openings: 1, lastDateToApply: "", isActive: true,
 };
 
@@ -340,9 +351,11 @@ function SectionHeader({ num, title }) {
   );
 }
 
-export default function JobForm({ onSuccess, onCancel, initialData = null }) {
+export default function JobForm({ onSuccess, onCancel }) {
   const { company } = useCompany();
-
+  const location = useLocation();
+  const initialData = location.state?.job || null;
+  const navigate = useNavigate();
   const [form, setForm] = useState(
     initialData ? {
       ...INITIAL_FORM, ...initialData,
@@ -355,10 +368,21 @@ export default function JobForm({ onSuccess, onCancel, initialData = null }) {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
-
-  const set = (key, val) => {
-    setForm(p => ({ ...p, [key]: val }));
-    if (errors[key]) setErrors(p => ({ ...p, [key]: "" }));
+  console.log("cmmmee",company);
+  const set = (field, value) => {
+    if (field === "applyDays") {
+      const today = new Date();
+      const lastDate = new Date(today);
+      lastDate.setDate(today.getDate() + Number(value));
+  
+      setForm((prev) => ({
+        ...prev,
+        applyDays: value,
+        lastDateToApply: lastDate.toISOString().split("T")[0],
+      }));
+    } else {
+      setForm((prev) => ({ ...prev, [field]: value }));
+    }
   };
   const showToast = (msg, type = "success") => {
     setToast({ msg, type });
@@ -394,6 +418,8 @@ export default function JobForm({ onSuccess, onCancel, initialData = null }) {
     setLoading(true);
   
     try {
+      console.log("cmmmee",company);
+      
       const payload = {
         company: company._id,
         role: form.role.trim(),
@@ -411,6 +437,7 @@ export default function JobForm({ onSuccess, onCancel, initialData = null }) {
         openings: Number(form.openings),
         lastDateToApply: form.lastDateToApply || null,
         isActive: form.isActive,
+        businessPark: form.businessPark,
       };
   
       const isEdit = !!initialData?._id;
@@ -422,7 +449,7 @@ export default function JobForm({ onSuccess, onCancel, initialData = null }) {
       showToast(isEdit ? "Job updated!" : "Job posted successfully!");
   
       if (onSuccess) onSuccess(res.data.data);
-  
+      setTimeout(() => navigate("/company/Home"), 1400);
     } catch (err) {
       showToast(err.response?.data?.message || "Something went wrong", "error");
     } finally {
@@ -483,11 +510,7 @@ Hi-{company?.companyName}
                     <input className="jf-input" placeholder="e.g. Engineering"
                       value={form.department} onChange={e => set("department", e.target.value)} />
                   </div>
-                  <div>
-                    <Label>Job Code</Label>
-                    <input className="jf-input" placeholder="e.g. ENG-001"
-                      value={form.jobCode} onChange={e => set("jobCode", e.target.value)} />
-                  </div>
+                 
                 </div>
                 <div className="field">
                   <Label>Description</Label>
@@ -561,12 +584,31 @@ Hi-{company?.companyName}
 
               <div className="jf-section">
                 <SectionHeader num="5" title="Position Details" />
-                <div className="grid-2 field">
-                  <div>
-                    <Label>Location</Label>
-                    <input className="jf-input" placeholder="e.g. Bangalore, Karnataka"
-                      value={form.location} onChange={e => set("location", e.target.value)} />
-                  </div>
+                <div className="grid-3 field">
+                <div>
+  <Label>Location</Label>
+  <input
+    className="jf-input"
+    placeholder="e.g. Kochi, Kerala"
+    value={form.location}
+    onChange={e => set("location", e.target.value)}
+  />
+</div>
+
+<div>
+  <Label>Business Park</Label>
+  <select
+    className="jf-input"
+    value={form.businessPark}
+    onChange={e => set("businessPark", e.target.value)}
+  >
+    {BUSINESS_PARKS.map(p => (
+      <option key={p} value={p}>{p}</option>
+    ))}
+  </select>
+</div>
+
+
                   <div>
                     <Label>Experience</Label>
                     <input className="jf-input" placeholder="e.g. 3–5 years"
@@ -581,12 +623,22 @@ Hi-{company?.companyName}
                     <FieldError msg={errors.openings} />
                   </div>
                   <div>
-                    <Label>Last Date to Apply</Label>
-                    <input className="jf-input" type="date"
-                      value={form.lastDateToApply}
-                      min={new Date().toISOString().split("T")[0]}
-                      onChange={e => set("lastDateToApply", e.target.value)} />
-                  </div>
+  <Label>Application Duration</Label>
+  <select
+    className="jf-input"
+    value={form.applyDays}
+    onChange={(e) => set("applyDays", e.target.value)}
+  >
+    <option value="">Select days</option>
+    <option value="1">1 Day</option>
+    <option value="2">2 Days</option>
+    <option value="3">3 Days</option>
+    <option value="4">4 Days</option>
+    <option value="5">5 Days</option>
+    <option value="6">6 Days</option>
+    <option value="7">7 Days</option>
+  </select>
+</div>
                 </div>
               </div>
 
