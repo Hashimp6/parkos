@@ -38,6 +38,7 @@ import LayoutSelector from "../components/LayoutSelector";
 import Profile6 from "../components/Profilelayout6";
 import Profile7 from "../components/ProfileLayout7";
 import Profile8 from "../components/Profilelayout8";
+import JobDashboard from "../pages/jobs/CandidatesList";
 
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
@@ -70,7 +71,8 @@ function AppRoutes() {
       <Route path="/profile/5" element={<Profile12 />} />
       <Route path="/profile/3" element={<PersonalPortfolio2 />} />
       <Route path="/profile/6" element={<Profile12 />} />
-      <Route path="/jobslist" element={<JobListings />} />
+      <Route path="/jobslist" element={<CompanyJobsAdmin />} />
+      <Route path="/company/jobs/:id" element={<JobDashboard />} />
       <Route path="/companyjobs" element={<CompanyJobsAdmin />} />
       <Route path="/layout" element={<LayoutSelector />} />
      
