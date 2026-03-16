@@ -6,7 +6,7 @@ import Profile5 from "./ProfileLayout4";
 import Profile6 from "./ProfileLayout5";
 import Profile7 from "./Profilelayout6";
 import Profile8 from "./ProfileLayout7";
-import Profile9 from "./Profilelayout8";
+import Profile9 from "./ProfileLayout8";
 import Profile10 from "./ProfileLayout9";
 import LayoutPreview from "./LayoutPreview";
 
