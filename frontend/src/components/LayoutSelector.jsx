@@ -7,9 +7,7 @@ import Profile6 from "./ProfileLayout5";
 import Profile7 from "./Profilelayout6";
 import Profile8 from "./ProfileLayout7";
 import Profile9 from "./Profilelayout8";
-import Profile10 from "./Profilelayout9";
-import Profile11 from "./ProfileLayout10";
-import Profile12 from "./ProfileLayout11";
+import Profile10 from "./ProfileLayout9";
 import LayoutPreview from "./LayoutPreview";
 
 const templates = {
