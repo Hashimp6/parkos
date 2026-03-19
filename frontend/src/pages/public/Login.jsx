@@ -184,7 +184,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Social buttons */}
-                <div className="grid grid-cols-2 gap-3">
+                {/* <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all border-[1.5px] border-gray-200"
@@ -206,7 +206,7 @@ export default function LoginPage() {
                     </svg>
                     Apple
                   </button>
-                </div>
+                </div> */}
 
               </div>
             ) : (

@@ -79,6 +79,10 @@ const candidateSchema = new mongoose.Schema(
       type: String, // tagline of the candidate
       default: "",
     },
+    freelanceServices: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FreelanceService"
+    }],
     qualification: {
         type: String, // 
         default: "",

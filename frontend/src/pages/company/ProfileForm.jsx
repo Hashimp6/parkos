@@ -18,8 +18,8 @@ const TABS = [
   { id: "team",      label: "Team",       sym: "◎" },
   { id: "projects",  label: "Projects",   sym: "◆" },
   { id: "services",  label: "Services",   sym: "◐" },
-  { id: "gallery",   label: "Gallery",    sym: "◧" },
-  { id: "clients",   label: "Clients",    sym: "◫" },
+  // { id: "gallery",   label: "Gallery",    sym: "◧" },
+  // { id: "clients",   label: "Clients",    sym: "◫" },
   { id: "contact",   label: "Contact",    sym: "◬" },
   { id: "settings",  label: "Layout",     sym: "◭" },
 ];
@@ -561,17 +561,6 @@ export default function CompanyProfileForm() {
                 </div>
               </Card>
 
-              <Card>
-                <CardTitle>Map Embed</CardTitle>
-                <label className={labelCls}>Google Maps Embed URL</label>
-                <input className={inputCls} placeholder="https://maps.google.com/maps?..." value={form.mapEmbedLink}
-                  onChange={e => set("mapEmbedLink", e.target.value)} />
-                {form.mapEmbedLink && (
-                  <div className="mt-3 rounded-2xl overflow-hidden border border-zinc-100" style={{ height: 180 }}>
-                    <iframe src={form.mapEmbedLink} width="100%" height="180" style={{ border: 0 }} allowFullScreen loading="lazy" title="map" />
-                  </div>
-                )}
-              </Card>
             </>
           )}
 
@@ -635,7 +624,7 @@ export default function CompanyProfileForm() {
           )}
 
           {/* ── GALLERY ── */}
-          {tab === "gallery" && (
+          {/* {tab === "gallery" && (
             <Card>
               <CardTitle>Photo Gallery</CardTitle>
               <p className="text-xs text-zinc-400 mb-4">Showcase your office, events, culture photos</p>
@@ -649,7 +638,7 @@ export default function CompanyProfileForm() {
                           ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
                           : <div className="w-full h-full flex items-center justify-center text-zinc-400 group-hover:text-zinc-600 text-2xl">🖼</div>}
                       </button>
-                      {/* Gallery file input — stores file + preview URL */}
+
                       <input id={`gallery-img-${i}`} type="file" accept="image/*" className="hidden"
                         onChange={(e) => {
                           const f = e.target.files?.[0];
@@ -676,10 +665,10 @@ export default function CompanyProfileForm() {
                 </button>
               </div>
             </Card>
-          )}
+          )} */}
 
           {/* ── CLIENTS ── */}
-          {tab === "clients" && (
+          {/* {tab === "clients" && (
             <Card>
               <CardTitle>Clients & Partners</CardTitle>
               <DynArray
@@ -693,11 +682,10 @@ export default function CompanyProfileForm() {
                 onAdd={(t) => addArr("clients", t)}
                 onRemove={(i) => remArr("clients", i)}
                 onUpdate={(i, k, v) => updArr("clients", i, k, v)}
-                // ← wire nested file tracking
-                onFileChange={(i, _key, file) => setNestedFile("clients", i, file)}
+                 onFileChange={(i, _key, file) => setNestedFile("clients", i, file)}
               />
             </Card>
-          )}
+          )} */}
 
           {/* ── CONTACT ── */}
           {tab === "contact" && (

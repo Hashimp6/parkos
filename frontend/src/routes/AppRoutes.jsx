@@ -23,8 +23,17 @@ import Profile12 from "../components/ProfileLayout12";
 import JobForm from "../pages/jobs/JobForm";
 import CompanyJobsAdmin from "../pages/company/JobsDash";
 import LayoutSelector from "../components/LayoutSelector";
-
 import JobDashboard from "../pages/jobs/CandidatesList";
+import Company1 from "../components/company/Layout1";
+import Company2 from "../components/company/Layout2";
+import Layout3 from "../components/company/Layout3";
+import Company4 from "../components/company/Layout4";
+import Company5 from "../components/company/Layout5";
+import FreelancerCategories from "../pages/freelance/FreelancersGrid";
+import FreelancerList from "../pages/freelance/Listing";
+import FreelancerDetail from "../pages/freelance/Detail";
+import AddServiceForm from "../pages/freelance/Form";
+import FreelanceDashboard from "../pages/freelance/Dashbord";
 
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
@@ -61,7 +70,12 @@ function AppRoutes() {
       <Route path="/company/jobs/:id" element={<JobDashboard />} />
       <Route path="/companyjobs" element={<CompanyJobsAdmin />} />
       <Route path="/layout" element={<LayoutSelector />} />
-     
+      <Route path="/company1" element={<Company2/>} />
+      <Route path="/freelance" element={<FreelancerCategories/>} />
+      <Route path="/freelance-list" element={<FreelancerList/>} />
+      <Route path="/freelancer/:id" element={<FreelancerDetail />} />
+      <Route path="/freelance-form" element={<AddServiceForm />} />
+      <Route path="/freelance-dashbord" element={<FreelanceDashboard />} />
       {/* Dashboard (Protected Later) */}
       {/* <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<DashboardHome />} />

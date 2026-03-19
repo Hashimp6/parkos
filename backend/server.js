@@ -18,6 +18,7 @@ app.use("/api/candidate", require("./routes/candidate"));
 app.use("/api/companies", require("./routes/company")); // Mini website profiles
 app.use("/api/jobs", require("./routes/jobs"));
 app.use("/api/jobs-application", require("./routes/JobApplication"));
+app.use("/api/freelance", require("./routes/freelancer"));
 // Health check
 app.get("/", (req, res) => {
   res.send("Business Park Job Platform API is running...");

@@ -560,24 +560,28 @@ export default function JobListings({
       try {
         setLoading(true);
         setError(null);
-
-        const params = { sort: "newest" };
+  
+        const params = {
+          sort: "newest",
+          search: search || undefined
+        };
+  
         if (activePark !== "All") params.businessPark = activePark;
-
+  
         const res = await axios.get(apiUrl, { params });
-        const raw = res.data?.data || res.data?.jobs || res.data || [];
-        console.log("kjjj",res.data?.data );
-        
+  
+        const raw = res.data?.data || [];
         setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
       } catch (err) {
-        console.error("Error fetching jobs:", err);
-        setError("Failed to load jobs. Please try again.");
+        console.error(err);
+        setError("Failed to load jobs.");
       } finally {
         setLoading(false);
       }
     };
+  
     fetchJobs();
-  }, [apiUrl, activePark]);
+  }, [apiUrl, activePark, search]);
 
   const handleApply = async (job) => {
     try {
@@ -596,13 +600,7 @@ export default function JobListings({
   };
 
   /* ── Client-side search filter only (park filter handled by API) ── */
-  const filtered = jobs
-    .filter(j => {
-      const q = search.toLowerCase().trim();
-      return !q || [j.title, j.company, j.location, ...(j.tags || [])].some(v => v?.toLowerCase().includes(q));
-    })
-    .sort((a, b) => new Date(b.postedAt || 0) - new Date(a.postedAt || 0));
-
+ const filtered = jobs;
   const featured = filtered.filter(j => j.isFeatured);
   const regular  = filtered.filter(j => !j.isFeatured);
 
