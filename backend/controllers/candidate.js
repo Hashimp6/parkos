@@ -1,5 +1,6 @@
 const Candidate = require("../models/candidate");
 const jwt = require("jsonwebtoken");
+const helper = require("../models/helper");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 const { sendMail } = require("../config/nodemailer");
 const generateOTP = () => {
@@ -600,5 +601,32 @@ exports.deleteCandidate = async (req, res) => {
     res.status(200).json({ success: true, message: "Candidate deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+exports.createCategorySuggestion = async (req, res) => {
+  try {
+    const { candidateCategory } = req.body;
+
+
+    // ✅ save to DB
+    const newSuggestion = await CategorySuggestion.create({
+      candidateCategory: candidateCategory.trim(),
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Suggestion submitted successfully",
+      data: newSuggestion,
+    });
+  } catch (error) {
+    console.error("Category Suggestion Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };

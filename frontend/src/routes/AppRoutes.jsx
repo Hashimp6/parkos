@@ -35,6 +35,8 @@ import FreelancerDetail from "../pages/freelance/Detail";
 import AddServiceForm from "../pages/freelance/Form";
 import FreelanceDashboard from "../pages/freelance/Dashbord";
 import ForgotPasswordPage from "../pages/public/ForgotPassword";
+import CompanyServices from "../pages/company/CategoryGrid";
+import ServiceCategories from "../pages/company/Category";
 
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
@@ -61,9 +63,10 @@ function AppRoutes() {
       <Route path="/company/login" element={<CompanyLoginPage />} />
       <Route path="/company/register" element={<CompanyRegisterPage />} />
       <Route path="/company/Home" element={<CompanyHome/>} />
+      <Route path="/company/category" element={<ServiceCategories/>} />
       <Route path="/company/form" element={<CompanyProfileForm/>} />
       <Route path="/profile/form" element={<CandidateProfileForm />} />
-      <Route path="/profile/:profileId" element={<ProfilePages />} />
+      <Route path="/:profileId" element={<ProfilePages />} />
       <Route path="/company" element={<CompanyWebsite3 />} />
       <Route path="/profile/5" element={<Profile12 />} />
       <Route path="/profile/3" element={<PersonalPortfolio2 />} />

@@ -1,60 +1,33 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-/* ── Sample data ── */
 const categories = [
-  // 💻 Tech & Development
   { name: "Web Development", icon: "💻", tag: "tech" },
   { name: "App Development", icon: "📱", tag: "tech" },
   { name: "Software Development", icon: "🖥️", tag: "tech" },
   { name: "UI/UX Design", icon: "🎨", tag: "design" },
-
-  // 🎨 Design & Creative
   { name: "Graphic Design", icon: "✏️", tag: "design" },
   { name: "Logo Design", icon: "🏷️", tag: "design" },
   { name: "Poster & Banner Design", icon: "🪧", tag: "design" },
-
-  // 🎬 Media & Content
   { name: "Video Editing", icon: "🎬", tag: "media" },
   { name: "Videography", icon: "📹", tag: "media" },
   { name: "Photography", icon: "📷", tag: "media" },
   { name: "Content Writing", icon: "📝", tag: "writing" },
-  // { name: "Presentation Services", icon: "📊", tag: "media" },
-
-  // 📈 Marketing & Business
   { name: "Digital Marketing", icon: "📈", tag: "marketing" },
   { name: "Social Media Marketing", icon: "📣", tag: "marketing" },
-  // { name: "Software Marketing", icon: "💼", tag: "marketing" },
-
-  // 💰 Finance & Professional
   { name: "Accounting & Finance", icon: "💰", tag: "finance" },
-
-  // 🎓 Education
   { name: "Education & Training", icon: "🎓", tag: "education" },
-
-  // 💄 Beauty & Personal Care
   { name: "Makeup & Beauty", icon: "💄", tag: "beauty" },
   { name: "Henna / Mehndi Art", icon: "🌿", tag: "beauty" },
-
-  // 🎨 Arts & Crafts
   { name: "Drawing & Illustration", icon: "🖌️", tag: "art" },
   { name: "Gifting Services", icon: "🎁", tag: "art" },
-
-  // 🎤 Events & Entertainment
   { name: "Event Management", icon: "🎉", tag: "event" },
-  // { name: "Party Planning", icon: "🥳", tag: "event" },
   { name: "Hosting / Presenters", icon: "🎤", tag: "event" },
-
-  // 🍽️ Food
   { name: "Food & Catering", icon: "🍽️", tag: "food" },
-
-  // 👗 Fashion
   { name: "Fashion Design", icon: "👗", tag: "fashion" },
   { name: "Tailoring", icon: "🧵", tag: "fashion" },
-
-  // 🧹 Home Services
   { name: "Cleaning Services", icon: "🧹", tag: "home" },
-    { name: "Others", icon: "💼", tag: "marketing" },
+  { name: "Others", icon: "💼", tag: "other" },
 ];
 
 const CSS = `
@@ -63,14 +36,14 @@ const CSS = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink:        #0a0a0a;
-    --ink-mid:    #404040;
-    --ink-muted:  #888;
-    --ink-faint:  #bbb;
-    --surface:    #ffffff;
-    --surface-2:  #f7f7f8;
-    --surface-3:  #f0f0f2;
-    --border:     #e4e4e8;
+    --ink:          #0a0a0a;
+    --ink-mid:      #404040;
+    --ink-muted:    #888;
+    --ink-faint:    #bbb;
+    --surface:      #ffffff;
+    --surface-2:    #f7f7f8;
+    --surface-3:    #f0f0f2;
+    --border:       #e4e4e8;
     --border-hover: #c0c0c8;
   }
 
@@ -89,7 +62,6 @@ const CSS = `
     overflow: hidden;
   }
 
-  /* giant faint letter watermark */
   .fc-hero::before {
     content: 'HIRE';
     position: absolute;
@@ -131,7 +103,7 @@ const CSS = `
 
   @keyframes blink {
     0%,100% { opacity:1; }
-    50% { opacity:0.3; }
+    50%      { opacity:0.3; }
   }
 
   .fc-title {
@@ -159,7 +131,7 @@ const CSS = `
     position: relative;
   }
 
-  /* ── SEARCH BAR ── */
+  /* ── SEARCH ── */
   .fc-search-wrap {
     position: relative;
     display: flex;
@@ -221,7 +193,7 @@ const CSS = `
 
   .fc-search-btn:hover { background: #222; }
 
-  /* ── COUNT TAG ── */
+  /* ── COUNT ── */
   .fc-count {
     text-align: center;
     font-size: 11px;
@@ -230,10 +202,7 @@ const CSS = `
     letter-spacing: 0.04em;
   }
 
-  .fc-count strong {
-    color: var(--ink);
-    font-weight: 700;
-  }
+  .fc-count strong { color: var(--ink); font-weight: 700; }
 
   /* ── GRID ── */
   .fc-grid {
@@ -310,75 +279,7 @@ const CSS = `
     transform: scale(1.08) rotate(-4deg);
     filter: grayscale(1) invert(1);
   }
-/* ── Suggest Section ── */
-.fc-suggest {
-  max-width: 640px;
-  margin: 80px auto 0;
-  text-align: center;
-  padding: 0 24px;
-}
 
-.fc-suggest-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 28px;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-
-.fc-suggest-sub {
-  font-size: 13px;
-  color: var(--ink-muted);
-  margin-bottom: 20px;
-}
-
-.fc-suggest-box {
-  display: flex;
-  gap: 8px;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.fc-suggest-box input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 13px;
-  padding: 10px;
-  background: transparent;
-}
-
-.fc-suggest-box button {
-  border: none;
-  background: var(--ink);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 0 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.fc-suggest-box button:hover {
-  background: #222;
-}
-
-/* ── Toast ── */
-.fc-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--ink);
-  color: #fff;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  animation: fadeUp 0.3s ease;
-}
   .fc-card-name {
     font-size: 13px;
     font-weight: 700;
@@ -390,7 +291,6 @@ const CSS = `
     z-index: 1;
   }
 
-  /* subtle arrow at bottom right on hover */
   .fc-arrow {
     position: absolute;
     bottom: 14px; right: 16px;
@@ -422,7 +322,6 @@ const CSS = `
     opacity: 0.4;
   }
 
-  /* responsive */
   @media (max-width: 900px) {
     .fc-grid { grid-template-columns: repeat(3, 1fr); }
   }
@@ -432,14 +331,10 @@ const CSS = `
 `;
 
 function CategoryCard({ cat, navigate, index }) {
-  const handleClick = () => {
-    if (navigate) navigate("/freelance-list", { state: { category: cat.name } });
-  };
-
   return (
     <div
       className="fc-card"
-      onClick={handleClick}
+      onClick={() => navigate && navigate("/freelance-list", { state: { category: cat.name } })}
       style={{ animationDelay: `${index * 45}ms` }}
     >
       <div className="fc-icon-wrap">{cat.icon}</div>
@@ -452,34 +347,20 @@ function CategoryCard({ cat, navigate, index }) {
 export default function FreelancerCategories() {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+
   const filtered = categories.filter((c) =>
     c.name.toLowerCase().includes(query.toLowerCase())
   );
-  const [suggestion, setSuggestion] = useState("");
-  const [toast, setToast] = useState(null);
-  const handleSuggest = async () => {
-    if (!suggestion.trim()) return;
-  
-    try {
-      // 👉 optional backend call
-      // await axios.post("/api/category-suggestion", { name: suggestion });
-  
-      setToast("Suggestion sent 🚀");
-      setSuggestion("");
-  
-      setTimeout(() => setToast(null), 3000);
-    } catch (err) {
-      setToast("Failed to send");
-      setTimeout(() => setToast(null), 3000);
-    }
-  };
+
   return (
     <>
       <style>{CSS}</style>
       <div className="fc-page">
-        {/* Hero */}
         <div className="fc-hero">
-         
+          <div className="fc-eyebrow">
+            <span className="fc-eyebrow-dot" />
+            Browse Services
+          </div>
           <h1 className="fc-title">
             Find your perfect<br /><em>creative match</em>
           </h1>
@@ -487,7 +368,6 @@ export default function FreelancerCategories() {
             Skilled professionals for every creative &amp; technical need
           </p>
 
-          {/* Search */}
           <div className="fc-search-wrap">
             <span className="fc-search-icon">⌕</span>
             <input
@@ -501,17 +381,14 @@ export default function FreelancerCategories() {
           </div>
         </div>
 
-        {/* Count */}
         <p className="fc-count">
           <strong>{filtered.length}</strong> categories available
         </p>
 
-        {/* Grid */}
         <div className="fc-grid">
           {filtered.length > 0 ? (
             filtered.map((cat, i) => (
-           <> <CategoryCard key={cat.name} cat={cat} navigate={navigate} index={i} />
-              </>  
+              <CategoryCard key={cat.name} cat={cat} navigate={navigate} index={i} />
             ))
           ) : (
             <div className="fc-empty">
@@ -519,25 +396,8 @@ export default function FreelancerCategories() {
               No categories found for &ldquo;{query}&rdquo;
             </div>
           )}
-          <div className="fc-suggest">
-  <h2 className="fc-suggest-title">Suggest a new category</h2>
-  <p className="fc-suggest-sub">
-    Can’t find what you’re looking for? Help us improve.
-  </p>
-
-  <div className="fc-suggest-box">
-    <input
-      type="text"
-      value={suggestion}
-      onChange={(e) => setSuggestion(e.target.value)}
-      placeholder="e.g. Drone Photography"
-    />
-    <button onClick={handleSuggest}>Submit</button>
-  </div>
-</div>
         </div>
       </div>
     </>
   );
 }
-
