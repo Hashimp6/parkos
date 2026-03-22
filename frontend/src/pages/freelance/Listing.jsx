@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import API_BASE from "../../../config";
 
 const STYLES = `
@@ -314,32 +314,376 @@ function SkeletonCard() {
   );
 }
 
-function FreelancerCard({ freelancer, index }) {
-  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(freelancer.name||"F")}&background=eeeeee&color=111111&size=128`;
+const style = `
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap');
+ 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --white: #ffffff;
+    --off-white: #f8f8fa;
+    --border: #e8e8ed;
+    --border-light: #f0f0f5;
+    --ink: #0a0a0a;
+    --ink-mid: #3a3a3a;
+    --ink-soft: #8a8a96;
+    --ink-faint: #b8b8c4;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-xl: 0 20px 60px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08);
+  }
+ 
+  .fl-wrap {
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+    width: 460px;
+  }
+ 
+  /* ── CARD ── */
+  .fl-card {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    height: 160px;
+    border-radius: 24px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s cubic-bezier(.34,1.4,.64,1), box-shadow 0.3s ease;
+    cursor: pointer;
+    animation: cardIn 0.5s cubic-bezier(.22,.68,0,1.2) both;
+  }
+ 
+  @keyframes cardIn {
+    from { opacity:0; transform: translateY(20px) scale(0.96); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+ 
+  .fl-card:hover {
+    transform: translateY(-5px) scale(1.008);
+    box-shadow: var(--shadow-xl);
+  }
+ 
+  /* Corner fold accent */
+  .fl-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 48px; height: 48px;
+    background: linear-gradient(225deg, var(--border-light) 45%, transparent 46%);
+    pointer-events: none;
+  }
+ 
+  /* ══════════════════════════════
+     LEFT IMAGE PANEL
+  ══════════════════════════════ */
+  .fl-left {
+    position: relative;
+    width: 150px;
+    min-width: 150px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+ 
+  /* Full-bleed photo as background */
+  .fl-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(18%) contrast(1.05);
+    transform: scale(1.04);
+    transition: transform 0.5s ease;
+  }
+ 
+  .fl-card:hover .fl-bg-img {
+    transform: scale(1.08);
+  }
+ 
+  /* Gradient overlay for depth */
+  .fl-left-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to right, transparent 55%, rgba(255,255,255,0.96) 100%),
+      linear-gradient(to bottom, rgba(0,0,0,0.12) 0%, transparent 40%, rgba(0,0,0,0.2) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+ 
+  /* Subtle vertical separator shimmer */
+  .fl-left-edge {
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border) 30%, var(--border) 70%, transparent);
+    z-index: 2;
+  }
+ 
+  /* Rating badge floating on image */
+  .fl-rating {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 3;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 10px;
+    padding: 4px 8px 4px 6px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+ 
+  .fl-star { font-size: 10px; color: #f59e0b; line-height: 1; }
+  .fl-rating-val {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.2px;
+  }
+ 
+  /* Online indicator */
+  .fl-status {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(6px);
+    border-radius: 99px;
+    padding: 3px 7px 3px 5px;
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+ 
+  .fl-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 5px rgba(34,197,94,0.6);
+    animation: pulse 2.4s ease infinite;
+  }
+ 
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+ 
+  .fl-status-txt {
+    font-size: 9px;
+    font-weight: 600;
+    color: #16a34a;
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+ 
+  /* ══════════════════════════════
+     RIGHT CONTENT
+  ══════════════════════════════ */
+  .fl-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px 22px 18px 20px;
+    min-width: 0;
+    background: var(--white);
+    position: relative;
+  }
+ 
+  .fl-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+ 
+  .fl-badge {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: var(--off-white);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 2px 6px;
+    line-height: 1.4;
+  }
+ 
+  .fl-badge-pro {
+    background: var(--ink);
+    color: var(--white);
+    border-color: var(--ink);
+  }
+ 
+  .fl-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.4px;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+ 
+  .fl-title {
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0;
+  }
+ 
+  /* Decorative thin rule */
+  .fl-rule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 11px 0 10px;
+  }
+ 
+  .fl-rule-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-light);
+  }
+ 
+  .fl-rule-dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+ 
+  /* Skills */
+  .fl-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+ 
+  .fl-skill {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 99px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+    border: 1px solid var(--border);
+    background: var(--off-white);
+    color: var(--ink-mid);
+  }
+ 
+  .fl-skill:first-child {
+    background: var(--ink);
+    color: var(--white);
+    border-color: var(--ink);
+  }
+ 
+  .fl-skill:nth-child(2) {
+    background: var(--white);
+    color: var(--ink-mid);
+    border-color: var(--border);
+  }
+ 
+  .fl-card:hover .fl-skill:first-child {
+    background: #222;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+ 
+  .fl-card:hover .fl-skill {
+    border-color: #d0d0d8;
+  }
+`;
+ 
+function FreelancerCard({ freelancer = {}, index = 0 }) {
+  const [imgErr, setImgErr] = useState(false);
+  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(freelancer.name || "F")}&background=e8e8ed&color=0a0a0a&size=256&bold=true`;
+  const skills = (freelancer.skills || []).slice(0, 4);
+  const isPro = (freelancer.rating || 0) >= 4.8;
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/freelancer/${freelancer._id}`);
+  };
   return (
-    <div className="fl3-card" style={{ animationDelay:`${index * 60}ms` }}>
-      <div className="fl3-rating">
-        <span className="fl3-rstar">★</span>
-        {freelancer.rating?.toFixed(1)}
-      </div>
-      <div className="fl3-img-wrap">
-        <img
-          className="fl3-img"
-          src={freelancer.profilePhoto || fallback}
-          alt={freelancer.name}
-          onError={e => { e.target.src = fallback; }}
-        />
-      </div>
-      <div className="fl3-info">
-        <p className="fl3-name">{freelancer.name}</p>
-        <p className="fl3-role">{freelancer.tagline}</p>
-        <div className="fl3-skills">
-          {(freelancer.skills || []).slice(0, 2).map(s => (
-            <span key={s} className="fl3-skill">{s}</span>
-          ))}
+    <>
+      <style>{style}</style>
+      <div 
+  className="fl-wrap" 
+  style={{ animationDelay: `${index * 90}ms`, cursor: "pointer" }}
+  onClick={handleClick}
+>
+        <div className="fl-card">
+          {/* ── LEFT: Full-bleed photo panel ── */}
+          <div className="fl-left">
+            <img
+              className="fl-bg-img"
+              src={imgErr ? fallback : (freelancer.profilePhoto || fallback)}
+              alt={freelancer.name}
+              onError={() => setImgErr(true)}
+            />
+            <div className="fl-left-overlay" />
+            <div className="fl-left-edge" />
+ 
+            {/* Top: online status */}
+            <div className="fl-status">
+              <div className="fl-dot" />
+              <span className="fl-status-txt">Available</span>
+            </div>
+ 
+            {/* Bottom: rating */}
+            {freelancer.rating != null && (
+              <div className="fl-rating">
+                <span className="fl-star">★</span>
+                <span className="fl-rating-val">{freelancer.rating.toFixed(1)}</span>
+              </div>
+            )}
+          </div>
+ 
+          {/* ── RIGHT: Content ── */}
+          <div className="fl-right">
+            <div className="fl-meta">
+              {isPro && <span className="fl-badge fl-badge-pro">Pro</span>}
+              <span className="fl-badge">Freelancer</span>
+            </div>
+            <p className="fl-name">{freelancer.name || "Freelancer"}</p>
+            <p className="fl-title">{freelancer.tagline || "Independent Consultant"}</p>
+ 
+            <div className="fl-rule">
+              <div className="fl-rule-line" />
+              <div className="fl-rule-dot" />
+              <div className="fl-rule-line" />
+            </div>
+ 
+            <div className="fl-skills">
+              {skills.map(s => (
+                <span key={s} className="fl-skill">{s}</span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -415,7 +759,7 @@ export default function FreelancerList() {
   return (
     <div className="fl3-root">
 
-      <header className="fl3-header">
+      {/* <header className="fl3-header">
         <span className="fl3-logo">Freelancers</span>
         <div className="fl3-search-wrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -432,7 +776,7 @@ export default function FreelancerList() {
         <span className="fl3-hcount">
           {loading ? "—" : `${filtered.length} found`}
         </span>
-      </header>
+      </header> */}
 
       <div className="fl3-hero">
         <div className="fl3-hero-left">
@@ -443,7 +787,7 @@ export default function FreelancerList() {
           <h1 className="fl3-hero-title">Find the right<br /><em>freelancer</em> for you</h1>
           <p className="fl3-hero-desc">Browse verified professionals across design, development, video & more.</p>
         </div>
-        {!loading && <ProjectedCard freelancer={freelancers[0] || null} />}
+        {/* {!loading && <ProjectedCard freelancer={freelancers[0] || null} />} */}
       </div>
 
       <div className="fl3-divider" />

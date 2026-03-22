@@ -1,75 +1,43 @@
 import { useState } from "react";
 
 // ── Sample data matching the Mongoose schema ──────────────────────────────────
-const DEMO_CANDIDATE = {
-  name: "Alex Smith",
-  email: "alex@example.com",
-  phone: "+1 (555) 234-5678",
-  place: "San Francisco, CA",
-  profilePhoto: "",          // leave empty → shows initials avatar
-  cv: "",
-  about:
-    "I craft fast, accessible, and beautiful web experiences. Passionate about clean code, thoughtful UI, and turning complex problems into elegant solutions.",
-  tagline: "Frontend Developer",
-  qualification: "B.Sc. Computer Science",
+const DEMO_CANDIDATE =  {
+  name: "Arjun Menon",
+  firstName: "Arjun",
+  lastName: "Menon",
+  role: "Full‑Stack Engineer",
+  tagline: "I build products people love.",
+  about: "7+ years crafting digital experiences at the intersection of engineering and design. I turn complex problems into elegant, performant solutions — from pixel to production.",
+  email: "arjun.menon@gmail.com",
+  phone: "+91 98765 43210",
+  place: "Kochi, Kerala",
+  profilePhoto: "https://i.pravatar.cc/900?img=68",
+  qualification: "B.Tech CS · NIT Calicut",
+  cv: "/cv.pdf",
+  skills: ["React","Node.js","TypeScript","MongoDB","GraphQL","Docker","AWS","Figma","Python","Redis","Next.js","PostgreSQL"],
   services: [
-    {
-      heading: "UI Development",
-      description:
-        "Pixel-perfect interfaces built with React, Tailwind, and modern CSS techniques.",
-    },
-    {
-      heading: "Performance Optimisation",
-      description:
-        "Lighthouse scores in the green. Lazy-loading, code-splitting, and edge delivery.",
-    },
-    {
-      heading: "Design Systems",
-      description:
-        "Scalable component libraries with Storybook, tokens, and tight Figma handoffs.",
-    },
-    {
-      heading: "API Integration",
-      description:
-        "REST & GraphQL wiring, caching strategies, and real-time WebSocket features.",
-    },
-  ],
-  skills: ["React", "TypeScript", "Node.js", "Tailwind CSS", "GraphQL", "Figma", "Next.js", "PostgreSQL"],
-  education: [
-    {
-      education: "B.Sc. Computer Science",
-      institution: "Stanford University",
-      year: 2018,
-      percentage: "3.9 GPA",
-    },
-    {
-      education: "High School Diploma",
-      institution: "Lincoln High School",
-      year: 2014,
-      percentage: "95%",
-    },
+    { heading: "Product Engineering", description: "End-to-end web applications built with obsessive attention to performance, scalability, and maintainability." },
+    { heading: "Interface Design", description: "Pixel-perfect interfaces that feel inevitable. Every micro-interaction earned, every animation purposeful." },
+    { heading: "API Architecture", description: "REST & GraphQL APIs with clean domain logic, robust auth, and built-in room to grow." },
+    { heading: "Cloud & DevOps", description: "Production infrastructure that just works — CI/CD, containers, AWS & GCP deployments." },
   ],
   experience: [
-    {
-      jobTitle: "Senior Frontend Engineer",
-      company: "Stripe",
-      startDate: "2021-06-01",
-      endDate: null,
-    },
-    {
-      jobTitle: "Frontend Developer",
-      company: "Figma",
-      startDate: "2019-02-01",
-      endDate: "2021-05-31",
-    },
-    {
-      jobTitle: "Junior Developer",
-      company: "Agency X",
-      startDate: "2018-08-01",
-      endDate: "2019-01-31",
-    },
+    { jobTitle: "Senior Frontend Engineer", company: "Infosys Ltd.", startDate: "2022-06-01", endDate: null },
+    { jobTitle: "Full‑Stack Developer", company: "Zoho Corporation", startDate: "2019-08-01", endDate: "2022-05-31" },
+    { jobTitle: "Junior Developer", company: "TCS", startDate: "2017-07-01", endDate: "2019-07-31" },
   ],
-  lookingVacancy: ["Senior Frontend Engineer", "Tech Lead", "UI Architect"],
+  education: [
+    { education: "B.Tech — Computer Science", institution: "NIT Calicut", year: 2017, percentage: "8.7 CGPA" },
+    { education: "Higher Secondary", institution: "St. Joseph's HSS", year: 2013, percentage: "94%" },
+  ],
+  projects: [
+    { title: "DevBoard", description: "Real-time developer dashboard aggregating GitHub, Jira & Slack. Adopted by 3 product teams.", link: "#", year: "2024" },
+    { title: "ShopSphere", description: "Multi-tenant e-commerce with live inventory sync and Stripe/Razorpay integration.", link: "#", year: "2023" },
+    { title: "AIResume", description: "AI-powered resume scorer and rewriter optimised for ATS. 2,000+ users in month one.", link: "#", year: "2023" },
+    { title: "NoteStack", description: "Collaborative markdown workspace with real-time sync and full version history.", link: null, year: "2022" },
+  ],
+  socials: [{ linkedin:"https://linkedin.com", github:"https://github.com", twitter:"https://twitter.com", website:"https://arjunmenon.dev" }],
+  lookingVacancy: ["Full-Stack Engineer","Frontend Lead","Technical Co-founder"],
 };
 
 // ── Utility helpers ───────────────────────────────────────────────────────────

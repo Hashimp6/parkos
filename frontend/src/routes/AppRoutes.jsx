@@ -8,7 +8,7 @@ import Home from "../pages/public/Home";
 // Auth Pages
 import Login from "../pages/public/Login";
 import Register from "../pages/public/Register";
-import PersonalPortfolio2 from "../components/ProfileLayout2";
+import PersonalPortfolio2 from "../components/candidate/ProfileLayout2";
 import JobListings from "../pages/public/JobList";
 import CompanyWebsite3 from "../components/CompanyLayout2";
 import CandidateProfileForm from "../pages/candidate/ProfileForm";
@@ -19,7 +19,7 @@ import CompanyHome from "../pages/company/CompanyHome";
 import CompanyProfileForm from "../pages/company/ProfileForm";
 import ProfilePages from "../pages/public/Profile";
 import CandidateHomeSection from "../pages/candidate/Profile";
-import Profile12 from "../components/ProfileLayout12";
+import Profile12 from "../components/candidate/ProfileLayout12";
 import JobForm from "../pages/jobs/JobForm";
 import CompanyJobsAdmin from "../pages/company/JobsDash";
 import LayoutSelector from "../components/LayoutSelector";
@@ -34,6 +34,7 @@ import FreelancerList from "../pages/freelance/Listing";
 import FreelancerDetail from "../pages/freelance/Detail";
 import AddServiceForm from "../pages/freelance/Form";
 import FreelanceDashboard from "../pages/freelance/Dashbord";
+import ForgotPasswordPage from "../pages/public/ForgotPassword";
 
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
@@ -48,12 +49,14 @@ function AppRoutes() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/jobs" element={<JobListings />} />
-        <Route path="/jobs/form" element={<JobForm/>} />
+        <Route path="/freelance" element={<FreelancerCategories/>} />
+        <Route path="/profile" element={<ProfileCard/>} />
       </Route>
 
       {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage/>} />
       <Route path="/home" element={<CandidateHomeSection/>} />
       <Route path="/company/login" element={<CompanyLoginPage />} />
       <Route path="/company/register" element={<CompanyRegisterPage />} />
@@ -61,17 +64,16 @@ function AppRoutes() {
       <Route path="/company/form" element={<CompanyProfileForm/>} />
       <Route path="/profile/form" element={<CandidateProfileForm />} />
       <Route path="/profile/:profileId" element={<ProfilePages />} />
-      <Route path="/profile" element={<ProfileCard/>} />
       <Route path="/company" element={<CompanyWebsite3 />} />
       <Route path="/profile/5" element={<Profile12 />} />
       <Route path="/profile/3" element={<PersonalPortfolio2 />} />
       <Route path="/profile/6" element={<Profile12 />} />
       <Route path="/jobslist" element={<CompanyJobsAdmin />} />
       <Route path="/company/jobs/:id" element={<JobDashboard />} />
+      <Route path="/jobs/form" element={<JobForm/>} />
       <Route path="/companyjobs" element={<CompanyJobsAdmin />} />
       <Route path="/layout" element={<LayoutSelector />} />
       <Route path="/company1" element={<Company2/>} />
-      <Route path="/freelance" element={<FreelancerCategories/>} />
       <Route path="/freelance-list" element={<FreelancerList/>} />
       <Route path="/freelancer/:id" element={<FreelancerDetail />} />
       <Route path="/freelance-form" element={<AddServiceForm />} />

@@ -1,13 +1,13 @@
-import Profile1 from "./ProfileLayout";
-import Profile2 from "./ProfileLayout1";
-import Profile10 from "./ProfileLayout10";
-import Profile3 from "./ProfileLayout2";
-import Profile4 from "./ProfileLayout3";
-import Profile5 from "./ProfileLayout4";
-import Profile6 from "./Profilelayout6";
-import Profile7 from "./ProfileLayout7";
-import Profile8 from "./ProfileLayout8";
-import Profile9 from "./ProfileLayout9";
+import Profile1 from "./candidate/ProfileLayout";
+import Profile2 from "./candidate/ProfileLayout1";
+import Profile10 from "./candidate/ProfileLayout10";
+import Profile3 from "./candidate/ProfileLayout2";
+import Profile4 from "./candidate/ProfileLayout3";
+import Profile5 from "./candidate/ProfileLayout4";
+import Profile6 from "./candidate/Profilelayout6";
+import Profile7 from "./candidate/ProfileLayout7";
+import Profile8 from "./candidate/ProfileLayout8";
+import Profile9 from "./candidate/ProfileLayout9";
 // import Profile6 from "./ProfileLayout2";
 // import Profile7 from "./ProfileLayout2";
 

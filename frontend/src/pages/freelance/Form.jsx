@@ -1,5 +1,8 @@
-import { useState } from "react";
+import axios from "axios";
+import { useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useUser } from "../../context/UserContext";
+import API_BASE from "../../../config";
 
 const CATEGORIES = ["Web Development", "Design", "Backend", "Mobile", "Marketing", "Writing", "Data Science", "Other"];
 
@@ -89,7 +92,10 @@ export default function FreelanceForm() {
   const location   = useLocation();
   const service    = location.state?.service || null;
   const isEdit     = location.state?.isEdit  || false;
-
+  const [placeSuggestions, setPlaceSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const timeoutRef = useRef();
+   const { token} = useUser();
   const initial = isEdit && service
     ? {
         title:       service.title       || "",
@@ -114,6 +120,42 @@ export default function FreelanceForm() {
   const set = (key, value) => {
     setForm((f) => ({ ...f, [key]: value }));
     if (errors[key]) setErrors((e) => ({ ...e, [key]: "" }));
+  };
+
+  const fetchPlaces = async (query) => {
+    if (!query) {
+      setPlaceSuggestions([]);
+      return;
+    }
+  
+    try {
+      const res = await axios.get(
+        "https://nominatim.openstreetmap.org/search",
+        {
+          params: {
+            q: query,
+            format: "json",
+            limit: 5,
+          },
+          headers: {
+            "Accept-Language": "en",
+          },
+        }
+      );
+  
+      setPlaceSuggestions(res.data);
+      setShowSuggestions(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handlePlaceChange = (val) => {
+    set("place", val);
+  
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      fetchPlaces(val);
+    }, 400);
   };
 
   // ── Skills ──
@@ -147,20 +189,48 @@ export default function FreelanceForm() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) return;
-    const result = {
-      ...(isEdit && service ? service : {}),
-      ...form,
-      _id: isEdit && service ? service._id : Date.now().toString(),
-      views:     isEdit && service ? service.views     : 0,
-      clicks:    isEdit && service ? service.clicks    : 0,
-      rating:    isEdit && service ? service.rating    : 0,
-      createdAt: isEdit && service ? service.createdAt : new Date().toISOString(),
-    };
-    // TODO: replace with your API call / state update
-    console.log("Saved:", result);
-    navigate(-1);
+    if (!token) {
+      console.log("No token, cannot save");
+      return;
+    }
+  
+    try {
+      if (isEdit && service) {
+        // ✅ UPDATE SERVICE
+        await axios.put(
+          `${API_BASE}/freelance/update/${service._id}`,
+          form,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        console.log("Service updated ✅");
+      } else {
+        // ✅ CREATE SERVICE
+        await axios.post(
+          `${API_BASE}/freelance/add`,
+          form,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        console.log("Service created ✅");
+      }
+  
+      // ✅ Navigate after success
+      navigate("/freelance-dashbord");
+  
+    } catch (err) {
+      console.error("Save error:", err.response?.data || err.message);
+    }
   };
 
   return (
@@ -323,14 +393,64 @@ export default function FreelanceForm() {
 </Field>
             </div>
 
-            <Field label="Location">
-              <input
-                style={inputStyle}
-                value={form.place}
-                onChange={(e) => set("place", e.target.value)}
-                placeholder="Thiruvananthapuram, Kerala"
-              />
-            </Field>
+          <Field label="Location">
+  <div style={{ position: "relative" }}>
+    
+    <input
+      style={inputStyle}
+      value={form.place}
+      onChange={(e) => handlePlaceChange(e.target.value)}
+      onFocus={() => setShowSuggestions(true)}
+      onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+      placeholder="Search location..."
+    />
+
+    {/* Suggestions */}
+    {showSuggestions && placeSuggestions.length > 0 && (
+      <div
+        style={{
+          position: "absolute",
+          top: "110%",
+          left: 0,
+          right: 0,
+          background: "#fff",
+          border: "1px solid #E5E7EB",
+          borderRadius: 10,
+          zIndex: 1000,
+          maxHeight: 200,
+          overflowY: "auto",
+          boxShadow: "0 10px 20px rgba(0,0,0,0.05)",
+        }}
+      >
+        {placeSuggestions.map((item, i) => (
+          <div
+            key={i}
+            onClick={() => {
+              set("place", item.display_name);
+              setShowSuggestions(false);
+            }}
+            style={{
+              padding: "10px 12px",
+              cursor: "pointer",
+              fontSize: 13,
+              borderBottom: "1px solid #F9FAFB",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "#F9FAFB")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "#fff")
+            }
+          >
+            {item.display_name.split(",").slice(0, 2).join(", ")}
+          </div>
+        ))}
+      </div>
+    )}
+    
+  </div>
+</Field>
+         
 
             <Field label="Description *">
               <textarea

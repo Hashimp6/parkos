@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const D = {
+const DEMO = {
   name: "Arjun Menon", firstName: "Arjun", lastName: "Menon",
   role: "Full‑Stack Engineer", tagline: "I BUILD\nTHINGS\nPEOPLE\nLOVE.",
   about: "7 years turning complex problems into fast, beautiful web products. I care equally about architecture and aesthetics — from the database to the last animation.",
@@ -33,9 +33,6 @@ const D = {
   lookingVacancy: ["Full-Stack Engineer","Frontend Lead","Technical Co-founder"],
 };
 
-const soc = D.socials?.[0] || {};
-const fmt = d => !d ? "Now" : new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"});
-const expYrs = D.experience?.length ? new Date().getFullYear() - new Date(D.experience[D.experience.length-1].startDate).getFullYear() : 7;
 
 /* ══════════ STYLES ══════════════════════════════════════════ */
 const CSS = `
@@ -572,7 +569,7 @@ function Contact({ D, soc }) {
 /* ── APP ─────────────────────────────────────────────────── */
 export default function Profile9({ data }) {
 
-  const D = data || {};
+  const D = data || DEMO||{};
   const soc = D.socials?.[0] || {};
 
   const fmt = d =>

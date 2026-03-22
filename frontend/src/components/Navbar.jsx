@@ -30,7 +30,7 @@ function Avatar({ name }) {
       width: 28, height: 28, borderRadius: "50%",
       background: "#1e1e1e", border: "0.5px solid #2a2a2a",
       display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: 11, fontWeight: 600, color: "#888",
+      fontSize: 11, fontWeight: 600, color: "#fff",
       fontFamily: "'DM Mono', monospace",
     }}>
       {initials}
@@ -89,10 +89,10 @@ export default function Navbar() {
           <ParkOSLogo />
           <div style={{ display: "flex", flexDirection: "column", lineHeight: 1, gap: 2 }}>
             <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 15, fontWeight: 500, color: "#f0f0f0", letterSpacing: "0.04em" }}>
-              parkOS
+              ParkOS
             </span>
             <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 400, color: "#4a4a4a", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-              business park
+              Your Destiny
             </span>
           </div>
         </button>
@@ -101,24 +101,22 @@ export default function Navbar() {
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <button className="park-nav-link" onClick={() => navigate("/")}    style={linkStyle("/")}>Home</button>
           <button className="park-nav-link" onClick={() => navigate("/jobs")} style={linkStyle("/jobs")}>Jobs</button>
-
+          <button className="park-nav-link" onClick={() => navigate("/freelance")} style={linkStyle("/freelance")}>Freelance</button>
           {/* Divider */}
           <div style={{ width: "0.5px", height: 16, background: "#1f1f1f", margin: "0 4px" }} />
 
           {user ? (
             /* ── Logged in ── */
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Avatar name={user.name || user.email} />
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: "#666" }}>
-                {user.name?.split(" ")[0] || user.email?.split("@")[0]}
-              </span>
-              <button
+                <button
                 className="park-nav-link"
-                onClick={logoutUser}
-                style={{ ...linkStyle(""), fontSize: 12, color: "#444", padding: "5px 10px" }}
+                onClick={() => navigate("/profile")} 
+                style={{ ...linkStyle(""), fontSize: 14, color: "#fff", padding: "5px 10px" }}
               >
-                Sign out
+              <Avatar name={user.name || user.email} />
+              
               </button>
+           
             </div>
           ) : (
             /* ── Logged out ── */

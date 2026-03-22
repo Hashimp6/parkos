@@ -236,7 +236,7 @@ exports.getAllFreelanceServices = async (req, res) => {
 
     const [services, total] = await Promise.all([
       query
-        .populate("candidate", "name profilePhoto tagline place")
+        .populate("candidate", "name profilePhoto tagline place phone")
         .skip(skip)
         .limit(limit)
         .lean(),
@@ -291,7 +291,7 @@ exports.getSingleService = async (req, res) => {
       req.params.id,
       { $inc: { views: 1 } },
       { new: true }
-    ).populate("candidate", "name profilePhoto tagline socials place");
+    ).populate("candidate", "name profilePhoto tagline socials place phone");
 
     if (!service) {
       return res.status(404).json({ success: false, message: "Service not found." });

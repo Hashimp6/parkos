@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import API_BASE from "../../../config";
+import axios from "axios";
 
 const sampleService = {
   candidate: {
@@ -22,9 +25,39 @@ const sampleService = {
 };
 
 export default function FreelancerDetail() {
-  const s = sampleService;
-  const f = s.candidate;
+  const { id } = useParams();
+  const [data, setData] = useState(null);
 
+  useEffect(() => {
+    axios.get(`${API_BASE}/freelance/${id}`)
+      .then(res => setData(res.data))
+      .catch(err => console.log(err));
+  }, [id]);
+  console.log(id,data); //
+  if (!data) return <p>Loading...</p>;
+
+  const s = data.service;
+  const f = s?.candidate || {};
+  const handleShare = async () => {
+    const shareData = {
+      title: f?.name || "Freelancer",
+      text: `${s.title} - Check out this freelancer`,
+      url: window.location.href
+    };
+  
+    try {
+      if (navigator.share) {
+        // ✅ Mobile / supported browsers
+        await navigator.share(shareData);
+      } else {
+        // ❌ Fallback (copy link)
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Link copied to clipboard!");
+      }
+    } catch (err) {
+      console.log("Share failed:", err);
+    }
+  };
   return (
     <div className="min-h-screen bg-white flex flex-col items-center py-16 px-4 font-sans text-[#1a1a1a]">
       
@@ -41,8 +74,8 @@ export default function FreelancerDetail() {
               
               {/* Profile Image */}
               <img 
-                src={f.profilePhoto} 
-                className="relative w-44 h-44 rounded-full object-cover grayscale brightness-105 border-4 border-[#F6F6F6] shadow-inner"
+  src={f?.profilePhoto || "https://via.placeholder.com/150"}
+               className="relative w-44 h-44 rounded-full object-cover brightness-105 border-4 border-[#F6F6F6] shadow-inner"
                 alt="Profile"
               />
               
@@ -59,19 +92,22 @@ export default function FreelancerDetail() {
             <div className="space-y-4 text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-3">
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{f.name}</h1>
-                <span className="text-xl">✅</span>
+
               </div>
 
               {/* Action Buttons */}
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-3">
                 <a href={`tel:${f.phone}`} className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white transition-all">📞</a>
-                <a href={f.linkedin} className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white transition-all text-sm font-bold">in</a>
-                <a href={`https://wa.me/${f.whatsapp}`} className="bg-black text-white px-8 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-800 transition-all flex items-center gap-2">
-                  Message
+                <a href={f?.social?.linkedin} className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white transition-all text-sm font-bold">in</a>
+                <a href={`https://wa.me/${f.phone}`} className="bg-black text-white px-8 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-800 transition-all flex items-center gap-2">
+                  Whatsapp
                 </a>
-                <button className="bg-white border border-gray-300 px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm">
-                  Share
-                </button>
+                <button 
+  onClick={handleShare}
+  className="bg-white border border-gray-300 px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm"
+>
+  Share
+</button>
               </div>
             </div>
 
@@ -79,11 +115,16 @@ export default function FreelancerDetail() {
             <div className="grid grid-cols-2 gap-16 border-t border-gray-300/50 pt-8 w-full md:w-auto">
               <div>
                 <p className="text-gray-400 text-[10px] uppercase font-bold tracking-[0.2em] mb-2">Category</p>
-                <p className="font-bold text-xl uppercase tracking-tighter">Editing</p>
+                <p className="font-bold text-xl tracking-tighter">{s.category}</p>
+
               </div>
               <div>
-                <p className="text-gray-400 text-[10px] uppercase font-bold tracking-[0.2em] mb-2">Investment</p>
-                <p className="font-bold text-xl tracking-tighter">₹{s.price}</p>
+                <p className="text-gray-400 text-[10px] uppercase font-bold tracking-[0.2em] mb-2">Service</p>
+                <p className="font-bold text-xl uppercase tracking-tighter">{s.title}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-[10px] uppercase font-bold tracking-[0.2em] mb-2">Prices</p>
+                <p className="font-bold text-xl tracking-tighter">{s.price}</p>
               </div>
             </div>
 

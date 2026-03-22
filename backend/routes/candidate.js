@@ -8,7 +8,8 @@ router.post("/verify-otp", candidateController.verifyEmailOTP);
 router.post("/login", candidateController.loginCandidate);
 router.post("/resend-otp", candidateController.resendOTP);
 router.put("/change-password/:candidateId", candidateController.changePassword);
-
+router.post("/forgot-password", candidateController.forgotPassword);
+router.post("/reset-password", candidateController.resetPassword);
 // Profile
 router.put(
     "/update/:candidateId",

@@ -14,7 +14,7 @@ const TABS = [
   { id: "skills",     label: "Skills",     sym: "◉" },
   { id: "education",  label: "Education",  sym: "◎" },
   { id: "experience", label: "Experience", sym: "◐" },
-  { id: "settings",   label: "Layout",     sym: "◧" },
+  // { id: "settings",   label: "Layout",     sym: "◧" },
 ];
 
 const inputCls =
@@ -247,6 +247,8 @@ export default function CandidateProfileForm() {
   const [tab, setTab] = useState("basic");
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const [placeSuggestions, setPlaceSuggestions] = useState([]);
+const [showSuggestions, setShowSuggestions] = useState(false);
   const navigate = useNavigate();
   // Sync form from context / localStorage on mount
   useEffect(() => {
@@ -273,13 +275,46 @@ export default function CandidateProfileForm() {
     ].filter(Boolean).length / 8 * 100
   );
   const pColor = progress < 40 ? "#f97316" : progress < 75 ? "#eab308" : "#22c55e";
-
+  const fetchPlaces = async (query) => {
+    if (!query) {
+      setPlaceSuggestions([]);
+      return;
+    }
+  
+    try {
+      const res = await axios.get(
+        `https://nominatim.openstreetmap.org/search`,
+        {
+          params: {
+            q: query,
+            format: "json",
+            addressdetails: 1,
+            limit: 5,
+          },
+        }
+      );
+  
+      setPlaceSuggestions(res.data);
+      setShowSuggestions(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
   const addArr  = (k, t) => set(k, [...form[k], t]);
   const remArr  = (k, i) => set(k, form[k].filter((_, x) => x !== i));
   const updArr  = (k, i, key, val) =>
     set(k, form[k].map((item, x) => x === i ? (key === null ? val : { ...item, [key]: val }) : item));
+  const timeoutRef = useRef();
 
+  const handlePlaceChange = (val) => {
+    set("place", val);
+  
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      fetchPlaces(val);
+    }, 400);
+  };
   // ── Save handler ─────────────────────────────────────────────────────────
   const handleSave = async () => {
     console.log("usssd",user,form);
@@ -472,20 +507,61 @@ export default function CandidateProfileForm() {
               </Card>
 
               {/* Rest of personal details */}
+              
               <Card>
                 <CardTitle>Contact & Location</CardTitle>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    { k: "email", l: "Email", p: "jane@email.com", t: "email" },
-                    { k: "phone", l: "Phone", p: "+91 98765 43210" },
-                    { k: "place", l: "Location", p: "Bangalore, India" },
-                  ].map((f) => (
-                    <div key={f.k}>
-                      <label className={labelCls}>{f.l}</label>
-                      <input className={inputCls} type={f.t || "text"} placeholder={f.p}
-                        value={form[f.k]} onChange={e => set(f.k, e.target.value)} />
-                    </div>
-                  ))}
+                {[
+  { k: "email", l: "Email", p: "jane@email.com", t: "email" },
+  { k: "phone", l: "Phone", p: "+91 98765 43210" },
+  { k: "place", l: "Location", p: "Bangalore, India" },
+].map((f) => (
+  <div key={f.k} className="relative">
+    <label className={labelCls}>{f.l}</label>
+
+    {/* 🔥 SPECIAL CASE: PLACE */}
+    {f.k === "place" ? (
+      <>
+        <input
+          className={inputCls}
+          placeholder={f.p}
+          value={form.place}
+          onChange={(e) => handlePlaceChange(e.target.value)}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+        />
+
+        {/* ✅ Suggestions dropdown */}
+        {showSuggestions && placeSuggestions.length > 0 && (
+          <div className="absolute z-50 w-full bg-white border border-zinc-200 rounded-xl mt-1 shadow-lg max-h-60 overflow-y-auto">
+            {placeSuggestions.map((item, i) => (
+              <div
+                key={i}
+                className="px-4 py-2 text-sm hover:bg-zinc-100 cursor-pointer"
+                onClick={() => {
+                  set("place", item.display_name);
+                  setShowSuggestions(false);
+                }}
+              >
+                {item.display_name}
+              </div>
+            ))}
+          </div>
+        )}
+      </>
+    ) : (
+      /* ✅ NORMAL INPUT */
+      <input
+        className={inputCls}
+        type={f.t || "text"}
+        placeholder={f.p}
+        value={form[f.k]}
+        onChange={(e) => set(f.k, e.target.value)}
+      />
+    )}
+  </div>
+))}
+                 
                 </div>
           
               </Card>
@@ -705,7 +781,7 @@ export default function CandidateProfileForm() {
           )}
 
           {/* SETTINGS */}
-        {tab === "settings" && (
+        {/* {tab === "settings" && (
   <Card>
    
     <LayoutSelector
@@ -714,7 +790,7 @@ export default function CandidateProfileForm() {
       data={form}
     />
   </Card>
-)}
+)} */}
 
           {/* Bottom CTA */}
           <div className="flex items-center justify-between pt-2 pb-8">

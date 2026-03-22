@@ -4,7 +4,44 @@ import { useState, useEffect, useRef, useCallback } from "react";
    DATA  —  replace with your API response
 ══════════════════════════════════════════════════════════ */
 
-
+const DEMO =  {
+  name: "Arjun Menon",
+  firstName: "Arjun",
+  lastName: "Menon",
+  role: "Full‑Stack Engineer",
+  tagline: "I build products people love.",
+  about: "7+ years crafting digital experiences at the intersection of engineering and design. I turn complex problems into elegant, performant solutions — from pixel to production.",
+  email: "arjun.menon@gmail.com",
+  phone: "+91 98765 43210",
+  place: "Kochi, Kerala",
+  profilePhoto: "https://i.pravatar.cc/900?img=68",
+  qualification: "B.Tech CS · NIT Calicut",
+  cv: "/cv.pdf",
+  skills: ["React","Node.js","TypeScript","MongoDB","GraphQL","Docker","AWS","Figma","Python","Redis","Next.js","PostgreSQL"],
+  services: [
+    { heading: "Product Engineering", description: "End-to-end web applications built with obsessive attention to performance, scalability, and maintainability." },
+    { heading: "Interface Design", description: "Pixel-perfect interfaces that feel inevitable. Every micro-interaction earned, every animation purposeful." },
+    { heading: "API Architecture", description: "REST & GraphQL APIs with clean domain logic, robust auth, and built-in room to grow." },
+    { heading: "Cloud & DevOps", description: "Production infrastructure that just works — CI/CD, containers, AWS & GCP deployments." },
+  ],
+  experience: [
+    { jobTitle: "Senior Frontend Engineer", company: "Infosys Ltd.", startDate: "2022-06-01", endDate: null },
+    { jobTitle: "Full‑Stack Developer", company: "Zoho Corporation", startDate: "2019-08-01", endDate: "2022-05-31" },
+    { jobTitle: "Junior Developer", company: "TCS", startDate: "2017-07-01", endDate: "2019-07-31" },
+  ],
+  education: [
+    { education: "B.Tech — Computer Science", institution: "NIT Calicut", year: 2017, percentage: "8.7 CGPA" },
+    { education: "Higher Secondary", institution: "St. Joseph's HSS", year: 2013, percentage: "94%" },
+  ],
+  projects: [
+    { title: "DevBoard", description: "Real-time developer dashboard aggregating GitHub, Jira & Slack. Adopted by 3 product teams.", link: "#", year: "2024" },
+    { title: "ShopSphere", description: "Multi-tenant e-commerce with live inventory sync and Stripe/Razorpay integration.", link: "#", year: "2023" },
+    { title: "AIResume", description: "AI-powered resume scorer and rewriter optimised for ATS. 2,000+ users in month one.", link: "#", year: "2023" },
+    { title: "NoteStack", description: "Collaborative markdown workspace with real-time sync and full version history.", link: null, year: "2022" },
+  ],
+  socials: [{ linkedin:"https://linkedin.com", github:"https://github.com", twitter:"https://twitter.com", website:"https://arjunmenon.dev" }],
+  lookingVacancy: ["Full-Stack Engineer","Frontend Lead","Technical Co-founder"],
+};
 
 function fmtD(d){ if(!d) return "Now"; return new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"}); }
 
@@ -579,7 +616,7 @@ const GlobeIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 ══════════════════════════════════════════════════════════ */
 export default function Profile5({ data }) {
 
-  const DATA = data || {};
+  const DATA = data || DEMO||{};
   const soc = DATA.socials?.[0] || {};
 
   const [active, setActive] = useState("about");

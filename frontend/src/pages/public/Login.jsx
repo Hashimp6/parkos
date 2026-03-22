@@ -140,15 +140,15 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* Forgot */}
                 <div className="text-right -mt-1">
-                  <button
-                    type="button"
-                    className="text-xs text-gray-400 hover:text-black transition-colors font-medium bg-transparent border-none cursor-pointer"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
+  <button
+    type="button"
+    onClick={() => navigate("/forgot-password")}
+    className="text-xs text-gray-400 hover:text-black transition-colors font-medium bg-transparent border-none cursor-pointer"
+  >
+    Forgot password?
+  </button>
+</div>
 
                 {/* Sign in */}
                 <button

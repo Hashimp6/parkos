@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import JobsFreelanceHero from "../../components/Hero";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const ls = (key) => { try { return localStorage.getItem(key); } catch { return null; } };
@@ -341,7 +342,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
       <Navbar {...auth} />
       <GotoBar {...auth} />
-      <Hero />
+     <JobsFreelanceHero/>
       <HowItWorks />
 
       {/* Split section */}

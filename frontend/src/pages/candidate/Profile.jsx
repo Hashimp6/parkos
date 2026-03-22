@@ -9,6 +9,15 @@ const DISCOVER = [
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>,
   },
   {
+    key: "Manage Freelance", label: "Manage freelance", sub: "Add freelance services", num: "04",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="12" rx="2"/>
+        <path d="M2 20h20"/>
+        <path d="M12 8l1 2 2 .5-2 1.5.5 2-1.5-1-1.5 1 .5-2-2-1.5 2-.5z"/>
+      </svg>
+    ) },
+  {
     key: "company", label: "Companies", sub: "Explore workplaces", num: "02",
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
   },
@@ -16,18 +25,7 @@ const DISCOVER = [
     key: "people", label: "Find People", sub: "Grow your network", num: "03",
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
   },
-  {
-    key: "Manage Freelance", label: "Manage freelance", sub: "Add freelance services", num: "04",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-        
-        <rect x="3" y="4" width="18" height="14" rx="2"/>
-        <line x1="12" y1="8" x2="12" y2="14"/>
-        <line x1="9" y1="11" x2="15" y2="11"/>
-        
-      </svg>
-    )},
+ 
 ];
 
 
@@ -528,6 +526,10 @@ export default function CandidateHomeSection({ onNavigate }) {
   </svg>
   View
 </button>
+<button className="hx-btn hx-btn-dark" onClick={()=>goto("/layout")}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Select Layout
+                  </button>
                 
                 </div>
               </div>

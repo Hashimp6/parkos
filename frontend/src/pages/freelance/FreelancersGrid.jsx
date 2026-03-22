@@ -1,128 +1,441 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+/* ── Sample data ── */
 const categories = [
-  { icon: "🌐", name: "Website Design", desc: "Landing pages, full sites, UI layouts and redesigns", tag: "Design", freelancers: 214 },
-  { icon: "✍️", name: "Logo Design", desc: "Brand marks & visual identity", tag: "Design", freelancers: 189 },
-  { icon: "🎨", name: "Poster Design", desc: "Event posters, social media visuals and print-ready artwork", tag: "Design", freelancers: 143 },
-  { icon: "📱", name: "App Design", desc: "Mobile UI/UX, prototypes & wireframes", tag: "Design", freelancers: 132 },
-  { icon: "✏️", name: "Illustration", desc: "Digital art, characters & custom scenes", tag: "Design", freelancers: 156 },
-  { icon: "🗂️", name: "Presentations", desc: "Pitch decks, investor slides & branded PowerPoints", tag: "Design", freelancers: 118 },
-  { icon: "📦", name: "Packaging", desc: "Product boxes & labels", tag: "Design", freelancers: 96 },
-  { icon: "🖼️", name: "Banner Design", desc: "Web banners & ad creatives", tag: "Design", freelancers: 134 },
-  { icon: "💻", name: "Web Development", desc: "React, Vue, WordPress, Node.js & full-stack builds", tag: "Tech", freelancers: 312 },
-  { icon: "🛒", name: "E-Commerce", desc: "Shopify & WooCommerce stores", tag: "Tech", freelancers: 145 },
-  { icon: "📊", name: "Data & Analytics", desc: "Dashboards, BI reports & data pipelines", tag: "Tech", freelancers: 109 },
-  { icon: "🏗️", name: "CAD & Architecture", desc: "Technical drawings, 3D renders & floor plans", tag: "Tech", freelancers: 62 },
-  { icon: "🔌", name: "API & Integrations", desc: "REST, GraphQL & third-party integrations", tag: "Tech", freelancers: 87 },
-  { icon: "🎬", name: "Editing", desc: "YouTube videos, reels, ads, short films & corporate content", tag: "Video", freelancers: 178 },
-  { icon: "🎪", name: "Animation", desc: "2D/3D motion graphics & explainer videos", tag: "Video", freelancers: 77 },
-  { icon: "🎞️", name: "Color Grading", desc: "Cinematic color grading & correction", tag: "Video", freelancers: 54 },
-  { icon: "📸", name: "Photography", desc: "Portrait, product & event photography", tag: "Media", freelancers: 203 },
-  { icon: "🎵", name: "Music & Audio", desc: "Jingles, beats, mixing & sound design", tag: "Audio", freelancers: 91 },
-  { icon: "🎭", name: "Voice Over", desc: "Narration, dubbing & commercials", tag: "Audio", freelancers: 84 },
-  { icon: "🖋️", name: "Content Writing", desc: "SEO blogs, articles & copywriting that convert", tag: "Writing", freelancers: 267 },
-  { icon: "🌍", name: "Translation", desc: "50+ languages, fast turnaround", tag: "Writing", freelancers: 143 },
-  { icon: "🔧", name: "Technical Writing", desc: "Docs, manuals & API guides", tag: "Writing", freelancers: 88 },
-  { icon: "📣", name: "Digital Marketing", desc: "Google Ads, Meta campaigns, SEO & email automation", tag: "Marketing", freelancers: 221 },
-  { icon: "📲", name: "Social Media", desc: "Content strategy, scheduling & growth", tag: "Marketing", freelancers: 188 },
-  { icon: "🎙️", name: "Anchoring & MC", desc: "Corporate events, weddings & live shows", tag: "Talent", freelancers: 67 },
-  { icon: "🎓", name: "Online Tutoring", desc: "Academics, tech skills & creative coaching", tag: "Talent", freelancers: 175 },
+  // 💻 Tech & Development
+  { name: "Web Development", icon: "💻", tag: "tech" },
+  { name: "App Development", icon: "📱", tag: "tech" },
+  { name: "Software Development", icon: "🖥️", tag: "tech" },
+  { name: "UI/UX Design", icon: "🎨", tag: "design" },
+
+  // 🎨 Design & Creative
+  { name: "Graphic Design", icon: "✏️", tag: "design" },
+  { name: "Logo Design", icon: "🏷️", tag: "design" },
+  { name: "Poster & Banner Design", icon: "🪧", tag: "design" },
+
+  // 🎬 Media & Content
+  { name: "Video Editing", icon: "🎬", tag: "media" },
+  { name: "Videography", icon: "📹", tag: "media" },
+  { name: "Photography", icon: "📷", tag: "media" },
+  { name: "Content Writing", icon: "📝", tag: "writing" },
+  // { name: "Presentation Services", icon: "📊", tag: "media" },
+
+  // 📈 Marketing & Business
+  { name: "Digital Marketing", icon: "📈", tag: "marketing" },
+  { name: "Social Media Marketing", icon: "📣", tag: "marketing" },
+  // { name: "Software Marketing", icon: "💼", tag: "marketing" },
+
+  // 💰 Finance & Professional
+  { name: "Accounting & Finance", icon: "💰", tag: "finance" },
+
+  // 🎓 Education
+  { name: "Education & Training", icon: "🎓", tag: "education" },
+
+  // 💄 Beauty & Personal Care
+  { name: "Makeup & Beauty", icon: "💄", tag: "beauty" },
+  { name: "Henna / Mehndi Art", icon: "🌿", tag: "beauty" },
+
+  // 🎨 Arts & Crafts
+  { name: "Drawing & Illustration", icon: "🖌️", tag: "art" },
+  { name: "Gifting Services", icon: "🎁", tag: "art" },
+
+  // 🎤 Events & Entertainment
+  { name: "Event Management", icon: "🎉", tag: "event" },
+  // { name: "Party Planning", icon: "🥳", tag: "event" },
+  { name: "Hosting / Presenters", icon: "🎤", tag: "event" },
+
+  // 🍽️ Food
+  { name: "Food & Catering", icon: "🍽️", tag: "food" },
+
+  // 👗 Fashion
+  { name: "Fashion Design", icon: "👗", tag: "fashion" },
+  { name: "Tailoring", icon: "🧵", tag: "fashion" },
+
+  // 🧹 Home Services
+  { name: "Cleaning Services", icon: "🧹", tag: "home" },
+    { name: "Others", icon: "💼", tag: "marketing" },
 ];
 
-const tagColors = {
-  Design:    { bg: "bg-blue-50",   text: "text-blue-600",   icon: "bg-blue-100" },
-  Tech:      { bg: "bg-violet-50", text: "text-violet-600", icon: "bg-violet-100" },
-  Video:     { bg: "bg-orange-50", text: "text-orange-600", icon: "bg-orange-100" },
-  Media:     { bg: "bg-emerald-50",text: "text-emerald-600",icon: "bg-emerald-100" },
-  Audio:     { bg: "bg-amber-50",  text: "text-amber-600",  icon: "bg-amber-100" },
-  Writing:   { bg: "bg-green-50",  text: "text-green-600",  icon: "bg-green-100" },
-  Marketing: { bg: "bg-pink-50",   text: "text-pink-600",   icon: "bg-pink-100" },
-  Talent:    { bg: "bg-purple-50", text: "text-purple-600", icon: "bg-purple-100" },
-};
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap');
 
-const allTags = ["All", ...Object.keys(tagColors)];
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-function CategoryCard({ cat, navigate }) {
-  const color = tagColors[cat.tag] || {
-    bg: "bg-gray-50",
-    text: "text-gray-600",
-    icon: "bg-gray-100",
-  };
+  :root {
+    --ink:        #0a0a0a;
+    --ink-mid:    #404040;
+    --ink-muted:  #888;
+    --ink-faint:  #bbb;
+    --surface:    #ffffff;
+    --surface-2:  #f7f7f8;
+    --surface-3:  #f0f0f2;
+    --border:     #e4e4e8;
+    --border-hover: #c0c0c8;
+  }
 
+  .fc-page {
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+    background: var(--surface-2);
+    padding: 0 0 80px;
+  }
+
+  /* ── HERO ── */
+  .fc-hero {
+    position: relative;
+    text-align: center;
+    padding: 64px 24px 52px;
+    overflow: hidden;
+  }
+
+  /* giant faint letter watermark */
+  .fc-hero::before {
+    content: 'HIRE';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(120px, 22vw, 260px);
+    font-weight: 400;
+    color: rgba(0,0,0,0.032);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -4px;
+  }
+
+  .fc-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 5px 14px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .fc-eyebrow-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    animation: blink 2s ease infinite;
+  }
+
+  @keyframes blink {
+    0%,100% { opacity:1; }
+    50% { opacity:0.3; }
+  }
+
+  .fc-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .fc-title em {
+    font-style: italic;
+    color: var(--ink-mid);
+  }
+
+  .fc-subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink-muted);
+    letter-spacing: 0.01em;
+    margin-bottom: 36px;
+    position: relative;
+  }
+
+  /* ── SEARCH BAR ── */
+  .fc-search-wrap {
+    position: relative;
+    display: flex;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .fc-search-wrap:focus-within {
+    border-color: var(--ink);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  .fc-search-icon {
+    position: absolute;
+    left: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .fc-search {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+    padding: 14px 14px 14px 42px;
+    letter-spacing: 0.01em;
+  }
+
+  .fc-search::placeholder { color: var(--ink-faint); font-weight: 400; }
+
+  .fc-search-btn {
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+    margin: 5px;
+    border-radius: 10px;
+  }
+
+  .fc-search-btn:hover { background: #222; }
+
+  /* ── COUNT TAG ── */
+  .fc-count {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin: 20px 0 32px;
+    letter-spacing: 0.04em;
+  }
+
+  .fc-count strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  /* ── GRID ── */
+  .fc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── CARD ── */
+  .fc-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px 18px 18px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(.34,1.4,.64,1),
+                box-shadow 0.25s ease,
+                border-color 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    animation: fadeUp 0.4s cubic-bezier(.22,.68,0,1.18) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(14px) scale(0.97); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  .fc-card:hover {
+    transform: translateY(-5px) scale(1.012);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.11), 0 2px 8px rgba(0,0,0,0.06);
+    border-color: var(--border-hover);
+  }
+
+  /* top-right corner accent slash */
+  .fc-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 38px; height: 38px;
+    background: linear-gradient(225deg, var(--surface-3) 45%, transparent 46%);
+    border-radius: 0 18px 0 0;
+    pointer-events: none;
+    transition: background 0.2s;
+  }
+
+  .fc-card:hover::after {
+    background: linear-gradient(225deg, var(--surface-2) 45%, transparent 46%);
+  }
+
+  /* icon wrapper */
+  .fc-icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 14px;
+    transition: background 0.2s, transform 0.25s cubic-bezier(.34,1.4,.64,1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .fc-card:hover .fc-icon-wrap {
+    background: var(--ink);
+    border-color: var(--ink);
+    transform: scale(1.08) rotate(-4deg);
+    filter: grayscale(1) invert(1);
+  }
+
+  .fc-card-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: -0.1px;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* subtle arrow at bottom right on hover */
+  .fc-arrow {
+    position: absolute;
+    bottom: 14px; right: 16px;
+    font-size: 14px;
+    color: var(--ink-faint);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .fc-card:hover .fc-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ── EMPTY ── */
+  .fc-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 64px 0;
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+
+  .fc-empty-icon {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .fc-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 620px) {
+    .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+`;
+
+function CategoryCard({ cat, navigate, index }) {
   const handleClick = () => {
-    navigate("/freelance-list", {
-      state: { category: cat.name }, // 🔥 passing category
-    });
+    if (navigate) navigate("/freelance-list", { state: { category: cat.name } });
   };
 
   return (
     <div
+      className="fc-card"
       onClick={handleClick}
-      className="bg-white border border-gray-100 rounded-xl p-4 cursor-pointer hover:border-gray-300 hover:shadow-md transition-all duration-200 break-inside-avoid mb-3"
+      style={{ animationDelay: `${index * 45}ms` }}
     >
-      <div className="flex items-center gap-3">
-        <div
-          className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg shrink-0 ${color.icon}`}
-        >
-          {cat.icon}
-        </div>
-        <h3 className="text-sm font-semibold text-gray-900 leading-tight">
-          {cat.name}
-        </h3>
-      </div>
+      <div className="fc-icon-wrap">{cat.icon}</div>
+      <p className="fc-card-name">{cat.name}</p>
+      <span className="fc-arrow">→</span>
     </div>
   );
 }
-  
-  export default function FreelancerCategories() {
-    const [query, setQuery] = useState("");
-    const navigate = useNavigate();
-    const filtered = categories.filter((c) =>
-      c.name.toLowerCase().includes(query.toLowerCase())
-    );
-  
-    return (
-      <div className="min-h-screen bg-gray-50 font-sans">
-        <div className="max-w-5xl mx-auto px-4 py-12">
-          {/* Hero + Search */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight">
-              Find a Freelancer
-            </h1>
-            <p className="text-gray-400 text-sm mt-2">
-              Skilled professionals for every creative & technical need
-            </p>
-            <div className="flex gap-2 max-w-md mx-auto mt-5">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search categories..."
-                className="flex-1 border border-gray-200 bg-white text-gray-800 text-sm px-4 py-2 rounded-lg outline-none focus:border-gray-400 placeholder-gray-300 transition"
-              />
-              <button className="bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                Search
-              </button>
-            </div>
-          </div>
-  
-          <p className="text-center text-xs text-gray-300 mb-5">
-            <span className="text-gray-800 font-semibold">{filtered.length}</span> categories available
+
+export default function FreelancerCategories() {
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+  const filtered = categories.filter((c) =>
+    c.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    <>
+      <style>{CSS}</style>
+      <div className="fc-page">
+        {/* Hero */}
+        <div className="fc-hero">
+         
+          <h1 className="fc-title">
+            Find your perfect<br /><em>creative match</em>
+          </h1>
+          <p className="fc-subtitle">
+            Skilled professionals for every creative &amp; technical need
           </p>
-  
+
+          {/* Search */}
+          <div className="fc-search-wrap">
+            <span className="fc-search-icon">⌕</span>
+            <input
+              className="fc-search"
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search categories…"
+            />
+            <button className="fc-search-btn">Search</button>
+          </div>
+        </div>
+
+        {/* Count */}
+        <p className="fc-count">
+          <strong>{filtered.length}</strong> categories available
+        </p>
+
+        {/* Grid */}
+        <div className="fc-grid">
           {filtered.length > 0 ? (
-            <div className="columns-2 sm:columns-3 lg:columns-4 gap-3">
-             {filtered.map((cat) => (
-  <CategoryCard key={cat.name} cat={cat} navigate={navigate} />
-))}
-            </div>
+            filtered.map((cat, i) => (
+              <CategoryCard key={cat.name} cat={cat} navigate={navigate} index={i} />
+            ))
           ) : (
-            <div className="text-center py-16 text-gray-300 text-sm">
-              No categories found for &quot;{query}&quot;
+            <div className="fc-empty">
+              <span className="fc-empty-icon">🔍</span>
+              No categories found for &ldquo;{query}&rdquo;
             </div>
           )}
         </div>
       </div>
-    );
-  }
+    </>
+  );
+}
+

@@ -446,6 +446,81 @@ exports.getCandidateById = async (req, res) => {
 };
 
 // =======================================
+// FORGOT PASSWORD - Step 1: Send OTP
+// Route: POST /forgot-password
+// =======================================
+exports.forgotPassword = async (req, res) => {
+  try {
+    console.log("Body received:", req.body);        // ← check email arrives
+    const { email } = req.body;
+
+    const candidate = await Candidate.findOne({ email });
+    console.log("Candidate found:", candidate);     // ← null means email not in DB
+
+    if (!candidate) {
+      return res.status(404).json({ success: false, message: "No account found with this email" });
+    }
+    const otp = generateOTP();
+    console.log("OTP generated:", otp);
+
+    candidate.otp = otp;
+    candidate.otpExpires = new Date(Date.now() + 30 * 60 * 1000);
+    await candidate.save();
+    console.log("Candidate saved");                 // ← does it reach here?
+
+    await sendMail(email, otp);
+    console.log("Mail sent");                       // ← does it reach here?
+
+    res.status(200).json({ success: true, message: "OTP sent to email" });
+
+  } catch (error) {
+    console.error("Error:", error);                 // ← catch any hidden errors
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// =======================================
+// FORGOT PASSWORD - Step 2: Reset Password
+// Route: POST /reset-password
+// =======================================
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
+    }
+
+    const candidate = await Candidate.findOne({ email });
+
+    if (!candidate) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (candidate.otp !== otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    if (candidate.otpExpires < Date.now()) {
+      return res.status(400).json({ success: false, message: "OTP expired" });
+    }
+
+    candidate.password = newPassword; // pre-save hook will hash it
+    candidate.otp = null;
+    candidate.otpExpires = null;
+    await candidate.save();
+
+    res.status(200).json({ success: true, message: "Password reset successfully" });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+// =======================================
 // 7️⃣ SEARCH CANDIDATE BY NAME
 // Route: GET /search/by-name?name=hashim
 // =======================================

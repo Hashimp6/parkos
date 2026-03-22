@@ -1,6 +1,33 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-
+const DEMO = {
+  name: "Alex Smith",
+  email: "alex@example.com",
+  phone: "+1 (555) 234-5678",
+  place: "San Francisco, CA",
+  profilePhoto: "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp",
+  cv: "",
+  about: "I craft fast, accessible, and beautiful web experiences. Passionate about clean code, thoughtful UI, and turning complex problems into elegant solutions at the intersection of design and engineering.",
+  tagline: "Frontend Developer",
+  qualification: "B.Sc. Computer Science",
+  services: [
+    { heading: "UI Development", description: "Pixel-perfect interfaces built with React, Tailwind, and modern CSS that feel alive." },
+    { heading: "Performance", description: "Lighthouse in the green. Lazy-loading, code-splitting, edge delivery at scale." },
+    { heading: "Design Systems", description: "Scalable component libraries with Storybook, tokens, and clean Figma handoffs." },
+    { heading: "API Integration", description: "REST & GraphQL wiring, caching strategies, real-time WebSocket features." },
+  ],
+  skills: ["React", "TypeScript", "Node.js", "Tailwind CSS", "GraphQL", "Figma", "Next.js", "PostgreSQL", "AWS", "Docker"],
+  education: [
+    { education: "B.Sc. Computer Science", institution: "Stanford University", year: 2018, percentage: "3.9 GPA" },
+    { education: "High School Diploma", institution: "Lincoln High School", year: 2014, percentage: "95%" },
+  ],
+  experience: [
+    { jobTitle: "Senior Frontend Engineer", company: "Stripe", startDate: "2021-06-01", endDate: null },
+    { jobTitle: "Frontend Developer", company: "Figma", startDate: "2019-02-01", endDate: "2021-05-31" },
+    { jobTitle: "Junior Developer", company: "Agency X", startDate: "2018-08-01", endDate: "2019-01-31" },
+  ],
+  lookingVacancy: ["Senior Frontend Engineer", "Tech Lead", "UI Architect"],
+};
 
 
 /* ── STYLES ─────────────────────────────────────────────── */
@@ -472,7 +499,7 @@ function Contact({ D, soc }){
 /* ── APP ── */
 export default function Profile8({ data }) {
 
-  const D = data || {};
+  const D = data ||DEMO|| {};
   const soc = D.socials?.[0] || {};
 
   const fmt = d =>

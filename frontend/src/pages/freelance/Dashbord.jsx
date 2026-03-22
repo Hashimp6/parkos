@@ -456,8 +456,12 @@ export default function FreelanceDashboard() {
   const navigate = useNavigate();
   const { token} = useUser();
   useEffect(() => {
+    if (!token) return; // ⛔ STOP if token not ready
+  
     const fetchServices = async () => {
       try {
+        console.log("T", token);
+  
         const res = await axios.get(`${API_BASE}/freelance/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
