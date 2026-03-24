@@ -10,7 +10,7 @@ router.post("/resend-otp", candidateController.resendOTP);
 router.put("/change-password/:candidateId", candidateController.changePassword);
 router.post("/forgot-password", candidateController.forgotPassword);
 router.post("/reset-password", candidateController.resetPassword);
-router.post("/suggestcategory", candidateController.createCategorySuggestion);
+
 // Profile
 router.put(
     "/update/:candidateId",
@@ -20,6 +20,7 @@ router.put(
     ]),
     candidateController.updateProfile
   );
+  router.put("/update-layout/:candidateId", candidateController.updateLayout);
 router.get("/search/by-name", candidateController.searchCandidateByName);
 router.get("/search/by-username", candidateController.searchCandidateByProfileId);
 // Get

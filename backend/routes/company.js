@@ -10,7 +10,8 @@ router.post("/verify-otp", companyController.verifyCompanyOTP);
 router.post("/resend-otp", companyController.resendOTP);
 router.get("/", companyController.getAllCompanies);
 router.get("/:id", companyController.getCompany);
-
+router.post("/forgot-password", companyController.forgotPassword);
+router.post("/reset-password", companyController.resetPassword);
 // PRIVATE ROUTES
 router.get("/me/profile", companyController.getMe);
 router.patch("/update/:id", (req, res, next) => {

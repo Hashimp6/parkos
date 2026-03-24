@@ -606,27 +606,34 @@ exports.deleteCandidate = async (req, res) => {
 
 
 
-exports.createCategorySuggestion = async (req, res) => {
+
+exports.updateLayout = async (req, res) => {
   try {
-    const { candidateCategory } = req.body;
+    const { candidateId } = req.params;
+    const { layoutType } = req.body;
 
+    const updated = await Candidate.findByIdAndUpdate(
+      candidateId,
+      { layoutType },
+      { new: true }
+    );
 
-    // ✅ save to DB
-    const newSuggestion = await CategorySuggestion.create({
-      candidateCategory: candidateCategory.trim(),
-    });
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: "Candidate not found",
+      });
+    }
 
-    return res.status(201).json({
+    res.status(200).json({
       success: true,
-      message: "Suggestion submitted successfully",
-      data: newSuggestion,
+      message: "Layout updated",
+      data: updated,
     });
   } catch (error) {
-    console.error("Category Suggestion Error:", error);
-
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: "Server error",
+      message: error.message,
     });
   }
 };

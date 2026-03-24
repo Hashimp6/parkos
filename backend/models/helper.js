@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-const categorySuggestionSchema = new mongoose.Schema(
+const CategorySuggestionSchema = new mongoose.Schema(
   {
     candidateCategory: {
       type: String,
     },
-  
-  
   },
-
+  {
+    timestamps: true,
+  }
 );
 
-export default mongoose.model("CategorySuggestion", categorySuggestionSchema);
+module.exports = mongoose.model("CategorySuggestion", CategorySuggestionSchema);

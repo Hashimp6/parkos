@@ -33,13 +33,39 @@ export default function BusinessCard({
 
   const captureCard = async () => {
     setCapturing(true);
+  
     const wasFlipped = flipped;
     if (wasFlipped) setFlipped(false);
-    await new Promise(r => setTimeout(r, 450));
+  
+    // ✅ Wait for DOM + fonts + layout
+    await document.fonts.ready;
+  
+    await new Promise((r) => setTimeout(r, 600)); // increase delay
+  
+    const el = cardRef.current;
+  
+    // ✅ Ensure element has size
+    if (!el || el.offsetWidth === 0 || el.offsetHeight === 0) {
+      throw new Error("Card not ready for capture");
+    }
+  
     const h2c = await loadHtml2Canvas();
-    const canvas = await h2c(cardRef.current, { scale: 3, useCORS: true, backgroundColor: null, logging: false });
+  
+    const canvas = await h2c(el, {
+      scale: 3,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+  
+      // ✅ VERY IMPORTANT FIXES
+      ignoreElements: (element) => {
+        // ignore hidden/backface elements
+        return window.getComputedStyle(element).backfaceVisibility === "hidden";
+      },
+    });
+  
     if (wasFlipped) setFlipped(true);
     setCapturing(false);
+  
     return canvas;
   };
 
@@ -253,8 +279,23 @@ export default function BusinessCard({
                     border: "1px solid rgba(180,160,120,0.3)",
                     boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
                   }}>
-                    <QRCode value={profileUrl} size={78} bgColor="#ffffff" fgColor="#1a1510" level="M" />
-                  </div>
+                   <div
+  style={{
+    width: 78,
+    height: 78,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+>
+  <QRCode
+    value={profileUrl}
+    size={78}
+    bgColor="#ffffff"
+    fgColor="#1a1510"
+    level="M"
+  />
+</div> </div>
                   <span style={{
                     fontSize: 7, letterSpacing: "0.18em",
                     textTransform: "uppercase", color: "#C4A882",

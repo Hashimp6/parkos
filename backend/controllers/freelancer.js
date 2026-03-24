@@ -1,7 +1,7 @@
 const Candidate = require("../models/candidate");
 const FreelanceService = require("../models/freelanceSchema");
 const axios = require("axios");
-
+const CategorySuggestion = require("../models/helper"); 
 /* ─── GEO HELPER (OpenStreetMap) ───────────────────────────── */
 
 async function getCoordinatesFromPlace(place) {
@@ -373,5 +373,47 @@ exports.toggleServiceStatus = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/* ─────────────────────────────────────────────
+   CREATE CATEGORY SUGGESTION
+───────────────────────────────────────────── */
+
+exports.createCategorySuggestion = async (req, res) => {
+  try {
+    console.log("📩 Incoming suggestion:", req.body);
+
+    const { candidateCategory } = req.body;
+
+    // ✅ validation
+    if (!candidateCategory || candidateCategory.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Category is required",
+      });
+    }
+
+    // ✅ clean input
+    const cleanCategory = candidateCategory.trim();
+
+    // ✅ save (no duplicate check as you requested)
+    const newSuggestion = await CategorySuggestion.create({
+      candidateCategory: cleanCategory,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Suggestion submitted successfully",
+      data: newSuggestion,
+    });
+
+  } catch (error) {
+    console.error("❌ Category Suggestion Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };

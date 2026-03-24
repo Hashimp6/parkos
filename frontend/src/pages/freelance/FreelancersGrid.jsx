@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_BASE from "../../../config";
+import axios from "axios";
 
 /* ── Sample data ── */
 const categories = [
@@ -457,13 +459,17 @@ export default function FreelancerCategories() {
   );
   const [suggestion, setSuggestion] = useState("");
   const [toast, setToast] = useState(null);
+
   const handleSuggest = async () => {
     if (!suggestion.trim()) return;
   
     try {
+      console.log("hjjj");
+      
       // 👉 optional backend call
-      // await axios.post("/api/category-suggestion", { name: suggestion });
-  
+    await axios.post(`${API_BASE}/freelance/suggestcategory`, {
+  candidateCategory: suggestion,
+});
       setToast("Suggestion sent 🚀");
       setSuggestion("");
   
@@ -500,7 +506,7 @@ export default function FreelancerCategories() {
             <button className="fc-search-btn">Search</button>
           </div>
         </div>
-
+        {toast && <div className="fc-toast">{toast}</div>}
         {/* Count */}
         <p className="fc-count">
           <strong>{filtered.length}</strong> categories available
@@ -509,10 +515,14 @@ export default function FreelancerCategories() {
         {/* Grid */}
         <div className="fc-grid">
           {filtered.length > 0 ? (
-            filtered.map((cat, i) => (
-           <> <CategoryCard key={cat.name} cat={cat} navigate={navigate} index={i} />
-              </>  
-            ))
+filtered.map((cat, i) => (
+  <CategoryCard
+    key={cat.name}
+    cat={cat}
+    navigate={navigate}
+    index={i}
+  />
+))
           ) : (
             <div className="fc-empty">
               <span className="fc-empty-icon">🔍</span>

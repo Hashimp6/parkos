@@ -518,7 +518,7 @@ export default function CandidateHomeSection({ onNavigate }) {
                   </button>
                   <button
   className="hx-btn hx-btn-ghost"
-  onClick={() => goto(`/profile/${user.profileId}`)}
+  onClick={() => goto(`/${user.profileId}`)}
 >
   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>

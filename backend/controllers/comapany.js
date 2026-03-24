@@ -158,6 +158,115 @@ exports.resendOTP = async (req, res) => {
   }
 };
 
+// =======================================
+// FORGOT PASSWORD - Step 1: Send OTP
+// Route: POST /forgot-password
+// =======================================
+exports.forgotPassword = async (req, res) => {
+  try {
+    console.log("Body received:", req.body);
+    const { email } = req.body;
+
+    const company = await Company.findOne({ email });
+    console.log("Company found:", company);
+
+    if (!company) {
+      return res.status(404).json({
+        success: false,
+        message: "No account found with this email",
+      });
+    }
+
+    const otp = generateOTP();
+    console.log("OTP generated:", otp);
+
+    company.otp = otp;
+    company.otpExpires = new Date(Date.now() + 30 * 60 * 1000);
+
+    await company.save();
+    console.log("Company saved");
+
+    await sendMail(email, otp);
+    console.log("Mail sent");
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent to email",
+    });
+
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// =======================================
+// FORGOT PASSWORD - Step 2: Reset Password
+// Route: POST /reset-password
+// =======================================
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const company = await Company.findOne({ email });
+
+    if (!company) {
+      return res.status(404).json({
+        success: false,
+        message: "Company not found",
+      });
+    }
+
+    if (company.otp !== otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    if (company.otpExpires < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired",
+      });
+    }
+
+    // Update password (make sure you have pre-save hashing in model)
+    company.password = newPassword;
+    company.otp = null;
+    company.otpExpires = null;
+
+    await company.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 // ─────────────────────────────────────────────────────────────────────────────
 // @route   POST /api/companies/login
 // @access  Public

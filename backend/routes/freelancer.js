@@ -9,7 +9,8 @@ const {
   toggleServiceStatus,
   getAllFreelanceServices,
   getSingleService,
-  getCandidateServices
+  getCandidateServices,
+  createCategorySuggestion
 } = require("../controllers/freelancer");
 
 // 🔐 Protected routes
@@ -18,8 +19,10 @@ router.put("/update/:id", auth, updateFreelanceService);
 router.delete("/delete/:id", auth, deleteFreelanceService);
 router.patch("/toggle/:id", auth, toggleServiceStatus);
 router.get("/my",auth, getCandidateServices);
+
 // 🌍 Public routes
 router.get("/", getAllFreelanceServices);
 router.get("/:id", getSingleService);
+router.post("/suggestcategory", createCategorySuggestion);
 
 module.exports = router;
