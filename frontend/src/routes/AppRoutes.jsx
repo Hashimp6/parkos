@@ -41,6 +41,7 @@ import PreviewPage from "../components/LayoutPreview";
 import ForgotPasswordPageCompany from "../pages/company/ForgotPassword";
 import CompanyLayoutSelector from "../pages/company/CompanyPreview";
 import CmpnyPreviewPage from "../pages/company/Preview";
+import CompanyProfilePage from "../pages/company/CompanyProfilePage";
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
 // import Profile from "../pages/dashboard/Profile";
@@ -65,6 +66,7 @@ function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage/>} />
       <Route path="/home" element={<CandidateHomeSection/>} />
+      {/* company pages  */}
       <Route path="/company/login" element={<CompanyLoginPage />} />
       <Route path="/company/register" element={<CompanyRegisterPage />} />
       <Route path="/company/forgot-password" element={<ForgotPasswordPageCompany/>} />
@@ -72,6 +74,10 @@ function AppRoutes() {
       <Route path="/company/Home" element={<CompanyHome/>} />
       <Route path="/company/category" element={<ServiceCategories/>} />
       <Route path="/company/form" element={<CompanyProfileForm/>} />
+      <Route path="/companyjobs" element={<CompanyJobsAdmin />} />
+      <Route path="/company/jobs/:id" element={<JobDashboard />} />
+      <Route path="/company/:companyId" element={<CompanyProfilePage />} />
+    
       <Route path="/profile/form" element={<CandidateProfileForm />} />
       <Route path="/:profileId" element={<ProfilePages />} />
       <Route path="/company" element={<CompanyWebsite3 />} />
@@ -79,11 +85,11 @@ function AppRoutes() {
       <Route path="/profile/3" element={<PersonalPortfolio2 />} />
       <Route path="/profile/6" element={<Profile12 />} />
       <Route path="/jobslist" element={<CompanyJobsAdmin />} />
-      <Route path="/company/jobs/:id" element={<JobDashboard />} />
       <Route path="/jobs/form" element={<JobForm/>} />
-      <Route path="/companyjobs" element={<CompanyJobsAdmin />} />
       <Route path="/layout" element={<LayoutSelector />} />
       <Route path="/company1" element={<Company2/>} />
+   
+   {/* freelance */}
       <Route path="/freelance-list" element={<FreelancerList/>} />
       <Route path="/freelancer/:id" element={<FreelancerDetail />} />
       <Route path="/freelance-form" element={<AddServiceForm />} />

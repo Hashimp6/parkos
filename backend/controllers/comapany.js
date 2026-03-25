@@ -629,3 +629,70 @@ exports.updateLayout = async (req, res) => {
     });
   }
 };
+
+exports.searchCompanies = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        message: "Search query is required",
+      });
+    }
+
+    const companies = await Company.find({
+      companyName: { $regex: query, $options: "i" } // case-insensitive search
+    })
+      .select("companyName logo industry") // return only needed fields
+      .limit(10); // limit results
+
+    res.status(200).json({
+      success: true,
+      data: companies,
+    });
+
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+// controllers/company.js
+
+exports.checkCompanyName = async (req, res) => {
+  try {
+    const { name } = req.query;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Company name is required",
+      });
+    }
+
+    const normalizedName = name.trim();
+
+    // Case-insensitive check
+    const existing = await Company.findOne({
+      companyName: { $regex: `^${normalizedName}$`, $options: "i" }
+    });
+
+    return res.status(200).json({
+      success: true,
+      available: !existing,
+      message: existing
+        ? "Company name already taken"
+        : "Company name available",
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};

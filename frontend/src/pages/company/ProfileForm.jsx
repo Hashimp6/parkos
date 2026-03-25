@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useCompany } from "../../context/CompanyContext";
 import API_BASE from "../../../config";
+import { useNavigate } from "react-router-dom";
 
 
 const BUSINESS_PARKS = [
@@ -184,7 +185,7 @@ export default function CompanyProfileForm() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const { company, updateCompany, token } = useCompany();
-
+  const navigate = useNavigate();
   // Track all uploadable files:
   // logo, banner          → single files
   // members[i].image      → array of files indexed by position
@@ -342,6 +343,9 @@ export default function CompanyProfileForm() {
       setFiles({ logo: null, banner: null, members: {}, gallery: {}, clients: {} });
 
       toast.success("Profile updated successfully!");
+      setTimeout(() => {
+        navigate("/company/Home");
+      }, 2000);
     } catch (err) {
       const msg = err?.response?.data?.message || "Update failed.";
       toast.error(msg);
@@ -454,11 +458,14 @@ export default function CompanyProfileForm() {
                     placeholder="🏢"
                   />
                   <div className="flex-1 space-y-3">
-                    <div>
-                      <label className={labelCls}>Company Name</label>
-                      <input className={inputCls} placeholder="Acme Technologies" value={form.companyName}
-                        onChange={e => set("companyName", e.target.value)} />
-                    </div>
+                  <div>
+  <label className={labelCls}>Company Name</label>
+  <input
+    className={inputCls}
+    value={form.companyName}
+    readOnly
+  />
+</div>
                     <div>
                       <label className={labelCls}>Tagline</label>
                       <input className={inputCls} placeholder="Building the future, one line at a time" value={form.tagline}

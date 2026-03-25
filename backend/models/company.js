@@ -66,7 +66,11 @@ const contactSchema = new mongoose.Schema({
 const companySchema = new mongoose.Schema(
   {
     // ── Auth & Basic ──────────────────────────────────────────────────────────
-    companyName: { type: String, trim: true },
+    companyName: { 
+      type: String, 
+      trim: true, 
+      unique: true 
+    },
     email:       { type: String, unique: true, lowercase: true, trim: true },
     phone:       { type: String },
     password:    { type: String, minlength: 6, select: false },

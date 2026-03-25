@@ -13,6 +13,8 @@ router.get("/:id", companyController.getCompany);
 router.post("/forgot-password", companyController.forgotPassword);
 router.post("/reset-password", companyController.resetPassword);
 router.put("/update-layout", companyController.updateLayout);
+router.get("/check-name", companyController.checkCompanyName);
+router.get("/search", companyController.searchCompanies);
 // PRIVATE ROUTES
 router.get("/me/profile", companyController.getMe);
 router.patch("/update/:id", (req, res, next) => {
