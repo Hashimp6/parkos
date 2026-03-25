@@ -38,7 +38,7 @@ export default function ForgotPasswordPageCompany() {
     setError("");
     setLoading(true);
     try {
-      await axios.post(`${API_BASE}/company/forgot-password`, { email });
+      await axios.post(`${API_BASE}/companies/forgot-password`, { email });
       setStep(STEP_OTP);
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
@@ -62,7 +62,7 @@ export default function ForgotPasswordPageCompany() {
     setError("");
     setLoading(true);
     try {
-      await axios.post(`${API_BASE}/company/reset-password`, {
+      await axios.post(`${API_BASE}/companies/reset-password`, {
         email,
         otp,
         newPassword,

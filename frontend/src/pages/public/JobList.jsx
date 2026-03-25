@@ -593,12 +593,56 @@ export default function JobListings({
   const [jobs,       setJobs]    = useState([]);
   const [isLoading,  setLoading] = useState(true);
   const [error,      setError]   = useState(null);
-
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const toggleSave = id => setSaved(p => {
     const n = new Set(p);
     n.has(id) ? n.delete(id) : n.add(id);
     return n;
   });
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400); // 400ms delay
+  
+    return () => {
+      clearTimeout(handler); // cancel previous timeout
+    };
+  }, [search]);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+  
+        const params = {
+          sort: "newest",
+          search: debouncedSearch || undefined, // ✅ use debounced value
+        };
+  
+        if (activePark !== "All") {
+          params.businessPark = activePark;
+        }
+  
+        const res = await axios.get(`${API_BASE}/jobs/search`, {
+          params: {
+            search: debouncedSearch,
+          },
+        });
+        const raw = res.data?.data || [];
+        setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
+  
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load jobs.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchJobs();
+  }, [apiUrl, activePark, debouncedSearch]); // ✅ depend on debouncedSearch
 
   useEffect(() => {
     const fetchJobs = async () => {

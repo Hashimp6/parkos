@@ -1,0 +1,43 @@
+<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" width="200" height="230">
+  <defs>
+    <linearGradient id="bgDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2a2a2a"/>
+      <stop offset="100%" stop-color="#141414"/>
+    </linearGradient>
+    <linearGradient id="blockW" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#d4d4d2"/>
+    </linearGradient>
+    <linearGradient id="blockM" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c8c8c6"/>
+      <stop offset="100%" stop-color="#929290"/>
+    </linearGradient>
+    <linearGradient id="blockDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a4a48"/>
+      <stop offset="100%" stop-color="#2a2a28"/>
+    </linearGradient>
+    <filter id="s">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Icon background -->
+  <rect x="0" y="0" width="200" height="200" rx="42" fill="url(#bgDark)"/>
+
+  <!-- Row 1: 3 equal blocks -->
+  <rect x="22" y="24" width="46" height="46" rx="10" fill="url(#blockW)" filter="url(#s)"/>
+  <rect x="77" y="24" width="46" height="46" rx="10" fill="url(#blockW)" filter="url(#s)"/>
+  <rect x="132" y="24" width="46" height="46" rx="10" fill="url(#blockW)" filter="url(#s)"/>
+
+  <!-- Row 2: wide + small -->
+  <rect x="22" y="79" width="101" height="46" rx="10" fill="url(#blockM)" filter="url(#s)"/>
+  <rect x="132" y="79" width="46" height="46" rx="10" fill="url(#blockM)" filter="url(#s)"/>
+
+  <!-- Row 3: full wide bar -->
+  <rect x="22" y="134" width="156" height="30" rx="9" fill="url(#blockDark)" filter="url(#s)"/>
+
+  <!-- Label -->
+  <text x="100" y="218" text-anchor="middle"
+    font-family="'Helvetica Neue', Helvetica, sans-serif"
+    font-size="16" font-weight="600" fill="#888886" letter-spacing="4">PARKOS</text>
+</svg>

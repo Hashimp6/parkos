@@ -10,6 +10,7 @@ const {
   getAllJobs,
   toggleJobStatus,
   getJobStats,
+  searchJobs,
 } = require("../controllers/jobs");
 
 // ─────────────────────────────────────────────
@@ -23,7 +24,7 @@ router.post("/", createJob);              // POST /api/jobs               — cr
 
 // Company-scoped
 router.get("/company/:companyId", getJobsByCompany); // GET /api/jobs/company/:companyId
-
+router.get("/search", searchJobs);
 // Single-job routes  (keep after /company/:companyId to avoid param clash)
 router.get("/:id", getJobById);           // GET    /api/jobs/:id
 router.put("/:id", updateJob);            // PUT    /api/jobs/:id

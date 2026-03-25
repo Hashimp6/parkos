@@ -21,7 +21,7 @@ const TABS = [
   // { id: "gallery",   label: "Gallery",    sym: "◧" },
   // { id: "clients",   label: "Clients",    sym: "◫" },
   { id: "contact",   label: "Contact",    sym: "◬" },
-  { id: "settings",  label: "Layout",     sym: "◭" },
+  // { id: "settings",  label: "Layout",     sym: "◭" },
 ];
 
 const inputCls =
@@ -717,7 +717,7 @@ export default function CompanyProfileForm() {
           )}
 
           {/* ── SETTINGS / LAYOUT ── */}
-          {tab === "settings" && (
+          {/* {tab === "settings" && (
             <Card>
               <CardTitle>Company Page Layout</CardTitle>
               <p className="text-xs text-zinc-400 mb-4">Choose how your public company profile looks</p>
@@ -739,7 +739,7 @@ export default function CompanyProfileForm() {
                 ))}
               </div>
             </Card>
-          )}
+          )} */}
 
           {/* ── Bottom CTA ── */}
           <div className="flex items-center justify-between pt-2 pb-8">

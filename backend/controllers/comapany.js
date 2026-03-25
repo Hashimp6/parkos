@@ -585,3 +585,47 @@ exports.verifyCompany = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+// controllers/companyController.js
+
+
+exports.updateLayout = async (req, res) => {
+  try {
+    console.log("fff",req.body);
+    
+    const { companyId, layout } = req.body;
+
+    if (!companyId || layout === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "Company ID and layout are required",
+      });
+    }
+
+
+    const updatedCompany = await Company.findByIdAndUpdate(
+      companyId,
+      { layout },
+      { new: true }
+    );
+
+    if (!updatedCompany) {
+      return res.status(404).json({
+        success: false,
+        message: "Company not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Layout updated successfully",
+      layout: updatedCompany.layout,
+    });
+
+  } catch (error) {
+    console.error("Layout update error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

@@ -39,6 +39,8 @@ import CompanyServices from "../pages/company/CategoryGrid";
 import ServiceCategories from "../pages/company/Category";
 import PreviewPage from "../components/LayoutPreview";
 import ForgotPasswordPageCompany from "../pages/company/ForgotPassword";
+import CompanyLayoutSelector from "../pages/company/CompanyPreview";
+import CmpnyPreviewPage from "../pages/company/Preview";
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
 // import Profile from "../pages/dashboard/Profile";
@@ -58,6 +60,7 @@ function AppRoutes() {
 
       {/* Auth */}
       <Route path="/preview/:layoutId" element={<PreviewPage />} />
+      <Route path="/company-preview/:id" element={<CmpnyPreviewPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage/>} />
@@ -65,6 +68,7 @@ function AppRoutes() {
       <Route path="/company/login" element={<CompanyLoginPage />} />
       <Route path="/company/register" element={<CompanyRegisterPage />} />
       <Route path="/company/forgot-password" element={<ForgotPasswordPageCompany/>} />
+      <Route path="/company/layout-select" element={<CompanyLayoutSelector/>} />
       <Route path="/company/Home" element={<CompanyHome/>} />
       <Route path="/company/category" element={<ServiceCategories/>} />
       <Route path="/company/form" element={<CompanyProfileForm/>} />

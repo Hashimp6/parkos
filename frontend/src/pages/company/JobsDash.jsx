@@ -149,9 +149,21 @@ export default function CompanyJobsAdmin() {
     const fetchJobs = async () => {
       try {
         const res = await axios.get(`${API_BASE}/jobs/company/${company._id}`);
-        setJobs(res.data.data || res.data);
+    
+        const raw = res.data?.data || res.data;
+    
+        // ✅ ensure it's always an array
+        const jobsArray = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.jobs)
+          ? raw.jobs
+          : [];
+    
+        setJobs(jobsArray);
+    
       } catch (err) {
         console.error("Error fetching jobs:", err);
+        setJobs([]); // safety fallback
       }
     };
     fetchJobs();
@@ -194,12 +206,13 @@ export default function CompanyJobsAdmin() {
     }
   };
 
-  const filtered = jobs.filter(
-    (j) =>
+  const filtered = Array.isArray(jobs)
+  ? jobs.filter((j) =>
       !search ||
       j.role?.toLowerCase().includes(search.toLowerCase()) ||
       j.department?.toLowerCase().includes(search.toLowerCase())
-  );
+    )
+  : [];
 
   const activeCount = jobs.filter((j) => j.isActive).length;
 

@@ -275,7 +275,7 @@ function GalPh({ caption }) {
 }
 
 export default function Company1({ data: rawData }) {
-  const d = rawData|| DUMMY;
+  const d = rawData ? rawData : DUMMY;
   const [scrolled, setScrolled] = useState(false);
   const [mobOpen, setMobOpen] = useState(false);
 
@@ -366,7 +366,9 @@ export default function Company1({ data: rawData }) {
             )}
             <h1 className="cp-hero-h1">
               {(() => {
-                const words = d.companyName.split(" ");
+                const words = typeof d?.companyName === "string"
+                ? d.companyName.split(" ")
+                : [];
                 return words.map((w, i) => i === 1 ? <em key={i}>{w} </em> : w + " ");
               })()}
             </h1>
@@ -425,8 +427,8 @@ export default function Company1({ data: rawData }) {
             </div>
             <div className="cp-hcard-fr">
               <div style={{ fontSize: 10, color: "#AAA", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 3 }}>Based in</div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: "#1A1A1A" }}>{addr.city || "Kerala"}</div>
-              <div style={{ fontSize: 11, color: "#BBB", marginTop: 1 }}>{addr.country || "India"}</div>
+              {has(addr.city) &&<div style={{ fontSize: 13, fontWeight: 500, color: "#1A1A1A" }}> {addr.city}</div>}
+              {has(addr.country) && <div style={{ fontSize: 11, color: "#BBB", marginTop: 1 }}>{addr.country}</div>}
             </div>
           </div>
         </div>
@@ -645,7 +647,8 @@ export default function Company1({ data: rawData }) {
             <div className="cp-contact-panel">
               <div className="cp-contact-addr-top">
                 <div className="cp-contact-addr-label">Headquarters</div>
-                <div className="cp-contact-addr-text">{addrStr || `${d.companyName} Office`}</div>
+                {has(addrStr) && ( <div className="cp-contact-addr-text">{addrStr}</div>
+)}
               </div>
               {has(d.mapEmbedLink)
                 ? <iframe src={d.mapEmbedLink} style={{ width: "100%", height: 220, border: 0, display: "block" }} title="map" />

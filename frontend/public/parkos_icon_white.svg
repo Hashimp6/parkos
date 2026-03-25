@@ -1,0 +1,43 @@
+<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" width="200" height="230">
+  <defs>
+    <linearGradient id="bgLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ececea"/>
+    </linearGradient>
+    <linearGradient id="lBlockD" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#333330"/>
+      <stop offset="100%" stop-color="#1a1a18"/>
+    </linearGradient>
+    <linearGradient id="lBlockM" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#888886"/>
+      <stop offset="100%" stop-color="#606060"/>
+    </linearGradient>
+    <linearGradient id="lBlockL" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ccccca"/>
+      <stop offset="100%" stop-color="#b0b0ae"/>
+    </linearGradient>
+    <filter id="sl">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#00000018"/>
+    </filter>
+  </defs>
+
+  <!-- Icon background -->
+  <rect x="0" y="0" width="200" height="200" rx="42" fill="url(#bgLight)" stroke="#e0e0de" stroke-width="1"/>
+
+  <!-- Row 1: 3 equal blocks — darkest -->
+  <rect x="22" y="24" width="46" height="46" rx="10" fill="url(#lBlockD)" filter="url(#sl)"/>
+  <rect x="77" y="24" width="46" height="46" rx="10" fill="url(#lBlockD)" filter="url(#sl)"/>
+  <rect x="132" y="24" width="46" height="46" rx="10" fill="url(#lBlockD)" filter="url(#sl)"/>
+
+  <!-- Row 2: wide + small — mid grey -->
+  <rect x="22" y="79" width="101" height="46" rx="10" fill="url(#lBlockM)" filter="url(#sl)"/>
+  <rect x="132" y="79" width="46" height="46" rx="10" fill="url(#lBlockM)" filter="url(#sl)"/>
+
+  <!-- Row 3: full wide bar — light grey -->
+  <rect x="22" y="134" width="156" height="30" rx="9" fill="url(#lBlockL)" filter="url(#sl)"/>
+
+  <!-- Label -->
+  <text x="100" y="218" text-anchor="middle"
+    font-family="'Helvetica Neue', Helvetica, sans-serif"
+    font-size="16" font-weight="600" fill="#555552" letter-spacing="4">PARKOS</text>
+</svg>
