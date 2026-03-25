@@ -265,7 +265,9 @@ export default function CompanyRegisterPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
-
+  const [nameStatus, setNameStatus] = useState("idle"); // "idle" | "checking" | "available" | "taken" | "error"
+  const nameDebounceRef = useRef(null);
+  
   // OTP modal state
   const [showOtp, setShowOtp] = useState(false);
   // store the pending registration response so we can call loginCompany after OTP
@@ -285,6 +287,42 @@ export default function CompanyRegisterPage() {
       errs.confirmPassword = "Passwords do not match.";
     return errs;
   };
+
+
+// Add this function inside the component:
+const checkCompanyName = async (name) => {
+  if (name.trim().length < 3) {
+    setNameStatus("idle");
+    return;
+  }
+  setNameStatus("checking");
+  try {
+    const res = await axios.get(`${API_BASE}/companies/check-name`, {
+      params: { name: name.trim() },
+    });
+    setNameStatus(res.data.available ? "available" : "taken");
+  } catch {
+    setNameStatus("error");
+  }
+};
+
+// Updated onChange handler for companyName input:
+const handleCompanyNameChange = (e) => {
+  const val = e.target.value;
+  setForm((prev) => ({ ...prev, companyName: val }));
+  setErrors((prev) => ({ ...prev, companyName: "" }));
+
+  if (nameDebounceRef.current) clearTimeout(nameDebounceRef.current);
+
+  if (val.trim().length < 3) {
+    setNameStatus("idle");
+    return;
+  }
+
+  nameDebounceRef.current = setTimeout(() => {
+    checkCompanyName(val);
+  }, 500); // 500ms debounce — fires after typing stops
+};
 
   // Step 1 — submit the registration form, then open OTP modal
   const handleSubmit = async () => {
@@ -424,17 +462,71 @@ export default function CompanyRegisterPage() {
               {!success ? (
                 <div className="flex flex-col gap-3">
                   {/* Company Name */}
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                      Company Name <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="text" value={form.companyName} onChange={update("companyName")}
-                      onFocus={() => setFocused("companyName")} onBlur={() => setFocused(null)}
-                      placeholder="Acme Inc." className={inputClass("companyName")}
-                    />
-                    {errors.companyName && <p className="text-xs text-red-400 mt-1">{errors.companyName}</p>}
-                  </div>
+              {/* Company Name */}
+<div>
+  <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+    Company Name <span className="text-red-400">*</span>
+  </label>
+  <div className="relative">
+    <input
+      type="text"
+      value={form.companyName}
+      onChange={handleCompanyNameChange}
+      onFocus={() => setFocused("companyName")}
+      onBlur={() => setFocused(null)}
+      placeholder="Acme Inc."
+      className="w-full rounded-xl px-4 py-3 text-sm text-black placeholder-gray-300 bg-gray-50 outline-none transition-all duration-200 pr-10"
+      style={{
+        border:
+          nameStatus === "taken" || errors.companyName
+            ? "1.5px solid #f87171"
+            : nameStatus === "available"
+            ? "1.5px solid #1D9E75"
+            : focused === "companyName"
+            ? "1.5px solid #000"
+            : "1.5px solid #e5e7eb",
+      }}
+    />
+
+    {/* Status icon inside input */}
+    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+      {nameStatus === "checking" && (
+        <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#e5e7eb" strokeWidth="3" />
+          <path d="M12 3a9 9 0 0 1 9 9" stroke="#9ca3af" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      )}
+      {nameStatus === "available" && (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#1D9E75" />
+          <polyline points="7 12 10.5 15.5 17 9" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {nameStatus === "taken" && (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#E24B4A" />
+          <line x1="8" y1="8" x2="16" y2="16" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="16" y1="8" x2="8" y2="16" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+        </svg>
+      )}
+    </div>
+  </div>
+
+  {/* Status messages below input */}
+  {nameStatus === "available" && (
+    <p className="text-xs mt-1" style={{ color: "#0F6E56" }}>
+      ✓ "{form.companyName.trim()}" is available
+    </p>
+  )}
+  {nameStatus === "taken" && (
+    <p className="text-xs mt-1 text-red-400">
+      ⚠ Company name already taken — try another
+    </p>
+  )}
+  {errors.companyName && (
+    <p className="text-xs text-red-400 mt-1">{errors.companyName}</p>
+  )}
+</div>
 
                   {/* Email */}
                   <div>

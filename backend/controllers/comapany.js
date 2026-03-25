@@ -676,9 +676,11 @@ exports.checkCompanyName = async (req, res) => {
 
     const normalizedName = name.trim();
 
-    // Case-insensitive check
+    // 🔥 escape regex
+    const safeName = normalizedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
     const existing = await Company.findOne({
-      companyName: { $regex: `^${normalizedName}$`, $options: "i" }
+      companyName: { $regex: `^${safeName}$`, $options: "i" }
     });
 
     return res.status(200).json({
@@ -690,6 +692,7 @@ exports.checkCompanyName = async (req, res) => {
     });
 
   } catch (err) {
+    console.error("❌ checkCompanyName error:", err); // 👈 ADD THIS
     res.status(500).json({
       success: false,
       message: err.message,
