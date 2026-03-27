@@ -41,6 +41,7 @@ import ClockScroll3D from "../pages/public/Clock";
 import ApplicationsPage from "../pages/candidate/JobDash";
 import Layout3 from "../components/company/Layout3";
 import CompanyRoute from "../components/company/CompanyProtectRoute";
+import NotFound from "../pages/public/NotFound";
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
 // import Profile from "../pages/dashboard/Profile";
@@ -105,7 +106,7 @@ function AppRoutes() {
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/change-password" element={<ChangePassword />} />
       </Route> */}
-
+<Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
