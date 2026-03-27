@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
+import API_BASE from "../../../config";
+import axios from "axios";
 
 // ─────────────────────────────────────────────────────────────
 // EYE ICON
@@ -73,21 +75,20 @@ function OtpModal({ email, onVerified, onClose }) {
       setError("Please enter the full 6-digit code.");
       return;
     }
+  
     try {
       setLoading(true);
       setError("");
-      // POST /candidate/verify-otp — adjust endpoint to match your backend
-      const res = await fetch("http://localhost:5006/api/candidate/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: code }),
+  
+      const { data } = await axios.post(`${API_BASE}/candidate/verify-otp`, {
+        email,
+        otp: code,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Invalid OTP");
+  
       setVerified(true);
       setTimeout(() => onVerified(data), 900);
     } catch (err) {
-      setError(err.message || "Invalid OTP. Please try again.");
+      setError(err.response?.data?.message || "Invalid OTP");
       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } finally {
@@ -99,19 +100,14 @@ function OtpModal({ email, onVerified, onClose }) {
     try {
       setResending(true);
       setError("");
-      // POST /candidate/resend-otp — adjust endpoint to match your backend
-      const res = await fetch("http://localhost:5006/api/candidate/resend-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to resend");
+  
+      await axios.post(`${API_BASE}/candidate/resend-otp`, { email });
+  
       setCountdown(30);
       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } catch (err) {
-      setError(err.message || "Failed to resend OTP.");
+      setError(err.response?.data?.message || "Failed to resend OTP.");
     } finally {
       setResending(false);
     }
@@ -305,31 +301,25 @@ export default function RegisterPage() {
   const handleSubmit = async () => {
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
+  
     setErrors({});
     setLoading(true);
-
+  
     try {
-      const res = await fetch("http://localhost:5006/api/candidate/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
-        }),
+      const { data } = await axios.post(`${API_BASE}/candidate/register`, {
+        name: form.name,
+        email: form.email,
+        password: form.password,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Registration failed");
-
-      // Store pending data — do NOT call loginUser yet
+  
       setPendingData(data);
       setLoading(false);
-
-      // Open OTP modal
       setShowOtp(true);
     } catch (err) {
       console.error(err);
-      setErrors({ email: err.message });
+      setErrors({
+        email: err.response?.data?.message || "Registration failed",
+      });
       setLoading(false);
     }
   };
