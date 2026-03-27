@@ -73,7 +73,7 @@ function AppRoutes() {
       <Route path="/forgot-password" element={<ForgotPasswordPage/>} />
       <Route path="/home" element={<CandidateHomeSection/>} />
       <Route path="/profile/form" element={<CandidateProfileForm />} />
-      <Route path="/:profileId" element={<ProfilePages />} />
+      <Route path="/profile/:profileId" element={<ProfilePages />} />
       
       
       {/* company pages  */}

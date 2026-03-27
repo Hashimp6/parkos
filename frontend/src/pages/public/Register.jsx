@@ -306,11 +306,14 @@ export default function RegisterPage() {
     setLoading(true);
   
     try {
+      console.log("for",form);
+      
       const { data } = await axios.post(`${API_BASE}/candidate/register`, {
         name: form.name,
         email: form.email,
         password: form.password,
       });
+  console.log("d",data);
   
       setPendingData(data);
       setLoading(false);
