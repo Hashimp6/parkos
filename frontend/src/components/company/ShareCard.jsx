@@ -9,7 +9,7 @@ export default function CompanyShareCard({ company, onClose }) {
   const [copied, setCopied] = useState(false);
   const overlayRef = useRef();
 
-  const profileUrl = `${window.location.origin}/company/${company?.username || company?._id}`;
+  const profileUrl = `${window.location.origin}/company/id/${company?.username || company?._id}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(profileUrl).then(() => {

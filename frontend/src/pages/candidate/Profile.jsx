@@ -606,7 +606,7 @@ export default function CandidateHomeSection({ onNavigate }) {
                 company={user.company||"ParkOS"}
                 phone={user.phone}
                 email={user.email}
-                website={`${window.location.origin}/candidate/profile/${user._id}`}
+                website={`${window.location.origin}/candidate/profile/id/${user._id}`}
               />
             </div>
             <div className="hx-modal-hint">

@@ -384,7 +384,7 @@ export default function CompanyHome({ onNavigate }) {
                 </h1>
               </div>
               <div className="cx-topbar-right">
-                <button className="cx-share" onClick={() => goto(`/company/${company._id}`)}>
+                <button className="cx-share" onClick={() => goto(`/company/id/${company._id}`)}>
                   <span className="cx-share-dot" />
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                   View Page
