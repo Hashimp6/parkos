@@ -25,9 +25,9 @@ router.get("/search/by-name", candidateController.searchCandidateByName);
 router.get("/search/by-username", candidateController.searchCandidateByProfileId);
 // Get
 router.get("/", candidateController.getAllCandidates);
-router.get("/:candidateId", candidateController.getCandidateById);
+router.get("/profile/:candidateId", candidateController.getCandidateById);
 
 // Delete
-router.delete("/:candidateId", candidateController.deleteCandidate);
+router.delete("/profile/:candidateId", candidateController.deleteCandidate);
 
 module.exports = router;
