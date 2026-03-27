@@ -36,23 +36,23 @@ const otpTemplate = (otp) => ({
 const sendMail = async (to, otp) => {
   try {
 
-    console.log("otp ",otp);
+    // console.log("otp ",otp);
     
-    // const template = otpTemplate(otp);
+    const template = otpTemplate(otp);
 
-    // const mailOptions = {
-    //   from: `"SerchBy" <${process.env.EMAIL_USER}>`,
-    //   to: to,
-    //   subject: template.subject,
-    //   text: template.text,
-    //   html: template.html,
-    // };
+    const mailOptions = {
+      from: `"SerchBy" <${process.env.EMAIL_USER}>`,
+      to: to,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+    };
 
-    // const result = await transporter.sendMail(mailOptions);
+    const result = await transporter.sendMail(mailOptions);
 
-    // console.log("OTP Email Sent:", result.messageId);
+    console.log("OTP Email Sent:", result.messageId);
 
-    // return result;
+    return result;
 
   } catch (error) {
     console.error("Email Error:", error);

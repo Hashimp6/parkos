@@ -522,45 +522,57 @@ const [showSuggestions, setShowSuggestions] = useState(false);
    
     {/* 🔥 SPECIAL CASE: PLACE */}
     {f.k === "place" ? (
-      <>
-        <input
-          className={inputCls}
-          placeholder={f.p}
-          value={form.place}
-          onChange={(e) => handlePlaceChange(e.target.value)}
-          onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-        />
+  // ✅ PLACE (existing logic)
+  <>
+    <input
+      className={inputCls}
+      placeholder={f.p}
+      value={form.place}
+      onChange={(e) => handlePlaceChange(e.target.value)}
+      onFocus={() => setShowSuggestions(true)}
+      onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+    />
 
-        {/* ✅ Suggestions dropdown */}
-        {showSuggestions && placeSuggestions.length > 0 && (
-          <div className="absolute z-50 w-full bg-white border border-zinc-200 rounded-xl mt-1 shadow-lg max-h-60 overflow-y-auto">
-            {placeSuggestions.map((item, i) => (
-              <div
-                key={i}
-                className="px-4 py-2 text-sm hover:bg-zinc-100 cursor-pointer"
-                onClick={() => {
-                  set("place", item.display_name);
-                  setShowSuggestions(false);
-                }}
-              >
-                {item.display_name}
-              </div>
-            ))}
+    {showSuggestions && placeSuggestions.length > 0 && (
+      <div className="absolute z-50 w-full bg-white border border-zinc-200 rounded-xl mt-1 shadow-lg max-h-60 overflow-y-auto">
+        {placeSuggestions.map((item, i) => (
+          <div
+            key={i}
+            className="px-4 py-2 text-sm hover:bg-zinc-100 cursor-pointer"
+            onClick={() => {
+              set("place", item.display_name);
+              setShowSuggestions(false);
+            }}
+          >
+            {item.display_name}
           </div>
-        )}
-      </>
-    ) : (
-      /* ✅ NORMAL INPUT */
-      <input
-        className={inputCls}
-        type={f.t || "text"}
-        placeholder={f.p}
-        value={form[f.k]}
-        onChange={(e) => set(f.k, e.target.value)}
-      />
-      
+        ))}
+      </div>
     )}
+  </>
+) : f.k === "email" ? (
+  // 🔒 EMAIL (LOCKED)
+  <>
+    <input
+      className={`${inputCls} bg-zinc-100 cursor-not-allowed`}
+      type="email"
+      value={form.email}
+      disabled
+    />
+    <div className="mt-1 text-[11px] text-zinc-400">
+      Email cannot be changed
+    </div>
+  </>
+) : (
+  // ✅ NORMAL INPUT
+  <input
+    className={inputCls}
+    type={f.t || "text"}
+    placeholder={f.p}
+    value={form[f.k]}
+    onChange={(e) => set(f.k, e.target.value)}
+  />
+)}
      {f.k === "phone" && (
    <div className="mt-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-700">
    Use a secondary phone number to protect your personal contact

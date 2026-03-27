@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 import API_BASE from "../../../config";
+import { useNavigate } from "react-router-dom";
 
 /* ─── Normalize API job to internal shape ─────────────────────────────── */
 const normalizeJob = (j) => ({
@@ -599,7 +600,7 @@ export default function JobListings({
     n.has(id) ? n.delete(id) : n.add(id);
     return n;
   });
-
+  const navigate = useNavigate();
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -666,9 +667,20 @@ export default function JobListings({
     try {
       if (!user?._id) {
         setToast({ type: "error", message: "Please login to apply" });
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
         return;
       }
-  console.log("ddee",job,user);
+      if (!user?.cv) {
+        setToast({ type: "error", message: "Please upload your CV before applying" });
+  
+        setTimeout(() => {
+          navigate("/profile/form");
+        }, 1500);
+  
+        return;
+      }
   
       const res = await axios.post(`${API_BASE}/jobs-application/apply`, {
         jobId: job._id,
