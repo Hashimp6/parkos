@@ -20,6 +20,10 @@ const LAYOUTS = [
   { id: 1, label: "Classic",  tag: "Professional" },
   { id: 2, label: "Modern",   tag: "Clean"        },
   { id: 3, label: "Minimal",  tag: "Simple"       },
+  { id: 4, label: "Minimal",  tag: "Simple" },
+    { id: 5, label: "Minimal",  tag: "Simple"       },
+    { id: 6, label: "Minimal",  tag: "Simple"       },
+    { id: 7, label: "Minimal",  tag: "Simple"       },
 ];
 
 const TEMPLATE_COUNT = LAYOUTS.length;

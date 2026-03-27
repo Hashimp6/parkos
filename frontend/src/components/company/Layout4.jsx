@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 /* ─────────────────────────────────────────────────────────
    COMPANY DATA
 ───────────────────────────────────────────────────────── */
-const company = {
+const DUMMY = {
   companyName: "NexaCore Technologies",
   tagline: "Engineering Tomorrow, Today.",
   about:
@@ -190,7 +190,7 @@ function SH({ num, right, dark }) {
 /* ─────────────────────────────────────────────────────────
    NAV
 ───────────────────────────────────────────────────────── */
-function Nav() {
+function Nav({ company }) {
   const { isMobile } = useBreakpoint();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen]         = useState(false);
@@ -266,7 +266,7 @@ function Nav() {
 /* ─────────────────────────────────────────────────────────
    HERO
 ───────────────────────────────────────────────────────── */
-function Hero() {
+function Hero({ company }) {
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
 
   return (
@@ -377,7 +377,7 @@ function Hero() {
 /* ─────────────────────────────────────────────────────────
    ABOUT
 ───────────────────────────────────────────────────────── */
-function About() {
+function About({ company }) {
   const { isMobile, isDesktop } = useBreakpoint();
   const py = isMobile ? 64 : 100;
 
@@ -435,7 +435,7 @@ function About() {
 /* ─────────────────────────────────────────────────────────
    SERVICES
 ───────────────────────────────────────────────────────── */
-function Services() {
+function Services({ company }) {
   const { isMobile, isDesktop } = useBreakpoint();
   const [active, setActive] = useState(null);
   const py = isMobile ? 64 : 100;
@@ -481,7 +481,7 @@ function Services() {
 /* ─────────────────────────────────────────────────────────
    PROJECTS
 ───────────────────────────────────────────────────────── */
-function Projects() {
+function Projects({ company }) {
   const { isMobile, isDesktop } = useBreakpoint();
   const py = isMobile ? 64 : 100;
 
@@ -531,7 +531,7 @@ function Projects() {
 /* ─────────────────────────────────────────────────────────
    TEAM
 ───────────────────────────────────────────────────────── */
-function Team() {
+function Team({ company }) {
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
   const cols    = isMobile ? 1 : isTablet ? 2 : 3;
   const greys   = [T.black, T.g800, T.g700, T.g600, T.g800, T.black];
@@ -585,7 +585,7 @@ function Team() {
 /* ─────────────────────────────────────────────────────────
    CLIENTS
 ───────────────────────────────────────────────────────── */
-function Clients() {
+function Clients({ company }) {
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
   const cols = isMobile ? 2 : isTablet ? 3 : 4;
   const py   = isMobile ? 64 : 100;
@@ -639,7 +639,7 @@ function Clients() {
 /* ─────────────────────────────────────────────────────────
    GALLERY
 ───────────────────────────────────────────────────────── */
-function Gallery() {
+function Gallery({ company }) {
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
   const shades = [T.g300, T.g400, T.g500, T.g600, T.g400, T.g300];
   const py     = isMobile ? 64 : 100;
@@ -711,7 +711,7 @@ function Gallery() {
 /* ─────────────────────────────────────────────────────────
    CONTACT
 ───────────────────────────────────────────────────────── */
-function Contact() {
+function Contact({ company }) {
   const { isMobile, isDesktop } = useBreakpoint();
   const [form,    setForm]  = useState({ name:"", email:"", company:"", message:"" });
   const [sent,    setSent]  = useState(false);
@@ -810,7 +810,7 @@ function Contact() {
 /* ─────────────────────────────────────────────────────────
    FOOTER
 ───────────────────────────────────────────────────────── */
-function Footer() {
+function Footer({ company }) {
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
 
   return (
@@ -871,20 +871,22 @@ function Footer() {
 /* ─────────────────────────────────────────────────────────
    ROOT EXPORT
 ───────────────────────────────────────────────────────── */
-export default function Company4() {
+export default function Company4({ data }) {
+  const companyData = data || DUMMY;
+
   return (
     <>
       <GlobalStyles />
-      <Nav />
-      <Hero />
-      <About />
-      <Services />
-      <Projects />
-      <Team />
-      <Clients />
-      <Gallery />
-      <Contact />
-      <Footer />
+      <Nav company={companyData} />
+      <Hero company={companyData} />
+      <About company={companyData} />
+      <Services company={companyData} />
+      <Projects company={companyData} />
+      <Team company={companyData} />
+      <Clients company={companyData} />
+      <Gallery company={companyData} />
+      <Contact company={companyData} />
+      <Footer company={companyData} />
     </>
   );
 }

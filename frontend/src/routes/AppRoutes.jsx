@@ -10,7 +10,6 @@ import Login from "../pages/public/Login";
 import Register from "../pages/public/Register";
 import PersonalPortfolio2 from "../components/candidate/ProfileLayout2";
 import JobListings from "../pages/public/JobList";
-import CompanyWebsite3 from "../components/CompanyLayout2";
 import CandidateProfileForm from "../pages/candidate/ProfileForm";
 import ProfileCard from "../pages/candidate/Profile";
 import CompanyRegisterPage from "../pages/company/Register";
@@ -24,11 +23,7 @@ import JobForm from "../pages/jobs/JobForm";
 import CompanyJobsAdmin from "../pages/company/JobsDash";
 import LayoutSelector from "../components/LayoutSelector";
 import JobDashboard from "../pages/jobs/CandidatesList";
-import Company1 from "../components/company/Layout1";
 import Company2 from "../components/company/Layout2";
-import Layout3 from "../components/company/Layout3";
-import Company4 from "../components/company/Layout4";
-import Company5 from "../components/company/Layout5";
 import FreelancerCategories from "../pages/freelance/FreelancersGrid";
 import FreelancerList from "../pages/freelance/Listing";
 import FreelancerDetail from "../pages/freelance/Detail";
@@ -42,6 +37,9 @@ import ForgotPasswordPageCompany from "../pages/company/ForgotPassword";
 import CompanyLayoutSelector from "../pages/company/CompanyPreview";
 import CmpnyPreviewPage from "../pages/company/Preview";
 import CompanyProfilePage from "../pages/company/CompanyProfilePage";
+import ClockScroll3D from "../pages/public/Clock";
+import ApplicationsPage from "../pages/candidate/JobDash";
+import Layout3 from "../components/company/Layout3";
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
 // import Profile from "../pages/dashboard/Profile";
@@ -57,6 +55,7 @@ function AppRoutes() {
         <Route path="/jobs" element={<JobListings />} />
         <Route path="/freelance" element={<FreelancerCategories/>} />
         <Route path="/profile" element={<ProfileCard/>} />
+        <Route path="/clock" element={<ClockScroll3D/>} />
       </Route>
 
       {/* Auth */}
@@ -77,17 +76,14 @@ function AppRoutes() {
       <Route path="/companyjobs" element={<CompanyJobsAdmin />} />
       <Route path="/company/jobs/:id" element={<JobDashboard />} />
       <Route path="/company/:companyId" element={<CompanyProfilePage />} />
+      <Route path="/company1" element={<Layout3 />} />
     
+      <Route path="/job-dash" element={<ApplicationsPage />} />
       <Route path="/profile/form" element={<CandidateProfileForm />} />
       <Route path="/:profileId" element={<ProfilePages />} />
-      <Route path="/company" element={<CompanyWebsite3 />} />
-      <Route path="/profile/5" element={<Profile12 />} />
-      <Route path="/profile/3" element={<PersonalPortfolio2 />} />
-      <Route path="/profile/6" element={<Profile12 />} />
       <Route path="/jobslist" element={<CompanyJobsAdmin />} />
       <Route path="/jobs/form" element={<JobForm/>} />
       <Route path="/layout" element={<LayoutSelector />} />
-      <Route path="/company1" element={<Company2/>} />
    
    {/* freelance */}
       <Route path="/freelance-list" element={<FreelancerList/>} />

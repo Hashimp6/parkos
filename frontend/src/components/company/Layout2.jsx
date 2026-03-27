@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
 // ── Mock company data (mirrors your Mongoose schema) ─────────────────────────
-const company = {
+const DUMMY= {
   companyName: "NexaCore Technologies",
   tagline: "Engineering Tomorrow, Today.",
   about:
@@ -77,7 +77,7 @@ const avatarGradients = [
 ];
 
 // ── Nav ───────────────────────────────────────────────────────────────────────
-function Nav() {
+function Nav({ company }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -144,7 +144,7 @@ function Nav() {
 }
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
-function Hero() {
+function Hero({ company }) {
   return (
     <section className="relative min-h-screen flex items-center bg-zinc-950 overflow-hidden">
       {/* Grid background */}
@@ -255,7 +255,7 @@ function Hero() {
 }
 
 // ── About ─────────────────────────────────────────────────────────────────────
-function About() {
+function About({ company }) {
   return (
     <section id="about" className="bg-zinc-900 py-28">
       <div className="max-w-7xl mx-auto px-6">
@@ -309,7 +309,7 @@ function About() {
 }
 
 // ── Services ──────────────────────────────────────────────────────────────────
-function Services() {
+function Services({ company }) {
   const icons = ["⬡", "◈", "⬢", "◇", "⬟", "◉"];
   return (
     <section id="services" className="bg-zinc-950 py-28">
@@ -353,7 +353,7 @@ function Services() {
 }
 
 // ── Projects ──────────────────────────────────────────────────────────────────
-function Projects() {
+function Projects({ company }) {
   const colors = ["border-amber-400/40", "border-sky-400/40", "border-emerald-400/40"];
   const accents = ["text-amber-400", "text-sky-400", "text-emerald-400"];
   const bgs = ["bg-amber-400/5", "bg-sky-400/5", "bg-emerald-400/5"];
@@ -391,7 +391,7 @@ function Projects() {
 }
 
 // ── Team ──────────────────────────────────────────────────────────────────────
-function Team() {
+function Team({ company }) {
   return (
     <section id="team" className="bg-zinc-950 py-28">
       <div className="max-w-7xl mx-auto px-6">
@@ -422,7 +422,7 @@ function Team() {
 }
 
 // ── Clients ───────────────────────────────────────────────────────────────────
-function Clients() {
+function Clients({ company }) {
   return (
     <section id="clients" className="bg-zinc-900 py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 mb-12">
@@ -449,7 +449,7 @@ function Clients() {
 }
 
 // ── Gallery ───────────────────────────────────────────────────────────────────
-function Gallery() {
+function Gallery({ company }) {
   const placeholderColors = ["bg-zinc-800", "bg-zinc-800", "bg-zinc-800", "bg-zinc-800"];
   return (
     <section id="gallery" className="bg-zinc-950 py-28">
@@ -478,7 +478,7 @@ function Gallery() {
 }
 
 // ── Contact ───────────────────────────────────────────────────────────────────
-function Contact() {
+function Contact({ company }) {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
 
@@ -601,7 +601,7 @@ function Contact() {
 }
 
 // ── Footer ────────────────────────────────────────────────────────────────────
-function Footer() {
+function Footer({ company }) {
   return (
     <footer className="bg-zinc-950 border-t border-zinc-800 py-12">
       <div className="max-w-7xl mx-auto px-6">
@@ -629,7 +629,8 @@ function Footer() {
 }
 
 // ── App ────────────────────────────────────────────────────────────────────────
-export default function Company2() {
+export default function Company2({ data}) {
+  const companyData = data ||DUMMY;
   return (
     <div className="font-sans antialiased">
       <style>{`
@@ -638,16 +639,17 @@ export default function Company2() {
         h1, h2, h3, h4, nav .font-black { font-family: 'Syne', sans-serif; }
         html { scroll-behavior: smooth; }
       `}</style>
-      <Nav />
-      <Hero />
-      <About />
-      <Services />
-      <Projects />
-      <Team />
-      <Clients />
-      <Gallery />
-      <Contact />
-      <Footer />
+     <Nav company={companyData} />
+      <Hero company={companyData} />
+      <About company={companyData} />
+      <Services company={companyData} />
+      <Projects company={companyData} />
+      <Team company={companyData} />
+      <Clients company={companyData} />
+      <Gallery company={companyData} />
+      <Contact company={companyData} />
+      <Footer company={companyData} />
+
     </div>
   );
 }

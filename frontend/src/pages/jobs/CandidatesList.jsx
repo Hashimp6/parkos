@@ -278,7 +278,7 @@ function ApplicantDrawer({ app, onClose, onStatusChange }) {
           <div>
             <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Skills</p>
             <div className="flex flex-wrap gap-1.5">
-              {app.candidate.skills.map((s) => (
+              {(app.candidate.skills || []).map((s) => (
                 <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-600 border border-zinc-200">{s}</span>
               ))}
             </div>
@@ -409,40 +409,7 @@ function ApplicantsPage({ job, applications, onBack, onStatusChange }) {
       {/* Table Card — same card style as CompanyJobsAdmin */}
       <div className="bg-white rounded-2xl border border-zinc-100 overflow-hidden">
 
-        {/* Toolbar */}
-        <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-zinc-100">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <IconSearch />
-            </span>
-            <input
-              type="text"
-              placeholder="Search applicants..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-2 text-sm border border-zinc-200 rounded-xl text-zinc-800 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 w-52 transition-all"
-            />
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {["All", ...STATUSES].map((s) => (
-              <button
-                key={s}
-                onClick={() => setFilter(s)}
-                className={`text-xs px-2.5 py-1.5 rounded-xl border transition-all whitespace-nowrap ${
-                  filter === s
-                    ? "bg-zinc-900 text-white border-zinc-900"
-                    : "border-zinc-200 text-zinc-500 hover:border-zinc-400"
-                }`}
-              >
-                {s}
-                {s !== "All" && (
-                  <span className="ml-1 opacity-50">{countByStatus(applications, s)}</span>
-                )}
-              </button>
-            ))}
-            <span className="text-xs text-zinc-400 ml-1">{filtered.length} records</span>
-          </div>
-        </div>
+       
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -492,10 +459,10 @@ function ApplicantsPage({ job, applications, onBack, onStatusChange }) {
                     {/* Skills */}
                     <td className="px-5 py-3.5">
                       <div className="flex gap-1 flex-wrap">
-                        {app.candidate.skills.slice(0, 2).map((s) => (
+                      {(app.candidate.skills || []).slice(0, 2).map((s) => (
                           <span key={s} className="text-xs px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-500 border border-zinc-200">{s}</span>
                         ))}
-                        {app.candidate.skills.length > 2 && (
+{(app.candidate.skills || []).length > 2 && (
                           <span className="text-xs text-zinc-300">+{app.candidate.skills.length - 2}</span>
                         )}
                       </div>
@@ -569,7 +536,9 @@ export default function JobDashboard() {
     if (applications.length === 0) {
       setLoadingApps(true);
       try {
-        const res = await axios.get(`${API_BASE}/applications/job/${job._id}`);
+        const res = await axios.get( `${API_BASE}/jobs-application?jobId=${job._id}`);
+        console.log("appli",res.data.data);
+        
         setApplications(res.data.data || res.data);
       } catch (err) {
         console.error("Failed to load applicants:", err);
@@ -583,7 +552,7 @@ export default function JobDashboard() {
   // Wire to: PATCH /api/applications/:id/status
   const handleStatusChange = async (appId, newStatus, note) => {
     try {
-      await axios.patch(`${API_BASE}/applications/${appId}/status`, { status: newStatus, note });
+      await axios.patch(`${API_BASE}/jobs-application/${appId}/status`, { status: newStatus, note });
     } catch (err) {
       console.error("Status update failed:", err);
     }

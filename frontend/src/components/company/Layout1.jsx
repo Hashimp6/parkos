@@ -274,8 +274,8 @@ function GalPh({ caption }) {
   );
 }
 
-export default function Company1({ data: rawData }) {
-  const d = rawData ? rawData : DUMMY;
+export default function Company1({ data}) {
+  const d = data || DUMMY;
   const [scrolled, setScrolled] = useState(false);
   const [mobOpen, setMobOpen] = useState(false);
 

@@ -22,7 +22,7 @@ const DISCOVER = [
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
   },
   {
-    key: "people", label: "Find People", sub: "Grow your network", num: "03",
+    key: "job-dash", label: "Manage Jobs", sub: "Manage Job Applications", num: "03",
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
   },
  
@@ -562,6 +562,9 @@ export default function CandidateHomeSection({ onNavigate }) {
                       goto("/jobs");
                     } else if (card.key === "Manage Freelance") {
                       goto("/freelance-dashbord");
+                    }
+                    else if (card.key === "job-dash") {
+                      goto("/job-dash");
                     }
                   }}
                   style={{animation:`riseIn .5s cubic-bezier(.16,1,.3,1) ${.15+i*.08}s both`}}

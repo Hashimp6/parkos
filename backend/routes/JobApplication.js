@@ -16,7 +16,7 @@ const {
 } = require("../controllers/jobApplication");
 
 // ── Candidate actions ────────────────────────────────────────────
-router.post("/apply", uploadApplicationResume, applyForJob);           // Submit application (+ optional resume file)
+router.post("/apply",  applyForJob);           // Submit application (+ optional resume file)
 router.get("/candidate/:candidateId", getApplicationsByCandidate);     // Candidate's own applications
 router.delete("/:id", deleteApplication);                              // Withdraw application
 

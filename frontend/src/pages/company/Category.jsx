@@ -2,32 +2,56 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const categories = [
-  { name: "Web Development", icon: "💻", tag: "tech" },
-  { name: "App Development", icon: "📱", tag: "tech" },
-  { name: "Software Development", icon: "🖥️", tag: "tech" },
-  { name: "UI/UX Design", icon: "🎨", tag: "design" },
-  { name: "Graphic Design", icon: "✏️", tag: "design" },
-  { name: "Logo Design", icon: "🏷️", tag: "design" },
-  { name: "Poster & Banner Design", icon: "🪧", tag: "design" },
-  { name: "Video Editing", icon: "🎬", tag: "media" },
-  { name: "Videography", icon: "📹", tag: "media" },
-  { name: "Photography", icon: "📷", tag: "media" },
-  { name: "Content Writing", icon: "📝", tag: "writing" },
-  { name: "Digital Marketing", icon: "📈", tag: "marketing" },
-  { name: "Social Media Marketing", icon: "📣", tag: "marketing" },
-  { name: "Accounting & Finance", icon: "💰", tag: "finance" },
+  // 💻 TECHNOLOGY
+  { name: "IT & Software", icon: "🖥️", tag: "tech" },
+  { name: "Web & App Development", icon: "🌐", tag: "web" },
+
+  // 🎨 CREATIVE
+  { name: "Design & Creative", icon: "🎨", tag: "design" },
+  { name: "Media & Video Production", icon: "🎬", tag: "media" },
+
+  // 📈 MARKETING
+  { name: "Digital Marketing & Advertising", icon: "📈", tag: "marketing" },
+
+  // 🏢 BUSINESS SERVICES
+  { name: "Business & Consulting", icon: "📊", tag: "business" },
+  { name: "Finance & Legal Services", icon: "⚖️", tag: "finance" },
+
+  // 🛒 COMMERCIAL
+  { name: "E-commerce & Retail", icon: "🛍️", tag: "commerce" },
+  { name: "Sales & Distribution", icon: "📦", tag: "sales" },
+
+  // 🏗️ INFRASTRUCTURE
+  { name: "Construction & Real Estate", icon: "🏗️", tag: "construction" },
+  { name: "Interior & Architecture", icon: "🛋️", tag: "interior" },
+
+  // 🏠 LOCAL SERVICES
+  { name: "Home & Maintenance Services", icon: "🧹", tag: "home" },
+
+  // 🎉 EVENTS
+  { name: "Event Management & Entertainment", icon: "🎉", tag: "event" },
+
+  // 🍽️ FOOD
+  { name: "Food & Catering Services", icon: "🍽️", tag: "food" },
+
+  // 🎓 EDUCATION
   { name: "Education & Training", icon: "🎓", tag: "education" },
-  { name: "Makeup & Beauty", icon: "💄", tag: "beauty" },
-  { name: "Henna / Mehndi Art", icon: "🌿", tag: "beauty" },
-  { name: "Drawing & Illustration", icon: "🖌️", tag: "art" },
-  { name: "Gifting Services", icon: "🎁", tag: "art" },
-  { name: "Event Management", icon: "🎉", tag: "event" },
-  { name: "Hosting / Presenters", icon: "🎤", tag: "event" },
-  { name: "Food & Catering", icon: "🍽️", tag: "food" },
-  { name: "Fashion Design", icon: "👗", tag: "fashion" },
-  { name: "Tailoring", icon: "🧵", tag: "fashion" },
-  { name: "Cleaning Services", icon: "🧹", tag: "home" },
-  { name: "Others", icon: "💼", tag: "other" },
+
+  // 🚚 LOGISTICS
+  { name: "Logistics & Transportation", icon: "🚚", tag: "logistics" },
+
+  // 🏥 HEALTH
+  { name: "Healthcare & Wellness", icon: "🏥", tag: "health" },
+
+  // 👗 LIFESTYLE
+  { name: "Fashion, Beauty & Lifestyle", icon: "👗", tag: "lifestyle" },
+
+  // 🌾 TRADITIONAL / LOCAL
+  { name: "Agriculture & Local Products", icon: "🌾", tag: "agriculture" },
+  { name: "Tourism & Hospitality", icon: "🏝️", tag: "tourism" },
+
+  // 🔧 GENERAL
+  { name: "Other Services", icon: "💼", tag: "other" },
 ];
 
 const CSS = `

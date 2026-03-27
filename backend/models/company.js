@@ -71,6 +71,9 @@ const companySchema = new mongoose.Schema(
       trim: true, 
       unique: true 
     },
+    category: {
+      type: String,
+    },
     email:       { type: String, unique: true, lowercase: true, trim: true },
     phone:       { type: String },
     password:    { type: String, minlength: 6, select: false },
@@ -105,6 +108,17 @@ const companySchema = new mongoose.Schema(
       enum:    BUSINESS_PARK_OPTIONS,
       default: "Other",
     },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        default: [0, 0],
+      },
+    },
     address: {
       building: { type: String, default: "" },
       street:   { type: String, default: "" },
@@ -130,7 +144,7 @@ const companySchema = new mongoose.Schema(
     website: { type: String, default: "" },
 
     // ── Admin ─────────────────────────────────────────────────────────────────
-    isVerified: { type: Boolean, default: false },
+   
     isActive:   { type: Boolean, default: true },
   },
   { timestamps: true }

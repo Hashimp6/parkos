@@ -517,8 +517,9 @@ const [showSuggestions, setShowSuggestions] = useState(false);
   { k: "place", l: "Location", p: "Bangalore, India" },
 ].map((f) => (
   <div key={f.k} className="relative">
+    
     <label className={labelCls}>{f.l}</label>
-
+   
     {/* 🔥 SPECIAL CASE: PLACE */}
     {f.k === "place" ? (
       <>
@@ -558,7 +559,13 @@ const [showSuggestions, setShowSuggestions] = useState(false);
         value={form[f.k]}
         onChange={(e) => set(f.k, e.target.value)}
       />
+      
     )}
+     {f.k === "phone" && (
+   <div className="mt-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-700">
+   Use a secondary phone number to protect your personal contact
+ </div>
+  )}
   </div>
 ))}
                  

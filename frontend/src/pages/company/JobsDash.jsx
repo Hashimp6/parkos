@@ -44,22 +44,21 @@ const IconCheck = () => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
   </svg>
 );
-const IconEye = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-  </svg>
-);
 const IconUsers = () => (
   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+const IconChevronRight = () => (
+  <svg className="w-4 h-4 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
   </svg>
 );
 
 // ─── Delete Confirm Modal ──────────────────────────────────────────────────
 function DeleteModal({ job, onConfirm, onCancel }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm px-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm px-4 pb-4 sm:pb-0">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-zinc-100">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-500">
@@ -111,7 +110,7 @@ function Toast({ toast }) {
 // ─── Stat Card ─────────────────────────────────────────────────────────────
 function StatCard({ label, value, accent }) {
   return (
-    <div className="bg-white rounded-xl border border-zinc-100 px-4 py-3.5">
+    <div className="bg-white rounded-xl border border-zinc-100 px-4 py-3.5 flex-1">
       <p className={`text-2xl font-semibold ${accent || "text-zinc-900"}`}>{value}</p>
       <p className="text-xs text-zinc-400 mt-0.5 font-medium uppercase tracking-wide">{label}</p>
     </div>
@@ -135,6 +134,87 @@ function Toggle({ active, onChange }) {
   );
 }
 
+// ─── Job Card (replaces table row) ────────────────────────────────────────
+function JobCard({ job, onView, onEdit, onDelete, onToggle }) {
+  const handleCardClick = (e) => {
+    // Don't navigate if clicking interactive elements
+    if (e.target.closest("button")) return;
+    onView();
+  };
+
+  return (
+    <div
+      onClick={handleCardClick}
+      className="bg-white border border-zinc-100 rounded-2xl p-4 hover:border-zinc-200 hover:shadow-sm active:scale-[0.99] transition-all cursor-pointer relative group"
+    >
+      {/* Top Row: Role + Chevron */}
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-zinc-900 text-sm leading-tight truncate">{job.role}</h3>
+          {job.department && (
+            <p className="text-xs text-zinc-400 mt-0.5 truncate">{job.department}</p>
+          )}
+        </div>
+        <IconChevronRight />
+      </div>
+
+      {/* Badges Row */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <span className={`text-xs font-medium ${JOB_TYPE_STYLES[job.jobType] || "text-zinc-600"}`}>
+          {job.jobType}
+        </span>
+        <span className="text-zinc-200 text-xs">•</span>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${WORK_MODE_STYLES[job.workMode] || "bg-zinc-100 text-zinc-600 border border-zinc-200"}`}>
+          {job.workMode}
+        </span>
+      </div>
+
+      {/* Bottom Row: Status + Applicants + Actions */}
+      <div className="flex items-center justify-between gap-3">
+        {/* Status Toggle */}
+        <div className="flex items-center gap-2">
+          <Toggle
+            active={job.isActive}
+            onChange={(e) => { e.stopPropagation(); onToggle(); }}
+          />
+          <span className={`text-xs font-medium ${job.isActive ? "text-emerald-600" : "text-zinc-400"}`}>
+            {job.isActive ? "Active" : "Closed"}
+          </span>
+        </div>
+
+        {/* Right-side Actions */}
+        <div className="flex items-center gap-2">
+          {/* Applicants pill */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onView(); }}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200 text-xs font-semibold hover:bg-indigo-100 transition-all"
+          >
+            <IconUsers />
+            {job.applicationsCount ?? 0}
+          </button>
+
+          {/* Edit */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all"
+          >
+            <IconEdit />
+            <span className="hidden sm:inline">Edit</span>
+          </button>
+
+          {/* Delete */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-red-500 bg-red-50 border border-red-200 hover:bg-red-100 transition-all"
+          >
+            <IconTrash />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ────────────────────────────────────────────────────────
 export default function CompanyJobsAdmin() {
   const navigate = useNavigate();
@@ -149,21 +229,16 @@ export default function CompanyJobsAdmin() {
     const fetchJobs = async () => {
       try {
         const res = await axios.get(`${API_BASE}/jobs/company/${company._id}`);
-    
         const raw = res.data?.data || res.data;
-    
-        // ✅ ensure it's always an array
         const jobsArray = Array.isArray(raw)
           ? raw
           : Array.isArray(raw?.jobs)
           ? raw.jobs
           : [];
-    
         setJobs(jobsArray);
-    
       } catch (err) {
         console.error("Error fetching jobs:", err);
-        setJobs([]); // safety fallback
+        setJobs([]);
       }
     };
     fetchJobs();
@@ -188,17 +263,10 @@ export default function CompanyJobsAdmin() {
   const toggleActive = async (id, currentStatus) => {
     try {
       const newStatus = !currentStatus;
-  
-      await axios.put(`${API_BASE}/jobs/${id}`, {
-        isActive: newStatus,
-      });
-  
+      await axios.put(`${API_BASE}/jobs/${id}`, { isActive: newStatus });
       setJobs((prev) =>
-        prev.map((j) =>
-          j._id === id ? { ...j, isActive: newStatus } : j
-        )
+        prev.map((j) => (j._id === id ? { ...j, isActive: newStatus } : j))
       );
-  
       showToast(newStatus ? "Job activated" : "Job closed");
     } catch (err) {
       console.error(err);
@@ -207,12 +275,13 @@ export default function CompanyJobsAdmin() {
   };
 
   const filtered = Array.isArray(jobs)
-  ? jobs.filter((j) =>
-      !search ||
-      j.role?.toLowerCase().includes(search.toLowerCase()) ||
-      j.department?.toLowerCase().includes(search.toLowerCase())
-    )
-  : [];
+    ? jobs.filter(
+        (j) =>
+          !search ||
+          j.role?.toLowerCase().includes(search.toLowerCase()) ||
+          j.department?.toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
 
   const activeCount = jobs.filter((j) => j.isActive).length;
 
@@ -228,10 +297,10 @@ export default function CompanyJobsAdmin() {
         />
       )}
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
         {/* ── Page Header ── */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 overflow-hidden flex items-center justify-center flex-shrink-0">
               {company?.logo ? (
@@ -243,7 +312,7 @@ export default function CompanyJobsAdmin() {
               )}
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-zinc-900 leading-tight tracking-tight">
+              <h1 className="text-base font-semibold text-zinc-900 leading-tight tracking-tight">
                 {company?.companyName}
               </h1>
               <p className="text-xs text-zinc-400 mt-0.5">Job Listings</p>
@@ -251,152 +320,64 @@ export default function CompanyJobsAdmin() {
           </div>
 
           <button
-            onClick={() => navigate("/company/jobs/create")}
-            className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-800 active:scale-[0.98] transition-all"
+            onClick={() => navigate("/jobs/form")}
+            className="flex items-center gap-1.5 px-3.5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-800 active:scale-[0.98] transition-all"
           >
             <IconPlus />
-            Add Job
+            <span>Add Job</span>
           </button>
         </div>
 
         {/* ── Stats Row ── */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
-          <StatCard label="Total Jobs"  value={jobs.length} />
-          <StatCard label="Active"      value={activeCount} accent="text-emerald-600" />
-          <StatCard label="Closed"      value={jobs.length - activeCount} accent="text-zinc-400" />
+        <div className="flex gap-3 mb-5">
+          <StatCard label="Total"  value={jobs.length} />
+          <StatCard label="Active" value={activeCount} accent="text-emerald-600" />
+          <StatCard label="Closed" value={jobs.length - activeCount} accent="text-zinc-400" />
         </div>
 
-        {/* ── Table Card ── */}
-        <div className="bg-white rounded-2xl border border-zinc-100 overflow-hidden">
-
-          {/* Toolbar */}
-          <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-zinc-100">
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <IconSearch />
-              </span>
-              <input
-                type="text"
-                placeholder="Search jobs..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-8 pr-3 py-2 text-sm border border-zinc-200 rounded-xl text-zinc-800 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 w-52 transition-all"
-              />
-            </div>
-            <span className="text-xs text-zinc-400">{filtered.length} jobs</span>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-100">
-                  {["Role", "Type / Mode", "Status", "Applicants", "Actions"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wide whitespace-nowrap">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-50">
-                {filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="text-center py-16 text-zinc-400 text-sm">
-                      No jobs found
-                    </td>
-                  </tr>
-                ) : (
-                  filtered.map((job) => (
-                    <tr key={job._id} className="hover:bg-zinc-50/70 transition-colors">
-
-                      {/* Role */}
-                      <td className="px-5 py-3.5 whitespace-nowrap">
-                        <div>
-                          <span className="font-semibold text-zinc-900 text-sm">{job.role}</span>
-                          {job.department && (
-                            <p className="text-xs text-zinc-400 mt-0.5">{job.department}</p>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Type / Mode */}
-                      <td className="px-5 py-3.5 whitespace-nowrap">
-                        <div className="flex flex-col gap-1">
-                          <span className={`text-xs font-medium ${JOB_TYPE_STYLES[job.jobType] || "text-zinc-600"}`}>
-                            {job.jobType}
-                          </span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium w-fit ${WORK_MODE_STYLES[job.workMode] || "bg-zinc-100 text-zinc-600 border border-zinc-200"}`}>
-                            {job.workMode}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Status toggle */}
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-2">
-                        <Toggle
-  active={job.isActive}
-  onChange={() => toggleActive(job._id, job.isActive)}
-/>
-                          <span className={`text-xs font-medium ${job.isActive ? "text-emerald-600" : "text-zinc-400"}`}>
-                            {job.isActive ? "Active" : "Closed"}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Applicants count */}
-                      <td className="px-5 py-3.5">
-                        <button
-                          onClick={() => navigate(`/company/jobs/${job._id}`, { state: { job } })}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200 text-xs font-semibold hover:bg-indigo-100 hover:border-indigo-300 transition-all"
-                        >
-                          <IconUsers />
-                          {job.applicationsCount ?? 0}
-                        </button>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => navigate(`/company/jobs/${job._id}`, { state: { job } })}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-zinc-800 hover:bg-zinc-700 shadow-sm hover:shadow transition-all active:scale-95"
-                          >
-                            <IconEye />
-                            View
-                          </button>
-                          <button
-                            onClick={() => navigate("/jobs/form", { state: { job } })}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 transition-all active:scale-95"
-                            title="Edit"
-                          >
-                            <IconEdit />
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(job)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-red-500 bg-red-50 border border-red-200 hover:bg-red-100 hover:border-red-300 transition-all active:scale-95"
-                            title="Delete"
-                          >
-                            <IconTrash />
-                          </button>
-                        </div>
-                      </td>
-
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Footer */}
-          <div className="px-5 py-3.5 border-t border-zinc-100 bg-zinc-50/50">
-            <span className="text-xs text-zinc-400">
-              Showing {filtered.length} of {jobs.length} jobs
+        {/* ── Search + Count ── */}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <IconSearch />
             </span>
+            <input
+              type="text"
+              placeholder="Search jobs..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-8 pr-3 py-2.5 text-sm border border-zinc-200 rounded-xl text-zinc-800 placeholder-zinc-300 focus:outline-none focus:border-zinc-400 bg-white transition-all"
+            />
           </div>
+          <span className="text-xs text-zinc-400 whitespace-nowrap">{filtered.length} jobs</span>
         </div>
+
+        {/* ── Job Cards ── */}
+        <div className="flex flex-col gap-3">
+          {filtered.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-zinc-100 py-16 text-center">
+              <p className="text-zinc-400 text-sm">No jobs found</p>
+            </div>
+          ) : (
+            filtered.map((job) => (
+              <JobCard
+                key={job._id}
+                job={job}
+                onView={() => navigate(`/company/jobs/${job._id}`, { state: { job } })}
+                onEdit={() => navigate("/jobs/form", { state: { job } })}
+                onDelete={() => setDeleteTarget(job)}
+                onToggle={() => toggleActive(job._id, job.isActive)}
+              />
+            ))
+          )}
+        </div>
+
+        {/* ── Footer ── */}
+        {jobs.length > 0 && (
+          <p className="text-center text-xs text-zinc-400 mt-5">
+            Showing {filtered.length} of {jobs.length} jobs
+          </p>
+        )}
       </div>
     </div>
   );

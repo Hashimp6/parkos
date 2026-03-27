@@ -10,7 +10,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+require("./cron/jobExpiry");
 // Routes
 app.use("/api/candidate", require("./routes/candidate"));
 // app.use("/api/employer", require("./routes/employerRoutes"));

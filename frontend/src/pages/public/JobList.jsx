@@ -393,7 +393,7 @@ function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile,
 
       {(job.company || job.location) && (
         <p style={{ fontFamily: "'Manrope',sans-serif", fontSize: 12, color: T.g400, margin: "0 0 12px", fontWeight: 500 }}>
-          {[job.company && <strong key="c" style={{ color: T.g600, fontWeight: 600 }}>{job.company}</strong>, job.location].filter(Boolean).reduce((acc, el, i) => i === 0 ? [el] : [...acc, <span key={i} style={{ color: T.g200, margin: "0 3px" }}>·</span>, el], [])}
+          {[job.company && <strong key="c" style={{ color: T.g600, fontWeight: 600 }}>{job.company?.companyName}</strong>, job.location].filter(Boolean).reduce((acc, el, i) => i === 0 ? [el] : [...acc, <span key={i} style={{ color: T.g200, margin: "0 3px" }}>·</span>, el], [])}
         </p>
       )}
 
@@ -668,6 +668,7 @@ export default function JobListings({
         setToast({ type: "error", message: "Please login to apply" });
         return;
       }
+  console.log("ddee",job,user);
   
       const res = await axios.post(`${API_BASE}/jobs-application/apply`, {
         jobId: job._id,

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 /* ─────────────────────────────────────────────
    HARDCODED COMPANY DATA  (swap with API later)
 ───────────────────────────────────────────── */
-const company = {
+const DUMMY = {
   companyName: "NexaCore Technologies",
   tagline: "Engineering Tomorrow, Today.",
   about:
@@ -109,7 +109,7 @@ function useScrolled(threshold = 40) {
 /* ─────────────────────────────────────────────
    NAV
 ───────────────────────────────────────────── */
-function Nav() {
+function Nav({ company }) {
   const scrolled = useScrolled();
   const [open, setOpen] = useState(false);
   const links = ["About", "Services", "Projects", "Team", "Clients", "Gallery", "Contact"];
@@ -293,6 +293,20 @@ function Nav() {
         .input-field.on-dark { color: ${C.cream}; border-color: ${C.borderDark}; }
         .input-field.on-dark::placeholder { color: ${C.stoneMid}; }
         .input-field.on-dark:focus { border-color: ${C.rustLight}; }
+      .cp-logo-mark {
+  width: 36px;
+  height: 36px;
+  background: #C4500A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FDF6EE;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+}
       `}</style>
 
       <nav
@@ -308,11 +322,14 @@ function Nav() {
         <div style={{ maxWidth: 1280, margin: "0 auto", height: 68, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           {/* Logo */}
           <a href="#" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <div style={{ width: 28, height: 28, background: C.rust, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ color: C.cream, fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 600, fontSize: 10, letterSpacing: 1 }}>NC</span>
+          <div className="cp-logo-mark">
+          {company.logo
+  ? <img src={company.logo} alt="logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+  : initials(company.companyName)
+}
             </div>
             <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 16, color: C.ink, letterSpacing: -0.3 }}>
-              NexaCore
+             {company.companyName}
             </span>
           </a>
 
@@ -359,7 +376,7 @@ function Nav() {
 /* ─────────────────────────────────────────────
    HERO
 ───────────────────────────────────────────── */
-function Hero() {
+function Hero({ company }) {
   return (
     <section
       id="hero"
@@ -441,7 +458,7 @@ function Hero() {
 /* ─────────────────────────────────────────────
    ABOUT
 ───────────────────────────────────────────── */
-function About() {
+function About({ company }) {
   return (
     <section id="about" style={{ background: C.creamDark, padding: "120px 40px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
@@ -503,7 +520,7 @@ function About() {
 /* ─────────────────────────────────────────────
    SERVICES
 ───────────────────────────────────────────── */
-function Services() {
+function Services({ company }) {
   const [expanded, setExpanded] = useState(null);
 
   return (
@@ -562,7 +579,7 @@ function Services() {
 /* ─────────────────────────────────────────────
    PROJECTS
 ───────────────────────────────────────────── */
-function Projects() {
+function Projects({ company }) {
   return (
     <section id="projects" style={{ background: C.cream, padding: "120px 40px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
@@ -604,7 +621,7 @@ function Projects() {
 /* ─────────────────────────────────────────────
    TEAM
 ───────────────────────────────────────────── */
-function Team() {
+function Team({ company }) {
   const avatarColors = [C.rust, C.inkLight, C.stone, "#6B4226", C.rustLight, C.stoneMid];
 
   return (
@@ -646,7 +663,7 @@ function Team() {
 /* ─────────────────────────────────────────────
    CLIENTS
 ───────────────────────────────────────────── */
-function Clients() {
+function Clients({ company }) {
   return (
     <section id="clients" style={{ background: C.ink, padding: "100px 40px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
@@ -700,7 +717,7 @@ function Clients() {
 /* ─────────────────────────────────────────────
    GALLERY
 ───────────────────────────────────────────── */
-function Gallery() {
+function Gallery({ company }) {
   const palettes = [
     { bg: "#D4956A", label: "Warm Amber" },
     { bg: "#8C6A50", label: "Stone Brown" },
@@ -757,7 +774,7 @@ function Gallery() {
 /* ─────────────────────────────────────────────
    CONTACT
 ───────────────────────────────────────────── */
-function Contact() {
+function Contact({ company }) {
   const [form, setForm] = useState({ name: "", email: "", company: "", message: "" });
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -887,7 +904,7 @@ function Contact() {
 /* ─────────────────────────────────────────────
    FOOTER
 ───────────────────────────────────────────── */
-function Footer() {
+function Footer({ company }) {
   return (
     <footer style={{ background: C.ink, borderTop: `1px solid ${C.borderDark}` }}>
       {/* Top band */}
@@ -963,19 +980,22 @@ function Footer() {
 /* ─────────────────────────────────────────────
    ROOT EXPORT
 ───────────────────────────────────────────── */
-export default function Layout3() {
+export default function Layout3({ data }) {
+  console.log("ggg",data);
+  
+  const companyData = data ||DUMMY;
   return (
     <div>
-      <Nav />
-      <Hero />
-      <About />
-      <Services />
-      <Projects />
-      <Team />
-      <Clients />
-      <Gallery />
-      <Contact />
-      <Footer />
+      <Nav company={companyData} />
+      <Hero company={companyData} />
+      <About company={companyData} />
+      <Services company={companyData} />
+      <Projects company={companyData} />
+      <Team company={companyData} />
+      <Clients company={companyData} />
+      <Gallery company={companyData} />
+      <Contact company={companyData} />
+      <Footer company={companyData} />
     </div>
   );
 }

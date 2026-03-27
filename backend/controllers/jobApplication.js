@@ -39,6 +39,8 @@ console.log("gyy",jobId, candidateId, coverLetter);
 
     // Job checks
     const job = await Job.findById(jobId);
+    console.log("jobb",job);
+    
     if (!job) return res.status(404).json({ success: false, message: "Job not found." });
     if (!job.isActive) {
       return res.status(400).json({ success: false, message: "This job is no longer accepting applications." });
@@ -46,6 +48,7 @@ console.log("gyy",jobId, candidateId, coverLetter);
     if (job.lastDateToApply && new Date() > new Date(job.lastDateToApply)) {
       return res.status(400).json({ success: false, message: "The application deadline for this job has passed." });
     }
+console.log("d");
 
     // Duplicate check
     const existing = await JobApplication.findOne({ job: jobId, candidate: candidateId });
@@ -58,6 +61,8 @@ console.log("gyy",jobId, candidateId, coverLetter);
     if (!candidate) return res.status(404).json({ success: false, message: "Candidate not found." });
 
     const resume=candidate.cv
+    console.log("SSS",candidate,resume);
+    
     const application = await JobApplication.create({
       job: jobId,
       candidate: candidateId,
@@ -104,7 +109,7 @@ exports.getAllApplications = async (req, res) => {
     const [applications, total] = await Promise.all([
       JobApplication.find(filter)
         .populate("job", "role location jobType company")
-        .populate("candidate", "name email phone profilePhoto profileId")
+        .populate("candidate", "name email phone profilePhoto cv profileId")
         .sort({ appliedAt: -1 })
         .skip(skip)
         .limit(lmt)
@@ -171,11 +176,18 @@ exports.getApplicationsByCandidate = async (req, res) => {
 
     const [applications, total] = await Promise.all([
       JobApplication.find(filter)
-        .populate({
-          path: "job",
-          select: "role department location jobType workMode salaryFrom salaryTo currency isActive lastDateToApply",
-          populate: { path: "company", select: "name logo" },
-        })
+      .populate({
+        path: "job",
+        select: "role department location jobType workMode salaryFrom salaryTo currency isActive lastDateToApply",
+        populate: {
+          path: "company",
+          select: "companyName logo",
+        },
+      })
+      .populate({
+        path: "candidate",
+        select: "name email phone profilePhoto",
+      })
         .sort({ appliedAt: -1 })
         .skip(skip)
         .limit(lmt)
