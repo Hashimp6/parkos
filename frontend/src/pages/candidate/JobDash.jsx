@@ -718,10 +718,8 @@ export default function ApplicationsPage() {
         ) : visible.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-zinc-300">
             <span className="text-5xl mb-3">📭</span>
-            <p className="text-sm font-semibold">No applications match your filter</p>
-            <button onClick={() => { setFilter("All"); setSearch(""); }} className="mt-3 text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-700">
-              Clear filters
-            </button>
+            <p className="text-sm font-semibold">No applications found</p>
+          
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

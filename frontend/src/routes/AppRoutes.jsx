@@ -42,6 +42,7 @@ import ApplicationsPage from "../pages/candidate/JobDash";
 import Layout3 from "../components/company/Layout3";
 import CompanyRoute from "../components/company/CompanyProtectRoute";
 import NotFound from "../pages/public/NotFound";
+import PublicRoute from "../components/candidate/PublicRoute";
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
 // import Profile from "../pages/dashboard/Profile";
@@ -68,10 +69,32 @@ function AppRoutes() {
 
       <Route path="/preview/:layoutId" element={<PreviewPage />} />
       <Route path="/company-preview/:id" element={<CmpnyPreviewPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage/>} />
-      <Route path="/home" element={<CandidateHomeSection/>} />
+      <Route
+  path="/login"
+  element={
+    <PublicRoute>
+      <Login />
+    </PublicRoute>
+  }
+/>
+
+<Route
+  path="/register"
+  element={
+      <PublicRoute>
+      <Register />
+    </PublicRoute>
+  }
+/>
+      <Route
+  path="/home"
+  element={
+    <ProtectedUserRoute>
+      <CandidateHomeSection />
+    </ProtectedUserRoute>
+  }
+/>
       <Route path="/profile/form" element={<CandidateProfileForm />} />
       <Route path="/profile/id/:profileId" element={<ProfilePages />} />
       
