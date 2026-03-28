@@ -554,7 +554,7 @@ console.log("dddd",verifyData.data,"dd",pendingData);
                 className="text-2xl font-bold text-black leading-snug mb-4"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                Start your journey<br />today and take control<br />of your time & tasks.
+                Start your journey<br />today with ParkOS<br />
               </h2>
               <div className="flex items-start gap-3">
                 <div className="w-0.5 h-10 bg-black rounded-full flex-shrink-0 mt-0.5" />
