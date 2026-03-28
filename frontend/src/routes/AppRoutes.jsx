@@ -43,6 +43,7 @@ import Layout3 from "../components/company/Layout3";
 import CompanyRoute from "../components/company/CompanyProtectRoute";
 import NotFound from "../pages/public/NotFound";
 import PublicRoute from "../components/candidate/PublicRoute";
+import ProtectedUserRoute from "../components/candidate/ProtectedUserRoute";
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
 // import Profile from "../pages/dashboard/Profile";

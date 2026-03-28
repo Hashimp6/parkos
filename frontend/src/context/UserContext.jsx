@@ -53,4 +53,21 @@ export const UserProvider = ({ children }) => {
   );
 };
 
+export const fetchUser = async () => {
+  try {
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) return;
+
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/candidate/me`, {
+      headers: { Authorization: `Bearer ${storedToken}` },
+    });
+
+    const freshUser = res.data; // adjust based on your API response shape
+    setUser(freshUser);
+    localStorage.setItem("candidate", JSON.stringify(freshUser));
+  } catch (err) {
+    console.error("Failed to refresh user:", err);
+  }
+};
+
 export const useUser = () => useContext(UserContext);

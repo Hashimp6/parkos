@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../../context/UserContext";
+import { fetchUser, useUser } from "../../context/UserContext";
 import BusinessCard from "../../components/ProfileVisitng";
 
 const DISCOVER = [
@@ -35,7 +35,10 @@ export default function CandidateHomeSection({ onNavigate }) {
   const [showCard, setShowCard] = useState(false);
   console.log("User from context:", user);
   const goto = (path) => { if (onNavigate) onNavigate(path); else navigate(path); };
-
+  
+  useEffect(() => {
+    fetchUser();
+  }, []); 
   const greeting = () => {
     const h = new Date().getHours();
     if (h < 12) return "Morning";
