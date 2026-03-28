@@ -57,7 +57,7 @@ app.get("/debug-env", (req, res) => {
     MONGO_URI: process.env.MONGO_URI ? "✅ loaded" : "❌ missing",
     JWT_SECRET: process.env.JWT_SECRET ? "✅ loaded" : "❌ missing",
     EMAIL_USER: process.env.EMAIL_USER ? "✅ loaded" : "❌ missing",
-    EMAIL_PASS: process.env.EMAIL_PASS ? "✅ loaded" : "❌ missing",
+    EMAIL_PASS: process.env.APP_PASS ? "✅ loaded" : "❌ missing",
     PORT: process.env.PORT || "using default 5002",
   });
 });
