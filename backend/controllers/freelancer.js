@@ -10,12 +10,13 @@ async function getCoordinatesFromPlace(place) {
       "https://nominatim.openstreetmap.org/search",
       {
         params: {
-          q: place,
+          q: `${place}, Kerala`,
           format: "json",
           limit: 1,
+          countrycodes: "in",
         },
         headers: {
-          "User-Agent": "freelance-platform-app", // REQUIRED
+          "User-Agent": "freelance-platform-app",
         },
       }
     );

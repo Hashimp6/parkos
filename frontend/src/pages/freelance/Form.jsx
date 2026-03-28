@@ -133,9 +133,12 @@ export default function FreelanceForm() {
         "https://nominatim.openstreetmap.org/search",
         {
           params: {
-            q: query,
+            q: `${query}, Kerala`,
             format: "json",
             limit: 5,
+            countrycodes: "in",
+            viewbox: "74.85,8.08,77.60,12.78",
+            bounded: 1,
           },
           headers: {
             "Accept-Language": "en",

@@ -286,14 +286,16 @@ const [showSuggestions, setShowSuggestions] = useState(false);
         `https://nominatim.openstreetmap.org/search`,
         {
           params: {
-            q: query,
+            q: `${query}, Kerala`,   // ← append Kerala to every query
             format: "json",
             addressdetails: 1,
             limit: 5,
+            countrycodes: "in",      // ← India only
+            viewbox: "74.85,8.08,77.60,12.78",  // Kerala bounding box (west,south,east,north)
+            bounded: 1,              // ← hard restrict to viewbox
           },
         }
       );
-  
       setPlaceSuggestions(res.data);
       setShowSuggestions(true);
     } catch (err) {
