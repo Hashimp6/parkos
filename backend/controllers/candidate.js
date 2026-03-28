@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const helper = require("../models/helper");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 const { sendMail } = require("../config/nodemailer");
+
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit
 };

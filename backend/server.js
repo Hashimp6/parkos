@@ -6,7 +6,7 @@ const connectDB = require("./config/db");
 dotenv.config();
 
 // ✅ Check required env variables on startup
-const requiredEnvVars = ["MONGO_URI", "JWT_SECRET"];
+const requiredEnvVars = ["MONGO_URI", "JWT_SECRET", "BREVO_API_KEY"];
 requiredEnvVars.forEach((key) => {
   if (!process.env[key]) {
     console.error(`❌ Missing env variable: ${key}`);
@@ -16,21 +16,15 @@ requiredEnvVars.forEach((key) => {
   }
 });
 
-// ✅ DB with error handling
-connectDB().catch((err) => {
-  console.error("❌ DB connection failed:", err.message);
-  process.exit(1);
-});
-
 const app = express();
 
-// ✅ Fix CORS for your Vercel frontend
+// ✅ CORS
 app.use(cors({
   origin: [
     "https://parkos-inky.vercel.app",
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://localhost:5178" // if using Vite
+    "http://localhost:5178",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -47,23 +41,42 @@ app.use("/api/jobs", require("./routes/jobs"));
 app.use("/api/jobs-application", require("./routes/JobApplication"));
 app.use("/api/freelance", require("./routes/freelancer"));
 
-// Health check + env debug route
+// Health check
 app.get("/", (req, res) => {
   res.send("Business Park Job Platform API is running...");
 });
 
-// ✅ Env check route — visit this in browser to confirm vars are loaded
+// Env debug route
 app.get("/debug-env", (req, res) => {
   res.json({
     MONGO_URI: process.env.MONGO_URI ? "✅ loaded" : "❌ missing",
     JWT_SECRET: process.env.JWT_SECRET ? "✅ loaded" : "❌ missing",
     EMAIL_USER: process.env.EMAIL_USER ? "✅ loaded" : "❌ missing",
-    EMAIL_PASS: process.env.APP_PASS ? "✅ loaded" : "❌ missing",
+    BREVO_API_KEY: process.env.BREVO_API_KEY ? "✅ loaded" : "❌ missing",
     PORT: process.env.PORT || "using default 5002",
-    BREVO_API_KEY: process.env.BREVO_API_KEY ? "✅ loaded" : "❌ missing",});
+  });
 });
 
 const PORT = process.env.PORT || 5002;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+
+// ✅ Listen FIRST so Railway health check passes immediately
+const server = app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+
+  // ✅ Connect DB after port is open
+  connectDB()
+    .then(() => console.log("MongoDB connected successfully"))
+    .catch((err) => {
+      console.error("❌ DB connection failed:", err.message);
+      process.exit(1);
+    });
+});
+
+// ✅ Graceful shutdown — prevents Railway SIGTERM from crashing with npm error
+process.on("SIGTERM", () => {
+  console.log("SIGTERM received, shutting down gracefully...");
+  server.close(() => {
+    console.log("Server closed.");
+    process.exit(0);
+  });
 });
