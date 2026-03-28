@@ -14,7 +14,7 @@ export default function CompanyProfilePage() {
   useEffect(() => {
     const fetchCompany = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/companies/${companyId}`);
+        const res = await axios.get(`${API_BASE}/companies/company/${companyId}`);
         console.log("company", res.data.data);
         setCompany(res.data.data);
       } catch (err) {

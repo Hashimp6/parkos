@@ -676,7 +676,7 @@ export default function JobListings({
         setToast({ type: "error", message: "Please upload your CV before applying" });
   
         setTimeout(() => {
-          navigate("/profile/form");
+          navigate("/profile/set/form");
         }, 1500);
   
         return;

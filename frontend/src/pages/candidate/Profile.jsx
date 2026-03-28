@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUser, useUser } from "../../context/UserContext";
+import {  useUser } from "../../context/UserContext";
 import BusinessCard from "../../components/ProfileVisitng";
+import API_BASE from "../../../config";
+import axios from "axios";
 
 const DISCOVER = [
   {
@@ -31,14 +33,36 @@ const DISCOVER = [
 
 export default function CandidateHomeSection({ onNavigate }) {
   const navigate = useNavigate();
-  const { user, logoutUser } = useUser();
+  const { user,updateUser, logoutUser,} = useUser();
   const [showCard, setShowCard] = useState(false);
-  console.log("User from context:", user);
   const goto = (path) => { if (onNavigate) onNavigate(path); else navigate(path); };
   
   useEffect(() => {
-    fetchUser();
-  }, []); 
+    const fetchFreshUser = async () => {
+      try {
+
+        const storedToken = localStorage.getItem("token");
+        const storedUser = localStorage.getItem("candidate");
+        if (!storedToken || !storedUser) return;
+
+        const { _id } = JSON.parse(storedUser);
+        if (!_id) return;
+
+        const res = await axios.get(`${API_BASE}/candidate/profile/${_id}`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+
+        updateUser(res.data.data); // 👈 updates context + localStorage
+        // if your API returns { candidate: {...} } use: updateUser(res.data.candidate)
+
+      } catch (err) {
+        console.error("❌ Failed to fetch user:", err.response?.status);
+        // silently fail — user still sees cached data from localStorage
+      }
+    };
+
+    fetchFreshUser();
+  }, []);
   const greeting = () => {
     const h = new Date().getHours();
     if (h < 12) return "Morning";
@@ -515,13 +539,13 @@ export default function CandidateHomeSection({ onNavigate }) {
                 <div className="hx-divider" />
 
                 <div className="hx-btns">
-                  <button className="hx-btn hx-btn-dark" onClick={()=>goto("/profile/form")}>
+                  <button className="hx-btn hx-btn-dark" onClick={()=>goto("/profile/set/form")}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     Edit
                   </button>
                   <button
   className="hx-btn hx-btn-ghost"
-  onClick={() => goto(`/${user.profileId}`)}
+  onClick={() => goto(`/profile/${user.profileId}`)}
 >
   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -609,7 +633,7 @@ export default function CandidateHomeSection({ onNavigate }) {
                 company={user.company||"ParkOS"}
                 phone={user.phone}
                 email={user.email}
-                website={`${window.location.origin}/candidate/profile/id/${user._id}`}
+                website={`${window.location.origin}/candidate/profile/${user._id}`}
               />
             </div>
             <div className="hx-modal-hint">
