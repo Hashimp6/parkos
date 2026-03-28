@@ -29,7 +29,8 @@ app.use(cors({
   origin: [
     "https://parkos-inky.vercel.app",
     "http://localhost:3000",
-    "http://localhost:5173", // if using Vite
+    "http://localhost:5173",
+    "http://localhost:5178" // if using Vite
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -59,7 +60,7 @@ app.get("/debug-env", (req, res) => {
     EMAIL_USER: process.env.EMAIL_USER ? "✅ loaded" : "❌ missing",
     EMAIL_PASS: process.env.APP_PASS ? "✅ loaded" : "❌ missing",
     PORT: process.env.PORT || "using default 5002",
-  });
+    BREVO_API_KEY: process.env.BREVO_API_KEY ? "✅ loaded" : "❌ missing",});
 });
 
 const PORT = process.env.PORT || 5002;
