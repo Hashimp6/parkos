@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Navbar from "../../components/Navbar";
 
 /* ─────────────────────────────────────────────
    SVG ILLUSTRATION — lost park ranger scene
@@ -180,24 +181,7 @@ export default function NotFound404() {
     <div className="min-h-screen bg-white flex flex-col" style={{ fontFamily: "'Courier New', monospace" }}>
 
       {/* TOPBAR */}
-      <header className="flex items-center justify-between px-8 py-5 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-black rounded-sm flex items-center justify-center">
-            <span className="text-white text-xs font-black tracking-tighter">PO</span>
-          </div>
-          <span className="text-lg font-black tracking-tight text-black" style={{ fontFamily: "Georgia, serif", letterSpacing: "-0.03em" }}>
-            Park<span className="text-gray-400">OS</span>
-          </span>
-        </div>
-        <nav className="hidden sm:flex gap-6 text-xs text-gray-400 tracking-widest uppercase">
-          <a href="#" className="hover:text-black transition-colors">Dashboard</a>
-          <a href="#" className="hover:text-black transition-colors">Trails</a>
-          <a href="#" className="hover:text-black transition-colors">Reports</a>
-        </nav>
-        <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
-          <span className="text-xs font-bold text-gray-500">?</span>
-        </div>
-      </header>
+     <Navbar/>
 
       {/* MAIN */}
       <main className={`flex-1 flex flex-col items-center justify-center px-6 py-8 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>

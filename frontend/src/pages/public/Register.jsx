@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import API_BASE from "../../../config";
 import axios from "axios";
+import { useToast } from "../../hooks/useToast";
+import Toast from "../../components/Toast";
 
 // ─────────────────────────────────────────────────────────────
 // EYE ICON
@@ -29,7 +31,7 @@ function OtpModal({ email, onVerified, onClose }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const [error, setError] = useState("");
+  const { showToast, toasts, removeToast } = useToast(); 
   const [countdown, setCountdown] = useState(30);
   const [verified, setVerified] = useState(false);
   const inputRefs = useRef([]);
@@ -51,7 +53,6 @@ function OtpModal({ email, onVerified, onClose }) {
     const next = [...otp];
     next[i] = val;
     setOtp(next);
-    setError("");
     if (val && i < 5) inputRefs.current[i + 1]?.focus();
   };
 
@@ -72,23 +73,16 @@ function OtpModal({ email, onVerified, onClose }) {
   const handleVerify = async () => {
     const code = otp.join("");
     if (code.length < 6) {
-      setError("Please enter the full 6-digit code.");
+      showToast("Please enter the full 6-digit code.", "error"); // ✅
       return;
     }
-  
     try {
       setLoading(true);
-      setError("");
-  
-      const { data } = await axios.post(`${API_BASE}/candidate/verify-otp`, {
-        email,
-        otp: code,
-      });
-  
+      const { data } = await axios.post(`${API_BASE}/candidate/verify-otp`, { email, otp: code });
       setVerified(true);
       setTimeout(() => onVerified(data), 900);
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid OTP");
+      showToast(err.response?.data?.message || "Invalid OTP. Try again.", "error"); // ✅
       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } finally {
@@ -99,15 +93,13 @@ function OtpModal({ email, onVerified, onClose }) {
   const handleResend = async () => {
     try {
       setResending(true);
-      setError("");
-  
       await axios.post(`${API_BASE}/candidate/resend-otp`, { email });
-  
       setCountdown(30);
       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
+      showToast("OTP resent successfully!", "success"); // ✅
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to resend OTP.");
+      showToast(err.response?.data?.message || "Failed to resend OTP.", "error"); // ✅
     } finally {
       setResending(false);
     }
@@ -161,11 +153,7 @@ function OtpModal({ email, onVerified, onClose }) {
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   className="w-11 h-12 text-center text-lg font-semibold text-black rounded-xl outline-none transition-all duration-150"
                   style={{
-                    border: error
-                      ? "1.5px solid #f87171"
-                      : val
-                      ? "1.5px solid #000"
-                      : "1.5px solid #e5e7eb",
+                    border: val ? "1.5px solid #000" : "1.5px solid #e5e7eb", // ✅ no error state
                     background: val ? "#f9f9f9" : "#fff",
                     caretColor: "transparent",
                   }}
@@ -173,10 +161,7 @@ function OtpModal({ email, onVerified, onClose }) {
               ))}
             </div>
 
-            {/* error */}
-            {error && (
-              <p className="text-xs text-red-400 mb-4 text-center">{error}</p>
-            )}
+           
 
             {/* verify button */}
             <button
@@ -251,7 +236,9 @@ function OtpModal({ email, onVerified, onClose }) {
           </div>
         )}
       </div>
-
+      {toasts.map(t => (
+        <Toast key={t.id} message={t.message} type={t.type} onClose={() => removeToast(t.id)} />
+      ))}
       <style>{`
         @keyframes fadeIn  { from { opacity:0 } to { opacity:1 } }
         @keyframes slideUp {
@@ -273,7 +260,7 @@ function OtpModal({ email, onVerified, onClose }) {
 export default function RegisterPage() {
   const { loginUser } = useUser();
   const navigate = useNavigate();
-
+  const { toasts, showToast, removeToast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -301,45 +288,41 @@ export default function RegisterPage() {
   const handleSubmit = async () => {
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
-  
+
     setErrors({});
     setLoading(true);
-  
+
     try {
-      console.log("for",form);
-      
       const { data } = await axios.post(`${API_BASE}/candidate/register`, {
         name: form.name,
         email: form.email,
         password: form.password,
       });
-  console.log("d",data);
-  
+
       setPendingData(data);
       setLoading(false);
       setShowOtp(true);
+      showToast("OTP sent to your email!", "success"); // ✅
+
     } catch (err) {
-      console.error(err);
-      setErrors({
-        email: err.response?.data?.message || "Registration failed",
-      });
       setLoading(false);
+      showToast(
+        err.response?.data?.message || "Registration failed. Please try again.",
+        "error"
+      ); // ✅ replace setErrors
     }
   };
+
 
   // Step 2 — OTP verified, finalise login
   const handleOtpVerified = (verifyData) => {
     setShowOtp(false);
-
-    // Use token/user from verify response if available, else fall back to registration response
     const token = verifyData?.token ?? pendingData?.token;
     const user  = verifyData?.data  ?? pendingData?.user;
-console.log("dddd",verifyData.data,"dd",pendingData);
-
     loginUser(user);
     localStorage.setItem("token", token);
-
     setSuccess(true);
+    showToast("Account created successfully!", "success"); // ✅
     setTimeout(() => navigate("/home"), 800);
   };
 
@@ -554,18 +537,18 @@ console.log("dddd",verifyData.data,"dd",pendingData);
                 className="text-2xl font-bold text-black leading-snug mb-4"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                Start your journey<br />today with ParkOS<br />
+               Start your journey with purpose.
               </h2>
               <div className="flex items-start gap-3">
                 <div className="w-0.5 h-10 bg-black rounded-full flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Join thousands of users who've simplified their workflow with Park O S.
+                Join a growing ecosystem of talent, companies, and freelancers — built to help you succeed.
                 </p>
               </div>
             </div>
           </div>
         </div>
-
+      
         <style>{`
           @keyframes cardIn {
             from { opacity: 0; transform: translateY(30px) scale(0.97); }
@@ -579,6 +562,14 @@ console.log("dddd",verifyData.data,"dd",pendingData);
           @media (max-width: 900px) { .right-panel { flex: 0 1 280px !important; } }
         `}</style>
       </div>
+      {toasts.map(t => (
+        <Toast
+          key={t.id}
+          message={t.message}
+          type={t.type}
+          onClose={() => removeToast(t.id)}
+        />
+      ))}
     </>
   );
 }

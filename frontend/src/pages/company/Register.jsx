@@ -425,7 +425,7 @@ const handleCompanyNameChange = (e) => {
               <div className="flex items-start gap-3">
                 <div className="w-0.5 h-10 bg-black rounded-full flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Register your company and connect with talent across all business parks.
+                Showcase your business, connect with top talent, and scale faster with ParkOS.
                 </p>
               </div>
             </div>

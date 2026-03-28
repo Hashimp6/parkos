@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../../context/UserContext";
 import API_BASE from "../../../config";
+import { useToast } from "../../hooks/useToast";
+import Toast from "../../components/Toast";
 
 export default function LoginPage() {
   
@@ -14,7 +16,7 @@ export default function LoginPage() {
   const [focused, setFocused] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
+  const { toasts, showToast, removeToast } = useToast();
   const handleSubmit = async () => {
     try {
       setLoading(true);
@@ -30,14 +32,17 @@ export default function LoginPage() {
   
       setLoading(false);
       setSuccess(true);
-  
+      showToast("Logged in successfully!", "success"); 
       setTimeout(() => {
         navigate("/home");
       }, 1200);
   
     } catch (error) {
       setLoading(false);
-      alert(error.response?.data?.message || "Login failed");
+      showToast(
+        error.response?.data?.message || "Failed to login. Please try later.",
+        "error"
+      );
     }
   };
 
@@ -264,12 +269,12 @@ export default function LoginPage() {
               className="text-2xl font-bold text-black leading-snug mb-4"
               style={{ letterSpacing: "-0.02em" }}
             >
-              Join us now and boost<br/>your productivity with<br/>easy time & task management.
+Work smarter. Grow faster.<br/>All in one place.
             </h2>
             <div className="flex items-start gap-3">
               <div className="w-0.5 h-10 bg-black rounded-full flex-shrink-0 mt-0.5" />
               <p className="text-sm text-gray-600 leading-relaxed">
-                Don't waste time — be part of our community now and start benefiting from our tools.
+                Don't waste time — come back to your destiny.
               </p>
             </div>
           </div>
@@ -292,6 +297,14 @@ export default function LoginPage() {
           .right-panel { flex: 0 1 280px !important; }
         }
       `}</style>
+         {toasts.map(t => (
+        <Toast
+          key={t.id}
+          message={t.message}
+          type={t.type}
+          onClose={() => removeToast(t.id)}
+        />
+      ))}
     </div>
   );
 }
