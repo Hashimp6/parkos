@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 /* ─────────────────────────────────────────────────────────
-   COMPANY DATA
+   DUMMY DATA  (shown only when no data prop is passed)
 ───────────────────────────────────────────────────────── */
 const DUMMY = {
   companyName: "NexaCore Technologies",
@@ -39,8 +39,8 @@ const DUMMY = {
     { title: "Tech Consulting",        description: "CTO-as-a-service, architecture audits, and technology roadmap planning for ambitious companies." },
   ],
   projects: [
-    { name: "FinFlow",   year: "2023", category: "FinTech · Payments",  description: "Real-time B2B payments platform processing ₹200 Cr+ monthly across 300+ SMEs, built on event-driven microservices.", link: "#" },
-    { name: "MediSync",  year: "2022", category: "HealthTech · AI",     description: "AI-powered patient data platform adopted by 40 hospitals, reducing diagnostic turnaround time by 60%.", link: "#" },
+    { name: "FinFlow",   year: "2023", category: "FinTech · Payments",  description: "Real-time B2B payments platform processing ₹200 Cr+ monthly across 300+ SMEs.", link: "#" },
+    { name: "MediSync",  year: "2022", category: "HealthTech · AI",     description: "AI-powered patient data platform adopted by 40 hospitals, reducing diagnostic turnaround by 60%.", link: "#" },
     { name: "LogiTrack", year: "2023", category: "Logistics · IoT",     description: "Supply-chain visibility SaaS monitoring 50,000+ shipments per month with live IoT tracking.", link: "#" },
     { name: "EduSphere", year: "2021", category: "EdTech · Platform",   description: "Adaptive learning platform used by 200,000+ students powered by real-time recommendation AI.", link: "#" },
   ],
@@ -73,6 +73,24 @@ const DUMMY = {
 };
 
 /* ─────────────────────────────────────────────────────────
+   UTILS
+───────────────────────────────────────────────────────── */
+// Check if a value is meaningfully present
+const has = (v) => {
+  if (v == null) return false;
+  if (typeof v === "string")  return v.trim() !== "";
+  if (typeof v === "number")  return !isNaN(v) && v !== 0;
+  if (Array.isArray(v))       return v.length > 0;
+  if (typeof v === "object")  return Object.values(v).some(has);
+  return !!v;
+};
+
+const initials = (n = "") =>
+  n.split(" ").filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+
+const YR = new Date().getFullYear();
+
+/* ─────────────────────────────────────────────────────────
    TOKENS
 ───────────────────────────────────────────────────────── */
 const T = {
@@ -91,7 +109,7 @@ const T = {
 };
 
 /* ─────────────────────────────────────────────────────────
-   BREAKPOINT HOOK  (updates on resize)
+   BREAKPOINT HOOK
 ───────────────────────────────────────────────────────── */
 function useBreakpoint() {
   const get = () => ({
@@ -108,8 +126,6 @@ function useBreakpoint() {
   }, []);
   return bp;
 }
-
-const initials = (n) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
 /* ─────────────────────────────────────────────────────────
    GLOBAL STYLES
@@ -165,7 +181,6 @@ function GlobalStyles() {
       .d3  { animation-delay:.28s; }
       .d4  { animation-delay:.38s; }
 
-      /* Responsive helpers */
       .wrap { max-width:1320px; margin:0 auto; padding:0 20px; }
       @media(min-width:640px)  { .wrap { padding:0 32px; } }
       @media(min-width:1024px) { .wrap { padding:0 48px; } }
@@ -201,7 +216,20 @@ function Nav({ company }) {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const links = ["About","Services","Projects","Team","Clients","Gallery","Contact"];
+  // Only show nav links for sections that have data
+  const allLinks = [
+    { id: "about",    label: "About",    show: has(company.about)    },
+    { id: "services", label: "Services", show: has(company.services) },
+    { id: "projects", label: "Projects", show: has(company.projects) },
+    { id: "team",     label: "Team",     show: has(company.members)  },
+    { id: "clients",  label: "Clients",  show: has(company.clients)  },
+    { id: "gallery",  label: "Gallery",  show: has(company.gallery)  },
+    { id: "contact",  label: "Contact",  show: true                  },
+  ];
+  const links = allLinks.filter(l => l.show);
+
+  const ini  = initials(company.companyName);
+  const name = company.companyName || "";
 
   return (
     <nav style={{
@@ -209,41 +237,54 @@ function Nav({ company }) {
       background: scrolled ? "rgba(255,255,255,0.97)" : "transparent",
       borderBottom: scrolled ? `1px solid ${T.g200}` : "1px solid transparent",
       backdropFilter: scrolled ? "blur(14px)" : "none",
+      WebkitBackdropFilter: scrolled ? "blur(14px)" : "none",
       transition:"all .35s",
     }}>
       <div className="wrap" style={{ height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
 
         {/* Logo */}
         <a href="#" style={{ display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
-          <div style={{ width:28, height:28, background:T.black, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <span style={{ color:T.white, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:11, letterSpacing:1 }}>NC</span>
-          </div>
-          <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:17, letterSpacing:"0.08em", textTransform:"uppercase", color:T.black }}>
-            NexaCore
+          {has(company.logo) ? (
+            <img src={company.logo} alt={name} style={{ height:32, objectFit:"contain" }} />
+          ) : (
+            <div style={{ width:28, height:28, background:T.black, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <span style={{ color:T.white, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:11, letterSpacing:1 }}>{ini}</span>
+            </div>
+          )}
+          <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:17, letterSpacing:"0.08em", textTransform:"uppercase", color:T.black, whiteSpace:"nowrap" }}>
+            {name}
           </span>
         </a>
 
         {/* Desktop links */}
         {!isMobile && (
-          <div style={{ display:"flex", gap:28, alignItems:"center" }}>
-            {links.map(l => <a key={l} href={`#${l.toLowerCase()}`} className="nl">{l}</a>)}
+          <div style={{ display:"flex", gap:24, alignItems:"center", flexWrap:"nowrap", overflow:"hidden" }}>
+            {links.map(l => (
+              <a key={l.id} href={`#${l.id}`} className="nl">{l.label}</a>
+            ))}
           </div>
         )}
 
-        {/* Desktop CTA / Mobile hamburger */}
+        {/* CTA / Hamburger */}
         {isMobile ? (
-          <button onClick={() => setOpen(!open)}
+          <button onClick={() => setOpen(!open)} aria-label="Toggle menu"
             style={{ background:"none", border:"none", cursor:"pointer", padding:4, display:"flex", flexDirection:"column", gap:5 }}>
             {[0,1,2].map(i => (
               <span key={i} style={{
                 display:"block", width:22, height:2, background:T.black, transition:"all .3s",
-                transform: open ? (i===0 ? "rotate(45deg) translate(5px,5px)" : i===2 ? "rotate(-45deg) translate(5px,-5px)" : "none") : "none",
+                transform: open
+                  ? (i===0 ? "rotate(45deg) translate(5px,5px)" : i===2 ? "rotate(-45deg) translate(5px,-5px)" : "none")
+                  : "none",
                 opacity: open && i===1 ? 0 : 1,
               }} />
             ))}
           </button>
         ) : (
-          <a href="#contact" className="btn-b" style={{ padding:"9px 22px", fontSize:11 }}>Get in Touch</a>
+          has(company.contacts?.email) && (
+            <a href="#contact" className="btn-b" style={{ padding:"9px 22px", fontSize:11, whiteSpace:"nowrap" }}>
+              Get in Touch
+            </a>
+          )
         )}
       </div>
 
@@ -251,12 +292,16 @@ function Nav({ company }) {
       {isMobile && open && (
         <div style={{ background:T.white, borderTop:`1px solid ${T.g200}`, padding:"16px 20px 28px" }}>
           {links.map(l => (
-            <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
+            <a key={l.id} href={`#${l.id}`} onClick={() => setOpen(false)}
               style={{ display:"block", padding:"13px 0", borderBottom:`1px solid ${T.g100}`, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:16, letterSpacing:"0.1em", textTransform:"uppercase", color:T.g700 }}>
-              {l}
+              {l.label}
             </a>
           ))}
-          <a href="#contact" className="btn-b" style={{ marginTop:20, display:"inline-block" }}>Get in Touch</a>
+          {has(company.contacts?.email) && (
+            <a href="#contact" onClick={() => setOpen(false)} className="btn-b" style={{ marginTop:20, display:"inline-block" }}>
+              Get in Touch
+            </a>
+          )}
         </div>
       )}
     </nav>
@@ -268,19 +313,47 @@ function Nav({ company }) {
 ───────────────────────────────────────────────────────── */
 function Hero({ company }) {
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
+  const addr = company.address || {};
+
+  // Build ticker items from available data only
+  const tickerItems = [
+    ...(has(company.tags) ? company.tags : []),
+    has(company.industry)    ? company.industry    : null,
+    has(company.businessPark) && company.businessPark !== "Other" ? company.businessPark : null,
+    "Product Engineering",
+    "Innovation",
+  ].filter(Boolean);
+
+  // Stats — only if data exists
+  const stats = [
+    has(company.foundedYear) && !isNaN(company.foundedYear) && { n: `${YR - company.foundedYear}+`, l: "Years"    },
+    has(company.members)  && { n: `${company.members.length}+`,  l: "Team"     },
+    has(company.clients)  && { n: `${company.clients.length}+`,  l: "Clients"  },
+    has(company.projects) && { n: `${company.projects.length}+`, l: "Projects" },
+  ].filter(Boolean).slice(0, 3); // max 3 to keep layout clean
+
+  const stripItems = [
+    has(addr.city) && addr.city,
+    has(company.businessPark) && company.businessPark !== "Other" && company.businessPark,
+    has(company.industry) && company.industry,
+  ].filter(Boolean);
 
   return (
     <section id="hero" style={{ paddingTop:60, background:T.white, overflow:"hidden" }}>
 
-      {/* Info strip — tablet+ only */}
-      {!isMobile && (
+      {/* Info strip — tablet+ only, only if has data */}
+      {!isMobile && (stripItems.length > 0 || has(company.tags) || has(company.foundedYear)) && (
         <div style={{ borderBottom:`1px solid ${T.g200}`, padding:"10px 0" }}>
           <div className="wrap" style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8 }}>
-            <span className="fl">Est. {company.foundedYear} · {company.businessPark} · {company.address.city}</span>
-            <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
-              {company.tags.map(t => <span key={t} className="fl" style={{ color:T.g400 }}>{t}</span>)}
-            </div>
-            <span className="fl">{company.industry}</span>
+            <span className="fl">
+              {[has(company.foundedYear) && `Est. ${company.foundedYear}`, ...stripItems].filter(Boolean).join(" · ")}
+            </span>
+            {has(company.tags) && (
+              <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
+                {company.tags.map(t => <span key={t} className="fl" style={{ color:T.g400 }}>{t}</span>)}
+              </div>
+            )}
+            {has(company.industry) && <span className="fl">{company.industry}</span>}
           </div>
         </div>
       )}
@@ -294,8 +367,8 @@ function Hero({ company }) {
         }}>
           {/* Left: headline */}
           <div style={{
-            borderRight:   isDesktop ? `1px solid ${T.g200}` : "none",
-            borderBottom:  !isDesktop ? `1px solid ${T.g200}` : "none",
+            borderRight:  isDesktop ? `1px solid ${T.g200}` : "none",
+            borderBottom: !isDesktop ? `1px solid ${T.g200}` : "none",
             padding: isMobile ? "48px 0 40px" : isTablet ? "60px 0 48px" : "72px 56px 72px 0",
             display:"flex", flexDirection:"column", justifyContent:"space-between",
             position:"relative", overflow:"hidden",
@@ -307,69 +380,92 @@ function Hero({ company }) {
               fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900,
               fontSize: isMobile ? 140 : 260,
               lineHeight:1, color:T.g100, userSelect:"none", pointerEvents:"none", letterSpacing:-8,
-            }}>NC</div>
+            }}>
+              {initials(company.companyName)}
+            </div>
 
             <div style={{ position:"relative" }}>
-              <span className="fl fu d1" style={{ display:"block", marginBottom:24 }}>
-                Product · Platform · Infrastructure
-              </span>
-              <h1 className="fd fu d2" style={{ fontSize: isMobile ? 58 : isTablet ? 84 : 108, color:T.black }}>
-                Engineering<br />
-                <span style={{ color:T.g300, fontStyle:"italic" }}>Tomorrow,</span><br />
-                Today.
+              {has(company.services) && (
+                <span className="fl fu d1" style={{ display:"block", marginBottom:24 }}>
+                  {company.services.slice(0,3).map(s => s.title).join(" · ")}
+                </span>
+              )}
+              <h1 className="fd fu d2" style={{ fontSize: isMobile ? 54 : isTablet ? 84 : 108, color:T.black }}>
+                {has(company.tagline) ? (
+                  <>
+                    {company.tagline.split(/[,.]/).filter(Boolean).map((part, i) => (
+                      <span key={i} style={{ display:"block", color: i === 1 ? T.g300 : T.black, fontStyle: i === 1 ? "italic" : "normal" }}>
+                        {part.trim()}{i === 0 ? "," : "."}
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  company.companyName
+                )}
               </h1>
             </div>
 
             <div className="fu d3" style={{ display:"flex", gap:12, flexWrap:"wrap", marginTop:40, position:"relative" }}>
-              <a href="#services" className="btn-b">Our Services</a>
-              <a href="#projects" className="btn-g">View Work</a>
+              {has(company.services) && <a href="#services" className="btn-b">Our Services</a>}
+              {has(company.projects) && <a href="#projects" className="btn-g">View Work</a>}
+              {!has(company.services) && !has(company.projects) && (
+                <a href="#contact" className="btn-b">Get in Touch</a>
+              )}
             </div>
           </div>
 
           {/* Right: about + stats */}
           <div style={{ display:"flex", flexDirection:"column" }}>
-            <div style={{
-              padding: isMobile ? "36px 0 28px" : isTablet ? "48px 0 36px" : "60px 0 48px 48px",
-              borderBottom:`1px solid ${T.g200}`,
-              flex:1,
-            }}>
-              <span className="fl" style={{ display:"block", marginBottom:18 }}>About the company</span>
-              <p className="fb fu d2" style={{ fontSize: isMobile ? 15 : 17, lineHeight:1.85, color:T.g700 }}>
-                {company.about}
-              </p>
-            </div>
+            {has(company.about) && (
+              <div style={{
+                padding: isMobile ? "36px 0 28px" : isTablet ? "48px 0 36px" : "60px 0 48px 48px",
+                borderBottom: stats.length > 0 ? `1px solid ${T.g200}` : "none",
+                flex:1,
+              }}>
+                <span className="fl" style={{ display:"block", marginBottom:18 }}>About the company</span>
+                <p className="fb fu d2" style={{ fontSize: isMobile ? 15 : 17, lineHeight:1.85, color:T.g700 }}>
+                  {company.about}
+                </p>
+              </div>
+            )}
 
             {/* Stats */}
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr" }}>
-              {[{ n:"7+", l:"Years" }, { n:"80+", l:"Products" }, { n:"40+", l:"Clients" }].map((s, i) => (
-                <div key={s.l} className="fu" style={{
-                  padding: isMobile ? "22px 14px" : "28px 24px",
-                  borderRight: i < 2 ? `1px solid ${T.g200}` : "none",
-                  animationDelay:`${.2+i*.1}s`,
-                }}>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize: isMobile ? 38 : 50, lineHeight:1, letterSpacing:-2, color:T.black }}>{s.n}</div>
-                  <span className="fl" style={{ display:"block", marginTop:6 }}>{s.l}</span>
-                </div>
-              ))}
-            </div>
+            {stats.length > 0 && (
+              <div style={{ display:"grid", gridTemplateColumns:`repeat(${stats.length},1fr)` }}>
+                {stats.map((s, i) => (
+                  <div key={s.l} className="fu"
+                    style={{
+                      padding: isMobile ? "22px 14px" : "28px 24px",
+                      borderRight: i < stats.length - 1 ? `1px solid ${T.g200}` : "none",
+                      borderLeft: isDesktop ? `1px solid ${T.g200}` : "none",
+                      animationDelay:`${.2+i*.1}s`,
+                    }}>
+                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize: isMobile ? 38 : 50, lineHeight:1, letterSpacing:-2, color:T.black }}>{s.n}</div>
+                    <span className="fl" style={{ display:"block", marginTop:6 }}>{s.l}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Ticker tape */}
-      <div style={{ background:T.black, padding:"11px 0", overflow:"hidden" }}>
-        <div className="mq-track">
-          {[...Array(6)].map((_,i) => (
-            <span key={i} style={{ display:"inline-flex", alignItems:"center" }}>
-              {[...company.tags,"Product Engineering","Cloud Infra","DevOps",company.businessPark].map((t,j) => (
-                <span key={j} style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:11, letterSpacing:"0.2em", textTransform:"uppercase", color:T.g700, padding:"0 18px" }}>
-                  {t} <span style={{ color:T.g800 }}>·</span>
-                </span>
-              ))}
-            </span>
-          ))}
+      {tickerItems.length > 0 && (
+        <div style={{ background:T.black, padding:"11px 0", overflow:"hidden" }}>
+          <div className="mq-track">
+            {[...Array(6)].map((_, i) => (
+              <span key={i} style={{ display:"inline-flex", alignItems:"center" }}>
+                {tickerItems.map((t, j) => (
+                  <span key={j} style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:11, letterSpacing:"0.2em", textTransform:"uppercase", color:T.g700, padding:"0 18px" }}>
+                    {t} <span style={{ color:T.g800 }}>·</span>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
@@ -380,27 +476,33 @@ function Hero({ company }) {
 function About({ company }) {
   const { isMobile, isDesktop } = useBreakpoint();
   const py = isMobile ? 64 : 100;
+  const addr = company.address || {};
+
+  // Build meta rows from only available data
+  const metaRows = [
+    has(company.industry)    && ["Industry",  company.industry],
+    has(company.companySize) && ["Size",      company.companySize],
+    has(company.foundedYear) && ["Founded",   String(company.foundedYear)],
+    has(addr.city)           && ["City",      addr.city],
+    has(company.businessPark) && company.businessPark !== "Other" && ["Park", company.businessPark],
+    has(addr.pincode)        && ["Pincode",   addr.pincode],
+  ].filter(Boolean);
 
   return (
     <section id="about" style={{ background:T.g50, padding:`${py}px 0`, borderBottom:`1px solid ${T.g200}` }}>
       <div className="wrap">
-        <SH num="01 / About" right="NexaCore" />
+        <SH num="01 / About" right={company.companyName} />
 
         <div style={{ display:"grid", gridTemplateColumns: isDesktop ? "300px 1fr" : "1fr", gap: isMobile ? 40 : 72, alignItems:"start" }}>
           {/* Left meta */}
           <div>
             <h2 className="fd" style={{ fontSize: isMobile ? 44 : 56, color:T.black, marginBottom:28 }}>
-              Built on<br />Conviction.
+              {has(company.tagline)
+                ? company.tagline.split(/[,.]/, 1)[0].trim()
+                : company.companyName}
             </h2>
             <div style={{ width:32, height:3, background:T.black, marginBottom:28 }} />
-            {[
-              ["Industry",  company.industry],
-              ["Size",      company.companySize],
-              ["Founded",   String(company.foundedYear)],
-              ["City",      company.address.city],
-              ["Park",      company.businessPark],
-              ["Pincode",   company.address.pincode],
-            ].map(([k,v]) => (
+            {metaRows.map(([k, v]) => (
               <div key={k} style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:4, padding:"10px 0", borderBottom:`1px solid ${T.g200}` }}>
                 <span className="fl">{k}</span>
                 <span className="fm" style={{ color:T.g700 }}>{v}</span>
@@ -410,21 +512,32 @@ function About({ company }) {
 
           {/* Right story */}
           <div>
-            <p style={{ fontFamily:"'Barlow',sans-serif", fontWeight:300, fontSize: isMobile ? 17 : 21, lineHeight:1.8, color:T.g700, marginBottom:28 }}>
-              {company.about}
-            </p>
-            <p className="fb" style={{ fontSize:15, marginBottom:36 }}>
-              Headquartered at {company.businessPark} in Kerala's technology corridor, we partner with startups,
-              growth-stage ventures, and blue-chip enterprises across fintech, healthtech, logistics,
-              and education — bringing senior engineering talent to every engagement.
-            </p>
-            <div style={{ borderLeft:`3px solid ${T.black}`, paddingLeft:22, marginBottom:36 }}>
-              <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontStyle:"italic", fontWeight:700, fontSize: isMobile ? 18 : 22, color:T.black, lineHeight:1.4, textTransform:"uppercase" }}>
-                "We don't just ship code.<br />We take ownership of outcomes."
+            {has(company.about) && (
+              <p style={{ fontFamily:"'Barlow',sans-serif", fontWeight:300, fontSize: isMobile ? 17 : 21, lineHeight:1.8, color:T.g700, marginBottom:28 }}>
+                {company.about}
               </p>
-              <span className="fl" style={{ display:"block", marginTop:10 }}>— Arjun Menon, Founder & CEO</span>
-            </div>
-            <a href="#contact" className="btn-b">Work With Us →</a>
+            )}
+
+            {/* Address paragraph — only if location data exists */}
+            {(has(company.businessPark) || has(addr.city)) && (
+              <p className="fb" style={{ fontSize:15, marginBottom:36 }}>
+                {[
+                  has(company.businessPark) && company.businessPark !== "Other" && `Headquartered at ${company.businessPark}`,
+                  has(addr.city) && `in ${addr.city}`,
+                  has(addr.state) && `${addr.state}`,
+                ].filter(Boolean).join(", ")}.
+              </p>
+            )}
+
+            {has(company.website) && (
+              <a href={company.website} target="_blank" rel="noreferrer" className="btn-b" style={{ marginBottom:32, display:"inline-block" }}>
+                Visit Website →
+              </a>
+            )}
+
+            {!has(company.website) && (
+              <a href="#contact" className="btn-b">Work With Us →</a>
+            )}
           </div>
         </div>
       </div>
@@ -447,7 +560,7 @@ function Services({ company }) {
 
         <div style={{ display:"grid", gridTemplateColumns: isDesktop ? "1fr 1fr" : "1fr", gap: isMobile ? 24 : 64, marginBottom:48, alignItems:"end" }}>
           <h2 className="fd" style={{ fontSize: isMobile ? 44 : 80, color:T.black }}>
-            Six<br />Practice<br />Areas.
+            {company.services.length} Practice{company.services.length !== 1 ? "s" : ""}.
           </h2>
           <p className="fb" style={{ fontSize:15 }}>
             From first-principles architecture to scaled delivery — our practice areas cover the
@@ -459,17 +572,21 @@ function Services({ company }) {
           {company.services.map((s, i) => (
             <div key={i} className="rh"
               onClick={() => setActive(active === i ? null : i)}
-              style={{ display:"flex", gap:16, padding:"22px 8px", borderBottom:`1px solid ${T.g200}`, alignItems: active===i ? "flex-start" : "center" }}>
-              <span className="fl" style={{ minWidth:32, paddingTop: active===i ? 3 : 0 }}>0{i+1}</span>
+              style={{ display:"flex", gap:16, padding:"22px 8px", borderBottom:`1px solid ${T.g200}`, alignItems: active === i ? "flex-start" : "center" }}>
+              <span className="fl" style={{ minWidth:32, paddingTop: active === i ? 3 : 0 }}>
+                {String(i + 1).padStart(2, "0")}
+              </span>
               <div style={{ flex:1 }}>
-                <h3 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize: isMobile ? 20 : 32, textTransform:"uppercase", letterSpacing:"-0.01em", color: active===i ? T.black : T.g800, transition:"color .2s" }}>
+                <h3 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize: isMobile ? 20 : 32, textTransform:"uppercase", letterSpacing:"-0.01em", color: active === i ? T.black : T.g800, transition:"color .2s" }}>
                   {s.title}
                 </h3>
-                {active === i && (
+                {active === i && has(s.description) && (
                   <p className="fb" style={{ fontSize:14, marginTop:10 }}>{s.description}</p>
                 )}
               </div>
-              <div style={{ width:28, height:28, border:`1px solid ${active===i ? T.black : T.g200}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:T.g400, transform: active===i ? "rotate(45deg)" : "none", transition:"all .25s", flexShrink:0 }}>+</div>
+              <div style={{ width:28, height:28, border:`1px solid ${active === i ? T.black : T.g200}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:T.g400, transform: active === i ? "rotate(45deg)" : "none", transition:"all .25s", flexShrink:0 }}>
+                +
+              </div>
             </div>
           ))}
         </div>
@@ -492,33 +609,38 @@ function Projects({ company }) {
 
         <div style={{ display:"grid", gridTemplateColumns: isDesktop ? "1fr 1fr" : "1fr", border:`1px solid ${T.g800}` }}>
           {company.projects.map((p, i) => {
-            const lastInRow  = isDesktop ? i % 2 === 1 : true;
-            const lastRow    = isDesktop ? i >= 2 : i === company.projects.length - 1;
+            const lastInRow = isDesktop ? i % 2 === 1 : true;
+            const lastRow   = isDesktop ? i >= company.projects.length - 2 : i === company.projects.length - 1;
             return (
-              <a key={i} href={p.link}
+              <a key={i} href={has(p.link) ? p.link : undefined}
                 style={{
                   display:"block",
                   padding: isMobile ? "32px 20px" : "44px 40px",
-                  borderRight:  !lastInRow  ? `1px solid ${T.g800}` : "none",
-                  borderBottom: !lastRow    ? `1px solid ${T.g800}` : "none",
+                  borderRight:  !lastInRow ? `1px solid ${T.g800}` : "none",
+                  borderBottom: !lastRow   ? `1px solid ${T.g800}` : "none",
                   background:"transparent", transition:"background .2s",
+                  cursor: has(p.link) ? "pointer" : "default",
                 }}
                 onMouseEnter={e => e.currentTarget.style.background = T.g800}
                 onMouseLeave={e => e.currentTarget.style.background = "transparent"}
               >
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:20, alignItems:"center" }}>
-                  <span className="fl" style={{ color:T.g600 }}>{p.category}</span>
-                  <span className="fl" style={{ color:T.g700 }}>{p.year}</span>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:20, alignItems:"center", flexWrap:"wrap", gap:8 }}>
+                  {has(p.category) && <span className="fl" style={{ color:T.g600 }}>{p.category}</span>}
+                  {has(p.year)     && <span className="fl" style={{ color:T.g700 }}>{p.year}</span>}
                 </div>
                 <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize: isMobile ? 52 : 68, color:T.g800, lineHeight:1, marginBottom:6, letterSpacing:-2 }}>
-                  0{i+1}
+                  {String(i + 1).padStart(2, "0")}
                 </div>
                 <h3 className="fd" style={{ fontSize: isMobile ? 32 : 48, color:T.white, marginBottom:14, lineHeight:1 }}>{p.name}</h3>
-                <p className="fb" style={{ fontSize:14, color:T.g500, marginBottom:24 }}>{p.description}</p>
-                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:T.g400 }}>Case Study</span>
-                  <span style={{ color:T.g500, fontSize:16 }}>↗</span>
-                </div>
+                {has(p.description) && (
+                  <p className="fb" style={{ fontSize:14, color:T.g500, marginBottom:24 }}>{p.description}</p>
+                )}
+                {has(p.link) && (
+                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                    <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:T.g400 }}>Case Study</span>
+                    <span style={{ color:T.g500, fontSize:16 }}>↗</span>
+                  </div>
+                )}
               </a>
             );
           })}
@@ -533,9 +655,9 @@ function Projects({ company }) {
 ───────────────────────────────────────────────────────── */
 function Team({ company }) {
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
-  const cols    = isMobile ? 1 : isTablet ? 2 : 3;
-  const greys   = [T.black, T.g800, T.g700, T.g600, T.g800, T.black];
-  const py      = isMobile ? 64 : 100;
+  const cols  = isMobile ? 1 : isTablet ? 2 : 3;
+  const greys = [T.black, T.g800, T.g700, T.g600, T.g800, T.black];
+  const py    = isMobile ? 64 : 100;
 
   return (
     <section id="team" style={{ background:T.white, padding:`${py}px 0` }}>
@@ -543,10 +665,11 @@ function Team({ company }) {
         <SH num="04 / Team" right="Leadership" />
 
         <div style={{ display:"grid", gridTemplateColumns: isDesktop ? "1fr 1fr" : "1fr", gap: isMobile ? 20 : 64, marginBottom:48, alignItems:"end" }}>
-          <h2 className="fd" style={{ fontSize: isMobile ? 44 : 80, color:T.black }}>The People<br />Behind<br />the Work.</h2>
+          <h2 className="fd" style={{ fontSize: isMobile ? 44 : 80, color:T.black }}>
+            The People<br />Behind<br />the Work.
+          </h2>
           <p className="fb" style={{ fontSize:15 }}>
-            Six senior leaders with deep domain expertise. No account managers — you work directly with
-            the people building your product.
+            Senior leaders with deep domain expertise — you work directly with the people building your product.
           </p>
         </div>
 
@@ -559,20 +682,40 @@ function Team({ company }) {
               <div key={i}
                 style={{
                   padding: isMobile ? "28px 0" : "32px 26px",
-                  borderRight:  !isMobile && col < cols-1 ? `1px solid ${T.g200}` : "none",
+                  borderRight:  !isMobile && col < cols - 1 ? `1px solid ${T.g200}` : "none",
                   borderBottom: isMobile ? `1px solid ${T.g100}` : (row < lastRow ? `1px solid ${T.g200}` : "none"),
-                  background:T.white, transition:"background .2s", cursor:"pointer",
+                  background:T.white, transition:"background .2s", cursor:"default",
                 }}
                 onMouseEnter={e => e.currentTarget.style.background = T.g50}
                 onMouseLeave={e => e.currentTarget.style.background = T.white}
               >
-                <div style={{ width:48, height:48, background:greys[i % greys.length], display:"flex", alignItems:"center", justifyContent:"center", marginBottom:18 }}>
-                  <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:15, color:T.white, letterSpacing:1 }}>{initials(m.name)}</span>
-                </div>
-                <span className="fl" style={{ display:"block", marginBottom:6 }}>0{i+1}</span>
-                <h3 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:19, textTransform:"uppercase", letterSpacing:"0.01em", color:T.black, marginBottom:4 }}>{m.name}</h3>
-                <p className="fl" style={{ color:T.g500, marginBottom:12 }}>{m.position}</p>
-                <p className="fb" style={{ fontSize:13, lineHeight:1.7 }}>{m.bio}</p>
+                {has(m.image) ? (
+                  <img src={m.image} alt={m.name} style={{ width:48, height:48, objectFit:"cover", marginBottom:18, display:"block" }} />
+                ) : (
+                  <div style={{ width:48, height:48, background:greys[i % greys.length], display:"flex", alignItems:"center", justifyContent:"center", marginBottom:18 }}>
+                    <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:15, color:T.white, letterSpacing:1 }}>
+                      {initials(m.name)}
+                    </span>
+                  </div>
+                )}
+                <span className="fl" style={{ display:"block", marginBottom:6 }}>{String(i + 1).padStart(2, "0")}</span>
+                <h3 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:19, textTransform:"uppercase", letterSpacing:"0.01em", color:T.black, marginBottom:4 }}>
+                  {m.name}
+                </h3>
+                {has(m.position) && (
+                  <p className="fl" style={{ color:T.g500, marginBottom: has(m.bio) ? 12 : 0 }}>{m.position}</p>
+                )}
+                {has(m.bio) && (
+                  <p className="fb" style={{ fontSize:13, lineHeight:1.7 }}>{m.bio}</p>
+                )}
+                {has(m.url) && (
+                  <a href={m.url} target="_blank" rel="noreferrer"
+                    style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:11, letterSpacing:"0.14em", textTransform:"uppercase", color:T.g500, marginTop:10, display:"inline-block", transition:"color .2s" }}
+                    onMouseEnter={e => e.target.style.color = T.black}
+                    onMouseLeave={e => e.target.style.color = T.g500}>
+                    View Profile ↗
+                  </a>
+                )}
               </div>
             );
           })}
@@ -596,9 +739,11 @@ function Clients({ company }) {
         <SH num="05 / Clients" right="Trusted By" />
 
         <div style={{ marginBottom:40 }}>
-          <h2 className="fd" style={{ fontSize: isMobile ? 44 : 68, color:T.black, marginBottom:20 }}>Trusted by<br />the Best.</h2>
+          <h2 className="fd" style={{ fontSize: isMobile ? 44 : 68, color:T.black, marginBottom:20 }}>
+            Trusted by<br />the Best.
+          </h2>
           <p className="fb" style={{ fontSize:15, maxWidth:520 }}>
-            From government institutions to nimble VC-backed startups — our clients span every stage and sector.
+            Our clients span every stage and sector — from government institutions to venture-backed startups.
           </p>
         </div>
 
@@ -610,23 +755,29 @@ function Clients({ company }) {
             return (
               <div key={i}
                 style={{
-                  padding: isMobile ? "20px 14px" : "28px 22px",
-                  borderRight:  col < cols-1 ? `1px solid ${T.g200}` : "none",
-                  borderBottom: row < lastRow ? `1px solid ${T.g200}` : "none",
+                  padding: isMobile ? "18px 12px" : "28px 22px",
+                  borderRight:  col < cols - 1 ? `1px solid ${T.g200}` : "none",
+                  borderBottom: row < lastRow   ? `1px solid ${T.g200}` : "none",
                   background:T.white, transition:"background .2s",
+                  cursor: has(c.website) ? "pointer" : "default",
                 }}
+                onClick={() => has(c.website) && window.open(c.website, "_blank")}
                 onMouseEnter={e => e.currentTarget.style.background = T.g50}
                 onMouseLeave={e => e.currentTarget.style.background = T.white}
               >
-                <div style={{ width:38, height:38, background:T.black, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:10 }}>
-                  <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:12, color:T.white, letterSpacing:1 }}>
-                    {c.name.slice(0,2).toUpperCase()}
-                  </span>
-                </div>
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize: isMobile ? 13 : 14, textTransform:"uppercase", letterSpacing:"0.04em", color:T.black, display:"block", marginBottom:4 }}>
+                {has(c.logo) ? (
+                  <img src={c.logo} alt={c.name} style={{ height:32, objectFit:"contain", marginBottom:10, display:"block", filter:"grayscale(1)", opacity:0.6 }} />
+                ) : (
+                  <div style={{ width:38, height:38, background:T.black, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:10 }}>
+                    <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:12, color:T.white, letterSpacing:1 }}>
+                      {c.name.slice(0, 2).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize: isMobile ? 12 : 14, textTransform:"uppercase", letterSpacing:"0.04em", color:T.black, display:"block", marginBottom: has(c.sector) ? 4 : 0 }}>
                   {c.name}
                 </span>
-                <span className="fl">{c.sector}</span>
+                {has(c.sector) && <span className="fl">{c.sector}</span>}
               </div>
             );
           })}
@@ -644,38 +795,39 @@ function Gallery({ company }) {
   const shades = [T.g300, T.g400, T.g500, T.g600, T.g400, T.g300];
   const py     = isMobile ? 64 : 100;
 
+  const GalItem = ({ g, i, height, fontSize }) => (
+    <div className="gal-item"
+      style={{ height, background: has(g.imageUrl) ? "transparent" : shades[i % shades.length], border:`1px solid ${T.g200}`, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
+      {has(g.imageUrl) ? (
+        <img src={g.imageUrl} alt={g.caption || ""} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+      ) : (
+        <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize, color:"rgba(255,255,255,0.2)" }}>
+          {String(i + 1).padStart(2, "0")}
+        </span>
+      )}
+      <div className="gal-overlay">
+        {has(g.tag)     && <span className="fl" style={{ color:T.g400, fontSize:9 }}>{g.tag}</span>}
+        {has(g.caption) && <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:13, color:T.white, textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"center" }}>{g.caption}</p>}
+      </div>
+    </div>
+  );
+
   return (
     <section id="gallery" style={{ background:T.white, padding:`${py}px 0` }}>
       <div className="wrap">
-        <SH num="06 / Gallery" right="Life at NexaCore" />
+        <SH num="06 / Gallery" right={`Life at ${company.companyName}`} />
 
-        {/* Mobile: 2-col simple grid */}
+        {/* Mobile: 2-col */}
         {isMobile && (
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-            {company.gallery.map((g, i) => (
-              <div key={i} className="gal-item" style={{ height:150, background:shades[i], border:`1px solid ${T.g200}`, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:44, color:"rgba(255,255,255,0.2)" }}>{String(i+1).padStart(2,"0")}</span>
-                <div className="gal-overlay">
-                  <span className="fl" style={{ color:T.g400, fontSize:9 }}>{g.tag}</span>
-                  <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:12, color:T.white, textTransform:"uppercase", letterSpacing:"0.04em" }}>{g.caption}</p>
-                </div>
-              </div>
-            ))}
+            {company.gallery.map((g, i) => <GalItem key={i} g={g} i={i} height={150} fontSize={44} />)}
           </div>
         )}
 
-        {/* Tablet: 3-col even grid */}
+        {/* Tablet: 3-col */}
         {isTablet && (
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
-            {company.gallery.map((g, i) => (
-              <div key={i} className="gal-item" style={{ height:200, background:shades[i], border:`1px solid ${T.g200}`, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:56, color:"rgba(255,255,255,0.2)" }}>{String(i+1).padStart(2,"0")}</span>
-                <div className="gal-overlay">
-                  <span className="fl" style={{ color:T.g400, fontSize:9 }}>{g.tag}</span>
-                  <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:14, color:T.white, textTransform:"uppercase", letterSpacing:"0.04em" }}>{g.caption}</p>
-                </div>
-              </div>
-            ))}
+            {company.gallery.map((g, i) => <GalItem key={i} g={g} i={i} height={200} fontSize={56} />)}
           </div>
         )}
 
@@ -687,17 +839,20 @@ function Gallery({ company }) {
                 style={{
                   gridColumn: i === 0 ? "1" : undefined,
                   gridRow:    i === 0 ? "1 / 3" : undefined,
-                  background: shades[i],
+                  background: has(g.imageUrl) ? "transparent" : shades[i % shades.length],
                   border:`1px solid ${T.g200}`,
-                  display:"flex", alignItems:"center", justifyContent:"center",
-                }}
-              >
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize: i===0 ? 110 : 64, color:"rgba(255,255,255,0.18)", letterSpacing:-2 }}>
-                  {String(i+1).padStart(2,"0")}
-                </span>
+                  display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden",
+                }}>
+                {has(g.imageUrl) ? (
+                  <img src={g.imageUrl} alt={g.caption || ""} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                ) : (
+                  <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize: i === 0 ? 110 : 64, color:"rgba(255,255,255,0.18)", letterSpacing:-2 }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                )}
                 <div className="gal-overlay">
-                  <span className="fl" style={{ color:T.g400, fontSize:9 }}>{g.tag}</span>
-                  <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:15, color:T.white, textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"center" }}>{g.caption}</p>
+                  {has(g.tag)     && <span className="fl" style={{ color:T.g400, fontSize:9 }}>{g.tag}</span>}
+                  {has(g.caption) && <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:15, color:T.white, textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"center" }}>{g.caption}</p>}
                 </div>
               </div>
             ))}
@@ -718,11 +873,32 @@ function Contact({ company }) {
   const [loading, setLoad]  = useState(false);
   const py = isMobile ? 64 : 100;
 
+  const addr = company.address || {};
+  const contacts = company.contacts || {};
+
   const submit = e => {
     e.preventDefault();
     setLoad(true);
     setTimeout(() => { setLoad(false); setSent(true); }, 1400);
   };
+
+  // Build contact rows from only available data
+  const contactRows = [
+    has(contacts.email) && ["Email",    contacts.email],
+    has(contacts.phone) && ["Phone",    contacts.phone],
+    has(addr.building) && has(addr.city) && ["Location", `${addr.building}, ${addr.city}`],
+    has(addr.pincode)  && ["Pincode",  addr.pincode],
+  ].filter(Boolean);
+
+  // Build social links from only available data
+  const socialLinks = [
+    has(contacts.linkedin)  && { label: "LinkedIn",  href: contacts.linkedin  },
+    has(contacts.twitter)   && { label: "Twitter",   href: contacts.twitter   },
+    has(contacts.instagram) && { label: "Instagram", href: contacts.instagram },
+    has(contacts.whatsapp)  && { label: "WhatsApp",  href: `https://wa.me/${contacts.whatsapp.replace(/\D/g,"")}` },
+    has(contacts.facebook)  && { label: "Facebook",  href: contacts.facebook  },
+    has(contacts.youtube)   && { label: "YouTube",   href: contacts.youtube   },
+  ].filter(Boolean);
 
   return (
     <section id="contact" style={{ background:T.g50, padding:`${py}px 0`, borderTop:`1px solid ${T.g200}` }}>
@@ -737,33 +913,32 @@ function Contact({ company }) {
               Let's Build<br />Something<br />Great.
             </h2>
             <p className="fb" style={{ fontSize:15, marginBottom:44 }}>
-              Whether you're launching a product, scaling engineering, or need a technology
-              audit — drop us a message and we'll get back within 24 hours.
+              Drop us a message and we'll get back within 24 hours.
             </p>
 
-            <div style={{ borderTop:`2px solid ${T.black}` }}>
-              {[
-                { label:"Email",    value:company.contacts.email },
-                { label:"Phone",    value:company.contacts.phone },
-                { label:"Location", value:`${company.address.building}, ${company.address.city}` },
-                { label:"Pincode",  value:company.address.pincode },
-              ].map(c => (
-                <div key={c.label} style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:6, padding:"13px 0", borderBottom:`1px solid ${T.g200}` }}>
-                  <span className="fl">{c.label}</span>
-                  <span className="fm" style={{ color:T.g700 }}>{c.value}</span>
-                </div>
-              ))}
-            </div>
+            {contactRows.length > 0 && (
+              <div style={{ borderTop:`2px solid ${T.black}` }}>
+                {contactRows.map(([label, value]) => (
+                  <div key={label} style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:6, padding:"13px 0", borderBottom:`1px solid ${T.g200}` }}>
+                    <span className="fl">{label}</span>
+                    <span className="fm" style={{ color:T.g700 }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
-            <div style={{ display:"flex", gap:10, marginTop:30, flexWrap:"wrap" }}>
-              {["LinkedIn","Twitter","Instagram","WhatsApp"].map(name => (
-                <a key={name} href="#"
-                  style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:T.g500, border:`1px solid ${T.g200}`, padding:"7px 14px", transition:"all .2s" }}
-                  onMouseEnter={e => { e.target.style.borderColor=T.black; e.target.style.color=T.black; }}
-                  onMouseLeave={e => { e.target.style.borderColor=T.g200;  e.target.style.color=T.g500; }}
-                >{name}</a>
-              ))}
-            </div>
+            {socialLinks.length > 0 && (
+              <div style={{ display:"flex", gap:10, marginTop:30, flexWrap:"wrap" }}>
+                {socialLinks.map(({ label, href }) => (
+                  <a key={label} href={href} target="_blank" rel="noreferrer"
+                    style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:T.g500, border:`1px solid ${T.g200}`, padding:"7px 14px", transition:"all .2s" }}
+                    onMouseEnter={e => { e.target.style.borderColor = T.black; e.target.style.color = T.black; }}
+                    onMouseLeave={e => { e.target.style.borderColor = T.g200;  e.target.style.color = T.g500; }}>
+                    {label}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Form */}
@@ -775,6 +950,8 @@ function Contact({ company }) {
                 </div>
                 <h3 className="fd" style={{ fontSize:30, color:T.black, marginBottom:10 }}>Message Sent.</h3>
                 <p className="fb" style={{ maxWidth:240, fontSize:14 }}>We'll respond within 24 business hours.</p>
+                <button onClick={() => { setSent(false); setForm({ name:"", email:"", company:"", message:"" }); }}
+                  className="btn-g" style={{ marginTop:24 }}>Send Another</button>
               </div>
             ) : (
               <form onSubmit={submit} style={{ display:"flex", flexDirection:"column", gap:26 }}>
@@ -786,16 +963,19 @@ function Contact({ company }) {
                   <div key={f.key}>
                     <span className="fl" style={{ display:"block", marginBottom:8 }}>{f.label}</span>
                     <input className="field" type={f.type} placeholder={f.ph} value={form[f.key]}
-                      onChange={e => setForm({...form,[f.key]:e.target.value})} required={f.req} />
+                      onChange={e => setForm({ ...form, [f.key]: e.target.value })} required={f.req} />
                   </div>
                 ))}
                 <div>
                   <span className="fl" style={{ display:"block", marginBottom:8 }}>Message</span>
-                  <textarea className="field" rows={5} placeholder="Tell us about your project and goals…"
-                    value={form.message} onChange={e => setForm({...form,message:e.target.value})} required style={{ resize:"none" }} />
+                  <textarea className="field" rows={isMobile ? 4 : 5}
+                    placeholder="Tell us about your project…"
+                    value={form.message}
+                    onChange={e => setForm({ ...form, message: e.target.value })}
+                    required style={{ resize:"none" }} />
                 </div>
                 <button type="submit" className="btn-b" disabled={loading}
-                  style={{ alignSelf:"flex-start", opacity:loading ? .6 : 1, cursor:loading ? "not-allowed" : "pointer" }}>
+                  style={{ alignSelf:"flex-start", opacity: loading ? 0.6 : 1, cursor: loading ? "not-allowed" : "pointer" }}>
                   {loading ? "Sending…" : "Send Message →"}
                 </button>
               </form>
@@ -811,7 +991,12 @@ function Contact({ company }) {
    FOOTER
 ───────────────────────────────────────────────────────── */
 function Footer({ company }) {
-  const { isMobile, isTablet, isDesktop } = useBreakpoint();
+  const { isMobile, isTablet } = useBreakpoint();
+  const addr     = company.address || {};
+  const contacts = company.contacts || {};
+  const ini      = initials(company.companyName);
+
+  const locationStr = [addr.city, addr.state, addr.country].filter(Boolean).join(" · ");
 
   return (
     <footer style={{ background:T.black }}>
@@ -823,45 +1008,98 @@ function Footer({ company }) {
           paddingBottom:44,
           borderBottom:`1px solid ${T.g900}`,
         }}>
-          {/* Brand — full width on mobile */}
+          {/* Brand */}
           <div style={{ gridColumn: isMobile ? "1 / -1" : "auto" }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
-              <div style={{ width:28, height:28, background:T.white, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <span style={{ color:T.black, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:11 }}>NC</span>
-              </div>
+              {has(company.logo) ? (
+                <img src={company.logo} alt={company.companyName} style={{ height:28, objectFit:"contain" }} />
+              ) : (
+                <div style={{ width:28, height:28, background:T.white, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <span style={{ color:T.black, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:11 }}>{ini}</span>
+                </div>
+              )}
               <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, letterSpacing:"0.08em", textTransform:"uppercase", color:T.white }}>
-                NexaCore
+                {company.companyName}
               </span>
             </div>
-            <p className="fb" style={{ fontSize:13, color:T.g600, maxWidth:260, lineHeight:1.8 }}>
-              Building scalable digital infrastructure for the next generation of enterprises.
-            </p>
-            <p className="fl" style={{ color:T.g700, marginTop:12 }}>
-              {company.address.city} · {company.address.state} · {company.address.country}
-            </p>
+            {has(company.about) && (
+              <p className="fb" style={{ fontSize:13, color:T.g600, maxWidth:260, lineHeight:1.8 }}>
+                {company.about.slice(0, 120)}{company.about.length > 120 ? "…" : ""}
+              </p>
+            )}
+            {has(locationStr) && (
+              <p className="fl" style={{ color:T.g700, marginTop:12 }}>{locationStr}</p>
+            )}
           </div>
 
-          {[
-            { heading:"Company", links:["About","Services","Projects","Team"]          },
-            { heading:"Work",    links:["Clients","Gallery","Case Studies","Blog"]      },
-            { heading:"Connect", links:["LinkedIn","Twitter","Instagram","GitHub"]      },
-          ].map(col => (
-            <div key={col.heading}>
-              <span className="fl" style={{ color:T.g700, display:"block", marginBottom:18 }}>{col.heading}</span>
-              {col.links.map(l => (
-                <a key={l} href="#"
+          {/* Company nav col */}
+          <div>
+            <span className="fl" style={{ color:T.g700, display:"block", marginBottom:18 }}>Company</span>
+            {[
+              has(company.about)    && { label:"About",    href:"#about"    },
+              has(company.services) && { label:"Services", href:"#services" },
+              has(company.projects) && { label:"Projects", href:"#projects" },
+              has(company.members)  && { label:"Team",     href:"#team"     },
+            ].filter(Boolean).map(l => (
+              <a key={l.label} href={l.href}
+                style={{ display:"block", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:600, fontSize:13, letterSpacing:"0.06em", textTransform:"uppercase", color:T.g600, marginBottom:12, transition:"color .2s" }}
+                onMouseEnter={e => e.target.style.color = T.white}
+                onMouseLeave={e => e.target.style.color = T.g600}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+
+          {/* More nav col */}
+          <div>
+            <span className="fl" style={{ color:T.g700, display:"block", marginBottom:18 }}>Explore</span>
+            {[
+              has(company.clients) && { label:"Clients", href:"#clients" },
+              has(company.gallery) && { label:"Gallery", href:"#gallery" },
+                                      { label:"Contact", href:"#contact" },
+              has(company.website) && { label:"Website", href: company.website },
+            ].filter(Boolean).map(l => (
+              <a key={l.label} href={l.href} target={l.href?.startsWith("http") ? "_blank" : undefined} rel="noreferrer"
+                style={{ display:"block", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:600, fontSize:13, letterSpacing:"0.06em", textTransform:"uppercase", color:T.g600, marginBottom:12, transition:"color .2s" }}
+                onMouseEnter={e => e.target.style.color = T.white}
+                onMouseLeave={e => e.target.style.color = T.g600}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Connect col — only if socials exist */}
+          {[contacts.linkedin, contacts.twitter, contacts.instagram, contacts.whatsapp, contacts.facebook].some(has) && (
+            <div>
+              <span className="fl" style={{ color:T.g700, display:"block", marginBottom:18 }}>Connect</span>
+              {[
+                has(contacts.linkedin)  && { label:"LinkedIn",  href: contacts.linkedin  },
+                has(contacts.twitter)   && { label:"Twitter",   href: contacts.twitter   },
+                has(contacts.instagram) && { label:"Instagram", href: contacts.instagram },
+                has(contacts.whatsapp)  && { label:"WhatsApp",  href: `https://wa.me/${contacts.whatsapp.replace(/\D/g,"")}` },
+                has(contacts.facebook)  && { label:"Facebook",  href: contacts.facebook  },
+              ].filter(Boolean).map(l => (
+                <a key={l.label} href={l.href} target="_blank" rel="noreferrer"
                   style={{ display:"block", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:600, fontSize:13, letterSpacing:"0.06em", textTransform:"uppercase", color:T.g600, marginBottom:12, transition:"color .2s" }}
                   onMouseEnter={e => e.target.style.color = T.white}
-                  onMouseLeave={e => e.target.style.color = T.g600}
-                >{l}</a>
+                  onMouseLeave={e => e.target.style.color = T.g600}>
+                  {l.label}
+                </a>
               ))}
             </div>
-          ))}
+          )}
         </div>
 
         <div style={{ paddingTop:22, display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:10 }}>
-          <span className="fl" style={{ color:T.g700 }}>© {new Date().getFullYear()} {company.companyName}. All rights reserved.</span>
-          <span className="fl" style={{ color:T.g700 }}>{company.businessPark} · Est. {company.foundedYear}</span>
+          <span className="fl" style={{ color:T.g700 }}>© {YR} {company.companyName}. All rights reserved.</span>
+          {(has(company.businessPark) || has(company.foundedYear)) && (
+            <span className="fl" style={{ color:T.g700 }}>
+              {[
+                has(company.businessPark) && company.businessPark !== "Other" && company.businessPark,
+                has(company.foundedYear) && `Est. ${company.foundedYear}`,
+              ].filter(Boolean).join(" · ")}
+            </span>
+          )}
         </div>
       </div>
     </footer>
@@ -872,21 +1110,23 @@ function Footer({ company }) {
    ROOT EXPORT
 ───────────────────────────────────────────────────────── */
 export default function Company4({ data }) {
-  const companyData = data || DUMMY;
+  // If real data is passed → use it as-is (only render what exists)
+  // If no data → show full dummy as demo
+  const company = data && Object.keys(data).length > 0 ? data : DUMMY;
 
   return (
     <>
       <GlobalStyles />
-      <Nav company={companyData} />
-      <Hero company={companyData} />
-      <About company={companyData} />
-      <Services company={companyData} />
-      <Projects company={companyData} />
-      <Team company={companyData} />
-      <Clients company={companyData} />
-      <Gallery company={companyData} />
-      <Contact company={companyData} />
-      <Footer company={companyData} />
+      <Nav company={company} />
+      <Hero company={company} />
+      {has(company.about)    && <About    company={company} />}
+      {has(company.services) && <Services company={company} />}
+      {has(company.projects) && <Projects company={company} />}
+      {has(company.members)  && <Team     company={company} />}
+      {has(company.clients)  && <Clients  company={company} />}
+      {has(company.gallery)  && <Gallery  company={company} />}
+      <Contact company={company} />
+      <Footer  company={company} />
     </>
   );
 }

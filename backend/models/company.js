@@ -149,7 +149,12 @@ const companySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+// ─── Indexes ──────────────────────────────────────────────────────────────────
+companySchema.index({ tags: 1 });                  // category filter (your use case)
+companySchema.index({ isActive: 1 });              // active company filter
+companySchema.index({ businessPark: 1 });          // filter by park
+companySchema.index({ location: "2dsphere" });     // geo queries (nearby companies)
+companySchema.index({ companyName: "text", about: "text" }); // search by name/about
 // ─── Password hashing ────────────────────────────────────────────────────────
 companySchema.pre("save", async function () {
   if (!this.password) return;

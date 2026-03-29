@@ -212,23 +212,7 @@ export default function ProfilePage({ data }) {
 
               {/* Action buttons */}
               <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  className="btn-ghost"
-                  style={{
-                    display: "flex", alignItems: "center", gap: 6,
-                    padding: "9px 16px", borderRadius: 10, cursor: "pointer",
-                    fontSize: 12, fontWeight: 600,
-                    background: "transparent",
-                    border: `1.5px solid ${t.cardBorder}`,
-                    color: t.sub, transition: "opacity 0.15s",
-                  }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                  </svg>
-                  Edit
-                </button>
+              
                 {c.cv && (
                   <button
                     style={{

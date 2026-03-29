@@ -36,6 +36,7 @@ export default function CandidateHomeSection({ onNavigate }) {
   const { user,updateUser, logoutUser,} = useUser();
   const [showCard, setShowCard] = useState(false);
   const goto = (path) => { if (onNavigate) onNavigate(path); else navigate(path); };
+  console.log("user",user);
   
   useEffect(() => {
     const fetchFreshUser = async () => {
@@ -633,7 +634,7 @@ export default function CandidateHomeSection({ onNavigate }) {
                 company={user.company||"ParkOS"}
                 phone={user.phone}
                 email={user.email}
-                website={`${window.location.origin}/candidate/profile/${user._id}`}
+                website={`https://parkos.in/profile/${user.profileId}`}
               />
             </div>
             <div className="hx-modal-hint">

@@ -207,13 +207,22 @@ const CSS = `
   .hero-dot { animation:glow 2.5s ease-in-out infinite; }
 
   /* RESPONSIVE */
-  @media(max-width:900px) {
-    .hero-inner { grid-template-columns:1fr!important; }
-    .photo-card { display:none; }
-    .contact-box { grid-template-columns:1fr!important; }
-    .proj-item { grid-template-columns:1fr!important; }
-    .proj-year { display:none; }
+ @media(max-width:900px){
+  .hero-inner {
+    grid-template-columns:1fr;
   }
+
+  .photo-card {
+    display:block;
+    margin-top: 2rem;
+    order: -1; /* 🔥 moves image above text (optional) */
+  }
+
+  .photo-frame img {
+    height: 320px; /* smaller for mobile */
+    object-fit: cover;
+  }
+}
   @media(max-width:640px) {
     .nav-links { display:none; }
   }

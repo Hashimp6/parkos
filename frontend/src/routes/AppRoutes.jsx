@@ -42,6 +42,11 @@ import ApplicationsPage from "../pages/candidate/JobDash";
 import Layout3 from "../components/company/Layout3";
 import CompanyRoute from "../components/company/CompanyProtectRoute";
 import NotFound from "../pages/public/NotFound";
+import PersonalPortfolio4 from "../components/candidate/ProfileLayout4";
+import PersonalPortfolio3 from "../components/candidate/ProfileLayout3";
+import PersonalPortfolio5 from "../components/candidate/ProfileLayout5";
+import Company5 from "../components/company/Layout5";
+import Company4 from "../components/company/Layout4";
 // Dashboard Pages
 // import DashboardHome from "../pages/dashboard/DashboardHome";
 // import Profile from "../pages/dashboard/Profile";
@@ -74,7 +79,7 @@ function AppRoutes() {
       <Route path="/home" element={<CandidateHomeSection/>} />
       <Route path="/profile/set/form" element={<CandidateProfileForm />} />
       <Route path="/profile/:profileId" element={<ProfilePages />} />
-      
+      <Route path="/profile12" element={<Company4 />} />
       
       {/* company pages  */}
       <Route path="/company/login" element={<CompanyLoginPage />} />

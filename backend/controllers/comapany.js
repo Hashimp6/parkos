@@ -2,6 +2,7 @@ const Company = require("../models/company");
 const jwt = require("jsonwebtoken");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 const { sendMail } = require("../config/nodemailer");
+const getCoordinates = require("../utils/geocoder");
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
@@ -415,6 +416,19 @@ exports.updateCompany = async (req, res) => {
       }
     });
 
+    if (updateData.address) {
+      const { city, street, pincode } = updateData.address;
+
+      // Only geocode if at least city is present
+      if (city) {
+        const coords = await getCoordinates(updateData.address);
+        if (coords) {
+          updateData.location = coords;
+        }
+      }
+    }
+
+
     // ── Top-level image uploads (logo, banner) ───────────────────────────────
     if (req.files?.logo) {
       const result = await uploadToCloudinary(req.files.logo[0].buffer, "companies/logos");
@@ -697,5 +711,45 @@ exports.checkCompanyName = async (req, res) => {
       success: false,
       message: err.message,
     });
+  }
+};
+
+// GET /api/companies/by-tag?tag=web
+
+const getCompaniesByTag = async (req, res) => {
+  try {
+    const { tag, page = 1, limit = 10 } = req.query;
+
+    if (!tag) {
+      return res.status(400).json({ message: "Tag is required" });
+    }
+
+    const query = {
+      isActive: true,
+      tags: tag, // MongoDB checks if tag exists in the array
+    };
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [companies, total] = await Promise.all([
+      Company.find(query)
+        .select("companyName logo tagline tags address contacts website businessPark")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      Company.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      tag,
+      total,
+      page: Number(page),
+      totalPages: Math.ceil(total / Number(limit)),
+      companies,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
