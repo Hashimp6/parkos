@@ -168,7 +168,7 @@ const blank = {
   tags: [""],
   businessPark: "Other",
   layout: 1,
-  address: { building: "", street: "", city: "", state: "", pincode: "", country: "India" },
+  address: { building: "", street: "", place: "" },
   mapEmbedLink: "",
   projects: [{ name: "", description: "", link: "" }],
   contacts: { linkedin: "", instagram: "", facebook: "", twitter: "", youtube: "", whatsapp: "", email: "", phone: "" },
@@ -184,6 +184,9 @@ export default function CompanyProfileForm() {
   const [tab, setTab]   = useState("branding");
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const [placeSuggestions, setPlaceSuggestions] = useState([]);
+const [showSuggestions, setShowSuggestions] = useState(false);
+const debounceRef = useRef();
   const { company, updateCompany, token } = useCompany();
   const navigate = useNavigate();
   // Track all uploadable files:
@@ -254,6 +257,42 @@ export default function CompanyProfileForm() {
   const setNestedFile = (arrayKey, index, file) => {
     setFiles((p) => ({ ...p, [arrayKey]: { ...p[arrayKey], [index]: file } }));
   };
+
+
+  const fetchPlaces = async (query) => {
+    if (!query) {
+      setPlaceSuggestions([]);
+      return;
+    }
+  
+    try {
+      const res = await axios.get(
+        "https://nominatim.openstreetmap.org/search",
+        {
+          params: {
+            q: query,
+            format: "json",
+            addressdetails: 1,
+            limit: 5,
+            countrycodes: "in", // 🔥 restrict to India
+          },
+        }
+      );
+  
+      setPlaceSuggestions(res.data);
+      setShowSuggestions(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  const fetchPlacesDebounced = (query) => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      fetchPlaces(query);
+    }, 400);
+  };
+
 
   // ── Save ──────────────────────────────────────────────────────────────────
   const handleSave = async () => {
@@ -551,18 +590,57 @@ export default function CompanyProfileForm() {
                 <CardTitle>Address</CardTitle>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { k: "building", l: "Building / Floor",  p: "Tower A, 3rd Floor",   full: true },
-                    { k: "street",   l: "Street",            p: "MG Road",              full: true },
-                    { k: "city",     l: "City",              p: "Kochi" },
-                    { k: "state",    l: "State",             p: "Kerala" },
-                    { k: "pincode",  l: "Pincode",           p: "682030" },
-                    { k: "country",  l: "Country",           p: "India" },
-                  ].map(f => (
+  { k: "building", l: "Building / Floor", full: true },
+  { k: "street",   l: "Street", full: true },
+  { k: "place",    l: "Place", full: true }, // 👈 NEW MAIN FIELD
+].map(f => (
                     <div key={f.k} className={f.full ? "sm:col-span-2" : ""}>
                       <label className={labelCls}>{f.l}</label>
-                      <input className={inputCls} placeholder={f.p}
-                        value={form.address[f.k] || ""}
-                        onChange={e => setNested("address", f.k, e.target.value)} />
+                      <div className="relative">
+  <input
+    className={inputCls}
+    placeholder={f.p || "Enter"}
+    value={form.address[f.k] || ""}
+    onChange={(e) => {
+      const value = e.target.value;
+      setNested("address", f.k, value);
+
+      if (f.k === "place") {
+        fetchPlacesDebounced(value);
+      }
+    }}
+    onFocus={() => f.k === "place" && setShowSuggestions(true)}
+    onBlur={() => f.k === "place" && setTimeout(() => setShowSuggestions(false), 200)}
+  />
+
+  {/* 🔥 Suggestions ONLY for place */}
+  {f.k === "place" && showSuggestions && placeSuggestions.length > 0 && (
+    <div className="absolute z-50 w-full mt-1 bg-white border border-zinc-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+      {placeSuggestions.map((item, i) => (
+        <div
+          key={i}
+          className="px-4 py-2 text-sm hover:bg-zinc-100 cursor-pointer"
+          onClick={() => {
+            setNested("address", "place", item.display_name);
+
+            // 💥 Save coordinates (VERY IMPORTANT for your platform)
+            set("location", {
+              type: "Point",
+              coordinates: [
+                parseFloat(item.lon),
+                parseFloat(item.lat),
+              ],
+            });
+
+            setShowSuggestions(false);
+          }}
+        >
+          {item.display_name}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
                     </div>
                   ))}
                 </div>

@@ -122,10 +122,7 @@ const companySchema = new mongoose.Schema(
     address: {
       building: { type: String, default: "" },
       street:   { type: String, default: "" },
-      city:     { type: String, default: "" },
-      state:    { type: String, default: "" },
-      pincode:  { type: String, default: "" },
-      country:  { type: String, default: "India" },
+      place:    { type: String, default: "" },
     },
     mapEmbedLink: { type: String, default: "" },
 

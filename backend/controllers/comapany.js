@@ -3,6 +3,9 @@ const jwt = require("jsonwebtoken");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 const { sendMail } = require("../config/nodemailer");
 const getCoordinates = require("../utils/geocoder");
+
+
+
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
@@ -417,17 +420,18 @@ exports.updateCompany = async (req, res) => {
     });
 
     if (updateData.address) {
-      const { city, street, pincode } = updateData.address;
-
-      // Only geocode if at least city is present
-      if (city) {
+      const hasAddress =
+        updateData.address.building ||
+        updateData.address.street ||
+        updateData.address.place;
+    
+      if (hasAddress) {
         const coords = await getCoordinates(updateData.address);
         if (coords) {
           updateData.location = coords;
         }
       }
     }
-
 
     // ── Top-level image uploads (logo, banner) ───────────────────────────────
     if (req.files?.logo) {

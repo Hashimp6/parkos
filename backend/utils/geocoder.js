@@ -7,12 +7,12 @@ const geocoder = NodeGeocoder({
 
 const getCoordinates = async (address) => {
   try {
-    const { building, street, city, state, pincode, country } = address;
+    const { building, street, place } = address;
     
     // Build a readable address string
-    const addressString = [building, street, city, state, pincode, country]
-      .filter(Boolean)
-      .join(", ");
+    const addressString = [building, street, place, "Kerala", "India"]
+  .filter(Boolean)
+  .join(", ");
 
     const res = await geocoder.geocode(addressString);
     
