@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const { nanoid } = require("nanoid");
 
 const experienceSchema = new mongoose.Schema({
   jobTitle: { type: String },
@@ -79,6 +80,10 @@ const candidateSchema = new mongoose.Schema(
       type: String, // tagline of the candidate
       default: "",
     },
+    company: {
+      type: String,
+      default: "",
+    },
     freelanceServices: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "FreelanceService"
@@ -145,6 +150,9 @@ isVerified: {
   }
 );
 
+candidateSchema.index({ skills: 1 });
+candidateSchema.index({ place: 1 });
+
 // Hash password before saving
 candidateSchema.pre("save", async function () {
     if (!this.password) return;
@@ -157,5 +165,11 @@ candidateSchema.pre("save", async function () {
 candidateSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+candidateSchema.pre("save", function (next) {
+  if (!this.profileId) {
+    this.profileId = `${this.name.toLowerCase().replace(/\s+/g, "-")}-${nanoid(6)}`;
+  }
+  next();
+});
 
 module.exports = mongoose.model("Candidate", candidateSchema);

@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const helper = require("../models/helper");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 const { sendMail } = require("../config/nodemailer");
+const { formatPhone } = require("../utils/helper");
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit
@@ -244,6 +245,7 @@ console.log("candidateId:", candidateId);
       place,
       about,
       tagline,
+      company,
       qualification,
       layoutType,
       skills,
@@ -304,10 +306,11 @@ console.log("candidateId:", candidateId);
  
     // ── Scalars ─────────────────
     setIfDefined("name", name);
-    setIfDefined("phone", phone);
+    setIfDefined("phone", formatPhone(phone));
     setIfDefined("place", place);
     setIfDefined("about", about);
     setIfDefined("tagline", tagline);
+    setIfDefined("company", company);
     setIfDefined("qualification", qualification);
     setIfDefined("layoutType", layoutType);
 

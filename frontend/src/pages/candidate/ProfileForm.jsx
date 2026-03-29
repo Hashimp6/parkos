@@ -218,7 +218,7 @@ function DynArray({ items, onAdd, onRemove, onUpdate, placeholder, template, fie
 // ── Initial form state ────────────────────────────────────────────────────────
 const blank = {
   name: "", email: "", phone: "", place: "",
-  tagline: "", qualification: "", about: "",
+  tagline: "",  company: "",    qualification: "", about: "",
   profilePhoto: "", cv: "", cvFileName: "", layoutType: 1,
   skills: [""], lookingVacancy: [""],
   services: [{ heading: "", description: "" }],
@@ -353,6 +353,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
         place: form.place,
         about: form.about,
         tagline: form.tagline,
+        company: form.company,
         qualification: form.qualification,
         layoutType: form.layoutType,
         socials: form.socials.filter(s => s.instagram || s.facebook || s.linkedin || s.twitter || s.github || s.website),
@@ -679,6 +680,15 @@ const [showSuggestions, setShowSuggestions] = useState(false);
                     <input className={inputCls} placeholder="Full-Stack Dev & Design Thinker"
                       value={form.tagline} onChange={e => set("tagline", e.target.value)} />
                   </div>
+                  <div>
+  <label className={labelCls}>Company</label>
+  <input
+    className={inputCls}
+    placeholder="e.g. Google, Amazon"
+    value={form.company || ""}
+    onChange={(e) => set("company", e.target.value)}
+  />
+</div>
                   <div>
                     <label className={labelCls}>Highest Qualification</label>
                     <input className={inputCls} placeholder="B.Tech Computer Science"
