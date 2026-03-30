@@ -59,9 +59,11 @@ function AppRoutes() {
         <Route path="/"                    element={<Home />} />
         <Route path="/jobs"                element={<JobListings />} />
         <Route path="/freelance"           element={<FreelancerCategories />} />
+        <Route path="/company/category-grid"             element={<CompanyServices />} />
+        
         </Route>
 
-        
+
         <Route path="/freelance-list"      element={<FreelancerList />} />
         <Route path="/freelancer/:id"      element={<FreelancerDetail />} />
         <Route path="/profile/:profileId"  element={<ProfilePages />} />

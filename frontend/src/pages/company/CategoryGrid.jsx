@@ -1,5 +1,7 @@
 import { useState } from "react";
-
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import API_BASE from "../../../config";
 // ── Sample data matching your exact MongoDB schema ──
 const COMPANIES = [
   {
@@ -441,19 +443,90 @@ export default function CompanyServices() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState(null);
+  const [tags, setTags] = useState([]);
+  const [category, setCategory] = useState("");
+  const location = useLocation();
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const filtered = COMPANIES.filter(c => {
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+  
+    const tagParam = params.get("tags");
+    const categoryParam = params.get("category");
+  
+    const parsedTags = tagParam ? tagParam.split(",") : [];
+  
+    setTags(parsedTags);
+    setCategory(categoryParam || "");
+  
+    console.log("🔥 Category Clicked:", categoryParam);
+    console.log("🔥 Tags:", parsedTags);
+  }, [location.search]);
+
+
+  const fetchCompanies = async (customFilter = filter, customTags = tags) => {
+    try {
+      setLoading(true);
+  
+      const params = new URLSearchParams();
+  
+      if (customTags.length > 0) {
+        params.append("tags", customTags.join(","));
+      }
+  
+      if (customFilter !== "all") {
+        params.append("industry", customFilter);
+      }
+  
+
+  
+      const res = await fetch(
+        `${API_BASE}/companies/company/by-tags?${params.toString()}`
+      );
+  
+      const data = await res.json();
+  
+      if (data.success) {
+        setCompanies(data.companies);
+      }
+    } catch (err) {
+      console.error("Fetch error", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tags.length > 0) {
+      fetchCompanies("all", tags);
+    }
+  }, [tags]);
+
+  const filtered = companies.filter(c => {
     const q = query.toLowerCase();
+  
     const matchQ =
       c.companyName.toLowerCase().includes(q) ||
       (c.tagline || "").toLowerCase().includes(q) ||
       (c.industry || "").toLowerCase().includes(q) ||
       (c.services || []).some(s => s.title.toLowerCase().includes(q)) ||
-      (c.tags || []).some(t => t.includes(q)) ||
-      (c.businessPark || "").toLowerCase().includes(q);
+      (c.tags || []).some(t => t.includes(q));
+  
+    const matchTag =
+      tags.length === 0 ||
+      (c.tags || []).some(t =>
+        tags.some(tag => t.toLowerCase().includes(tag.toLowerCase()))
+      );
+  
     const matchF = filter === "all" || c.industry === filter;
-    return matchQ && matchF;
+  
+    return matchQ && matchF && matchTag;
   });
+
+
+  
 
   return (
     <>
@@ -483,11 +556,26 @@ export default function CompanyServices() {
           </div>
           <div className="cp-frow">
             <span className="cp-flabel">Industry</span>
-            {INDUSTRY_FILTERS.map(f => (
-              <button key={f.value} className={`cp-pill${filter === f.value ? " on" : ""}`} onClick={() => setFilter(f.value)}>
-                {f.label}
-              </button>
-            ))}
+           {/* Always show default filters */}
+<button
+  className={`cp-pill ${filter === "all" ? "on" : ""}`}
+  onClick={() => setFilter("all")}
+>
+  All
+</button>
+
+
+
+{/* Optional: show URL tags ALSO */}
+{tags.length > 0 && tags.map((tag, i) => (
+  <button
+    key={`tag-${i}`}
+    className={`cp-pill ${filter === tag ? "on" : ""}`}
+    onClick={() => setFilter(tag)}
+  >
+    {tag}
+  </button>
+))}
           </div>
         </div>
 
@@ -518,3 +606,130 @@ export default function CompanyServices() {
     </>
   );
 }
+
+
+
+
+
+
+
+
+//   useEffect(() => {
+//     const params = new URLSearchParams(location.search);
+  
+//     const tagParam = params.get("tags");
+//     const categoryParam = params.get("category");
+  
+//     const parsedTags = tagParam ? tagParam.split(",") : [];
+  
+//     setTags(parsedTags);
+//     setCategory(categoryParam);
+  
+//     console.log("🔥 Category Clicked:", categoryParam);
+//     console.log("🔥 Tags:", parsedTags);
+  
+//   }, [location.search]);
+
+
+//   const filtered = COMPANIES.filter(c => {
+//     const q = query.toLowerCase();
+  
+//     const matchQ =
+//       c.companyName.toLowerCase().includes(q) ||
+//       (c.tagline || "").toLowerCase().includes(q) ||
+//       (c.industry || "").toLowerCase().includes(q) ||
+//       (c.services || []).some(s => s.title.toLowerCase().includes(q)) ||
+//       (c.tags || []).some(t => t.includes(q));
+  
+//     const matchTag =
+//       tags.length === 0 ||
+//       (c.tags || []).some(t =>
+//         tags.some(tag => t.toLowerCase().includes(tag.toLowerCase()))
+//       );
+  
+//     const matchF = filter === "all" || c.industry === filter;
+  
+//     return matchQ && matchF && matchTag;
+//   });
+
+
+  
+
+//   return (
+//     <>
+//       <style>{CSS}</style>
+//       <div className="cp">
+
+//         {/* Hero */}
+//         <div className="cp-hero">
+//           <div>
+//             <div className="cp-ol"><span className="cp-ol-dash"/>Service Directory<span className="cp-ol-dash"/></div>
+//             <h1 className="cp-h1">Companies <em>built</em><br/>to serve you</h1>
+//             <p className="cp-sub">Browse verified businesses, filter by industry, and connect instantly via call, WhatsApp, or email.</p>
+//           </div>
+//           <div className="cp-stat">
+//             <div className="cp-stat-n">{COMPANIES.length}</div>
+//             <div className="cp-stat-l">Active Companies</div>
+//           </div>
+//         </div>
+
+//         {/* Controls */}
+//         <div className="cp-ctrl">
+//           <div className="cp-sw">
+//             <span className="cp-si">
+//               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+//             </span>
+//             <input className="cp-sin" type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies, services, tags…" />
+//           </div>
+//           <div className="cp-frow">
+//             <span className="cp-flabel">Industry</span>
+//            {/* Always show default filters */}
+// <button
+//   className={`cp-pill ${filter === "all" ? "on" : ""}`}
+//   onClick={() => setFilter("all")}
+// >
+//   All
+// </button>
+
+
+
+// {/* Optional: show URL tags ALSO */}
+// {tags.length > 0 && tags.map((tag, i) => (
+//   <button
+//     key={`tag-${i}`}
+//     className={`cp-pill ${filter === tag ? "on" : ""}`}
+//     onClick={() => setFilter(tag)}
+//   >
+//     {tag}
+//   </button>
+// ))}
+//           </div>
+//         </div>
+
+//         {/* Result bar */}
+//         <div className="cp-bar">
+//           <div>Showing <strong>{filtered.length}</strong> of {COMPANIES.length} companies</div>
+//           {(filter !== "all" || query) && (
+//             <button className="cp-clr" onClick={() => { setFilter("all"); setQuery(""); }}>Clear all ✕</button>
+//           )}
+//         </div>
+
+//         {/* Grid */}
+//         <div className="cp-grid">
+//           {filtered.length > 0
+//             ? filtered.map((c, i) => <Card key={c._id} company={c} index={i} onConnect={setSelected} />)
+//             : (
+//               <div className="cp-empty">
+//                 <span className="cp-empty-i">🏢</span>
+//                 <div className="cp-empty-t">No companies found</div>
+//                 <div className="cp-empty-s">Try a different search or clear the filter</div>
+//               </div>
+//             )
+//           }
+//         </div>
+//       </div>
+
+//       {selected && <Modal company={selected} onClose={() => setSelected(null)} />}
+//     </>
+//   );
+// }

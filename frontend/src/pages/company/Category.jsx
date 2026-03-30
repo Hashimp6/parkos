@@ -3,55 +3,160 @@ import { useNavigate } from "react-router-dom";
 
 const categories = [
   // 💻 TECHNOLOGY
-  { name: "IT & Software", icon: "🖥️", tag: "tech" },
-  { name: "Web & App Development", icon: "🌐", tag: "web" },
+  {
+    name: "IT & Software",
+    icon: "🖥️",
+    tag: "tech",
+    tags: ["IT", "software", "tech", "programming", "developer", "engineer", "system admin", "cybersecurity", "cloud", "DevOps"],
+  },
+  {
+    name: "Web & App Development",
+    icon: "🌐",
+    tag: "web",
+    tags: ["web development", "web design", "app development", "mobile app", "React", "Flutter", "frontend", "backend", "full stack", "website"],
+  },
 
   // 🎨 CREATIVE
-  { name: "Design & Creative", icon: "🎨", tag: "design" },
-  { name: "Media & Video Production", icon: "🎬", tag: "media" },
+  {
+    name: "Design & Creative",
+    icon: "🎨",
+    tag: "design",
+    tags: ["graphic design", "UI UX", "logo design", "branding", "illustration", "motion graphics", "poster design", "Figma", "Photoshop"],
+  },
+  {
+    name: "Media & Video Production",
+    icon: "🎬",
+    tag: "media",
+    tags: ["video editing", "video production", "photography", "reels", "YouTube", "short film", "content creation", "cinematography", "drone"],
+  },
 
   // 📈 MARKETING
-  { name: "Digital Marketing & Advertising", icon: "📈", tag: "marketing" },
+  {
+    name: "Digital Marketing & Advertising",
+    icon: "📈",
+    tag: "marketing",
+    tags: ["digital marketing", "SEO", "social media", "Google Ads", "Facebook Ads", "content marketing", "email marketing", "influencer", "brand promotion"],
+  },
 
   // 🏢 BUSINESS SERVICES
-  { name: "Business & Consulting", icon: "📊", tag: "business" },
-  { name: "Finance & Legal Services", icon: "⚖️", tag: "finance" },
+  {
+    name: "Business & Consulting",
+    icon: "📊",
+    tag: "business",
+    tags: ["business consulting", "strategy", "management", "HR", "operations", "startup", "project management", "business development"],
+  },
+  {
+    name: "Finance & Legal Services",
+    icon: "⚖️",
+    tag: "finance",
+    tags: ["finance", "accounting", "legal", "CA", "chartered accountant", "tax", "GST", "lawyer", "audit", "compliance", "bookkeeping"],
+  },
 
   // 🛒 COMMERCIAL
-  { name: "E-commerce & Retail", icon: "🛍️", tag: "commerce" },
-  { name: "Sales & Distribution", icon: "📦", tag: "sales" },
+  {
+    name: "E-commerce & Retail",
+    icon: "🛍️",
+    tag: "commerce",
+    tags: ["ecommerce", "online store", "Shopify", "Amazon", "product listing", "retail", "dropshipping", "marketplace"],
+  },
+  {
+    name: "Sales & Distribution",
+    icon: "📦",
+    tag: "sales",
+    tags: ["sales", "distribution", "B2B", "B2C", "field sales", "telecalling", "channel partner", "dealer", "reseller"],
+  },
 
   // 🏗️ INFRASTRUCTURE
-  { name: "Construction & Real Estate", icon: "🏗️", tag: "construction" },
-  { name: "Interior & Architecture", icon: "🛋️", tag: "interior" },
+  {
+    name: "Construction & Real Estate",
+    icon: "🏗️",
+    tag: "construction",
+    tags: ["construction", "real estate", "builder", "contractor", "civil engineer", "architecture", "property", "plot", "apartment", "renovation"],
+  },
+  {
+    name: "Interior & Architecture",
+    icon: "🛋️",
+    tag: "interior",
+    tags: ["interior design", "architecture", "home decor", "modular kitchen", "false ceiling", "furniture", "space planning", "3D visualization"],
+  },
 
   // 🏠 LOCAL SERVICES
-  { name: "Home & Maintenance Services", icon: "🧹", tag: "home" },
+  {
+    name: "Home & Maintenance Services",
+    icon: "🧹",
+    tag: "home",
+    tags: ["home services", "cleaning", "plumbing", "electrician", "AC repair", "painting", "carpenter", "maintenance", "handyman", "pest control"],
+  },
 
   // 🎉 EVENTS
-  { name: "Event Management & Entertainment", icon: "🎉", tag: "event" },
+  {
+    name: "Event Management & Entertainment",
+    icon: "🎉",
+    tag: "event",
+    tags: ["event management", "wedding planning", "DJ", "catering", "decoration", "photography", "stage", "anchor", "entertainment", "corporate event"],
+  },
 
   // 🍽️ FOOD
-  { name: "Food & Catering Services", icon: "🍽️", tag: "food" },
+  {
+    name: "Food & Catering Services",
+    icon: "🍽️",
+    tag: "food",
+    tags: ["catering", "food", "tiffin", "cloud kitchen", "restaurant", "chef", "baking", "homemade food", "meal delivery", "cooking"],
+  },
 
   // 🎓 EDUCATION
-  { name: "Education & Training", icon: "🎓", tag: "education" },
+  {
+    name: "Education & Training",
+    icon: "🎓",
+    tag: "education",
+    tags: ["education", "tutoring", "training", "online classes", "coaching", "teacher", "skill development", "certification", "course", "workshop"],
+  },
 
   // 🚚 LOGISTICS
-  { name: "Logistics & Transportation", icon: "🚚", tag: "logistics" },
+  {
+    name: "Logistics & Transportation",
+    icon: "🚚",
+    tag: "logistics",
+    tags: ["logistics", "transportation", "delivery", "courier", "freight", "supply chain", "warehouse", "last mile", "moving", "truck"],
+  },
 
   // 🏥 HEALTH
-  { name: "Healthcare & Wellness", icon: "🏥", tag: "health" },
+  {
+    name: "Healthcare & Wellness",
+    icon: "🏥",
+    tag: "health",
+    tags: ["healthcare", "wellness", "doctor", "nurse", "physiotherapy", "yoga", "fitness", "nutrition", "mental health", "pharmacy", "home care"],
+  },
 
   // 👗 LIFESTYLE
-  { name: "Fashion, Beauty & Lifestyle", icon: "👗", tag: "lifestyle" },
+  {
+    name: "Fashion, Beauty & Lifestyle",
+    icon: "👗",
+    tag: "lifestyle",
+    tags: ["fashion", "beauty", "makeup", "salon", "styling", "boutique", "tailoring", "skincare", "bridal", "mehndi"],
+  },
 
   // 🌾 TRADITIONAL / LOCAL
-  { name: "Agriculture & Local Products", icon: "🌾", tag: "agriculture" },
-  { name: "Tourism & Hospitality", icon: "🏝️", tag: "tourism" },
+  {
+    name: "Agriculture & Local Products",
+    icon: "🌾",
+    tag: "agriculture",
+    tags: ["agriculture", "farming", "organic", "local products", "Kerala products", "spices", "coconut", "fishery", "dairy", "plantation"],
+  },
+  {
+    name: "Tourism & Hospitality",
+    icon: "🏝️",
+    tag: "tourism",
+    tags: ["tourism", "travel", "hotel", "resort", "homestay", "tour package", "guide", "hospitality", "Kerala tourism", "backwater"],
+  },
 
   // 🔧 GENERAL
-  { name: "Other Services", icon: "💼", tag: "other" },
+  {
+    name: "Other Services",
+    icon: "💼",
+    tag: "other",
+    tags: ["other", "miscellaneous", "general", "freelance", "services"],
+  },
 ];
 
 const CSS = `
@@ -265,7 +370,6 @@ const CSS = `
     border-color: var(--border-hover);
   }
 
-  /* top-right corner accent slash */
   .fc-card::after {
     content: '';
     position: absolute;
@@ -281,7 +385,6 @@ const CSS = `
     background: linear-gradient(225deg, var(--surface-2) 45%, transparent 46%);
   }
 
-  /* icon wrapper */
   .fc-icon-wrap {
     width: 44px; height: 44px;
     border-radius: 12px;
@@ -313,6 +416,42 @@ const CSS = `
     margin-bottom: 6px;
     position: relative;
     z-index: 1;
+  }
+
+  /* ── TAGS PREVIEW ── */
+  .fc-tags-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fc-tag-pill {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 2px 7px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .fc-card:hover .fc-tag-pill {
+    background: var(--surface-2);
+    color: var(--ink-mid);
+  }
+
+  .fc-tag-more {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    padding: 2px 4px;
+    align-self: center;
   }
 
   .fc-arrow {
@@ -354,15 +493,38 @@ const CSS = `
   }
 `;
 
+// Show first 3 tags as pills, rest as "+N more"
+function TagsPreview({ tags }) {
+  const visible = tags.slice(0, 3);
+  const remaining = tags.length - visible.length;
+  return (
+    <div className="fc-tags-preview">
+      {visible.map((t) => (
+        <span key={t} className="fc-tag-pill">{t}</span>
+      ))}
+      {remaining > 0 && (
+        <span className="fc-tag-more">+{remaining}</span>
+      )}
+    </div>
+  );
+}
+
 function CategoryCard({ cat, navigate, index }) {
+  const handleClick = () => {
+    // Pass all tags to the next page via query params or state
+    const tagParam = cat.tags.join(",");
+    navigate(`/company/category-grid?tags=${encodeURIComponent(tagParam)}&category=${encodeURIComponent(cat.tag)}`);
+  };
+
   return (
     <div
       className="fc-card"
-      onClick={() => navigate && navigate("/freelance-list", { state: { category: cat.name } })}
+      onClick={handleClick}
       style={{ animationDelay: `${index * 45}ms` }}
     >
       <div className="fc-icon-wrap">{cat.icon}</div>
       <p className="fc-card-name">{cat.name}</p>
+      <TagsPreview tags={cat.tags} />
       <span className="fc-arrow">→</span>
     </div>
   );
@@ -372,9 +534,14 @@ export default function FreelancerCategories() {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
-  const filtered = categories.filter((c) =>
-    c.name.toLowerCase().includes(query.toLowerCase())
-  );
+  // Search works across both name AND tags
+  const filtered = categories.filter((c) => {
+    const q = query.toLowerCase();
+    return (
+      c.name.toLowerCase().includes(q) ||
+      c.tags.some((t) => t.toLowerCase().includes(q))
+    );
+  });
 
   return (
     <>
@@ -399,7 +566,7 @@ export default function FreelancerCategories() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search categories…"
+              placeholder="Search categories or skills…"
             />
             <button className="fc-search-btn">Search</button>
           </div>

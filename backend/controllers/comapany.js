@@ -720,40 +720,122 @@ exports.checkCompanyName = async (req, res) => {
 
 // GET /api/companies/by-tag?tag=web
 
-const getCompaniesByTag = async (req, res) => {
+exports.getCompaniesByTag = async (req, res) => {
   try {
-    const { tag, page = 1, limit = 10 } = req.query;
+    const {
+      tags,
+      lat,
+      lng,
+      page = 1,
+      limit = 12,
+      mode = "or",
+    } = req.query;
 
-    if (!tag) {
-      return res.status(400).json({ message: "Tag is required" });
+    console.log("querry",req.query);
+    
+    // ── Normalize tags ─────────────────────────────
+    let tagArray = [];
+
+    if (Array.isArray(tags)) {
+      tagArray = tags.flatMap(t => t.split(","))
+        .map(t => t.trim().toLowerCase())
+        .filter(Boolean);
+    } else if (typeof tags === "string" && tags.trim()) {
+      tagArray = tags.split(",")
+        .map(t => t.trim().toLowerCase())
+        .filter(Boolean);
     }
 
-    const query = {
-      isActive: true,
-      tags: tag, // MongoDB checks if tag exists in the array
-    };
+    if (tagArray.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one tag is required"
+      });
+    }
 
     const skip = (Number(page) - 1) * Number(limit);
 
+    // ── Base match ────────────────────────────────
+    const tagQuery =
+      mode === "and"
+        ? { tags: { $all: tagArray } }
+        : { tags: { $in: tagArray } };
+
+    // ── CASE 1: WITH LOCATION (NEAREST FIRST) ─────
+    if (lat && lng) {
+      const companies = await Company.aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: "Point",
+              coordinates: [Number(lng), Number(lat)],
+            },
+            distanceField: "distance",
+            spherical: true,
+            query: {
+              isActive: true,
+              ...tagQuery,
+            },
+          },
+        },
+        {
+          $addFields: {
+            sortScore: {
+              $add: [
+                { $cond: ["$isVerified", 0, 100000] },
+                "$distance"
+              ]
+            }
+          }
+        },
+        { $sort: { sortScore: 1 } },
+        { $skip: skip },
+        { $limit: Number(limit) },
+      ]);
+
+      return res.json({
+        success: true,
+        mode,
+        tags: tagArray,
+        nearby: true,
+        count: companies.length,
+        companies,
+      });
+    }
+
+    // ── CASE 2: WITHOUT LOCATION ──────────────────
     const [companies, total] = await Promise.all([
-      Company.find(query)
-        .select("companyName logo tagline tags address contacts website businessPark")
-        .sort({ createdAt: -1 })
+      Company.find({
+        isActive: true,
+        ...tagQuery,
+      })
+        .sort({ isVerified: -1, createdAt: -1 })
         .skip(skip)
         .limit(Number(limit)),
-      Company.countDocuments(query),
+
+      Company.countDocuments({
+        isActive: true,
+        ...tagQuery,
+      }),
     ]);
 
-    res.status(200).json({
+    return res.json({
       success: true,
-      tag,
+      mode,
+      tags: tagArray,
+      nearby: false,
       total,
       page: Number(page),
       totalPages: Math.ceil(total / Number(limit)),
       companies,
     });
 
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
+ 
