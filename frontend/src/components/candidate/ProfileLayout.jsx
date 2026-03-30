@@ -140,6 +140,50 @@ export default function ProfilePage({ data }) {
             position: "relative",
             overflow: "hidden",
           }}>
+
+            {/* 🔥 Quick Actions (Top Right) */}
+<div className="absolute top-3 right-3 flex gap-2">
+
+{/* Call */}
+{c.phone && (
+  <a href={`tel:${c.phone}`} target="_blank" rel="noreferrer">
+    <div className="w-9 h-9 flex items-center justify-center rounded-full 
+                    bg-white/80 backdrop-blur-md border border-black/10
+                    hover:scale-110 transition cursor-pointer">
+      📞
+    </div>
+  </a>
+)}
+
+{/* Instagram */}
+{c.instagram && (
+  <a href={c.instagram} target="_blank" rel="noreferrer">
+    <div className="w-9 h-9 flex items-center justify-center rounded-full 
+                    bg-white/80 backdrop-blur-md border border-black/10
+                    hover:scale-110 transition cursor-pointer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="2" y="2" width="20" height="20" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="18" cy="6" r="1"/>
+      </svg>
+    </div>
+  </a>
+)}
+
+{/* LinkedIn */}
+{c.linkedin && (
+  <a href={c.linkedin} target="_blank" rel="noreferrer">
+    <div className="w-9 h-9 flex items-center justify-center rounded-full 
+                    bg-white/80 backdrop-blur-md border border-black/10
+                    hover:scale-110 transition cursor-pointer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM0 8h5v16H0V8zm7.5 0h4.8v2.2h.07c.67-1.27 2.3-2.6 4.73-2.6C21.4 7.6 24 10 24 14.2V24h-5v-8.4c0-2-.04-4.6-2.8-4.6-2.8 0-3.2 2.2-3.2 4.4V24h-5V8z"/>
+      </svg>
+    </div>
+  </a>
+)}
+
+</div>
             {/* Decorative circles */}
             <div style={{ position: "absolute", width: 220, height: 220, borderRadius: "50%", background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.04)", top: -60, right: -40 }} />
             <div style={{ position: "absolute", width: 140, height: 140, borderRadius: "50%", background: dark ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.03)", bottom: -50, left: 30 }} />
@@ -156,7 +200,7 @@ export default function ProfilePage({ data }) {
             </svg>
 
             {/* Active badge top-right */}
-            {c.isActive && (
+            {/* {c.isActive && (
               <div style={{
                 position: "absolute", top: 14, right: 14,
                 display: "flex", alignItems: "center", gap: 5,
@@ -169,7 +213,7 @@ export default function ProfilePage({ data }) {
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block", boxShadow: "0 0 6px #22c55e" }} />
                 Open to work
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Avatar — overlapping cover */}
@@ -343,12 +387,12 @@ export default function ProfilePage({ data }) {
                       <p style={{ fontSize: 13, fontWeight: 700, color: t.text, margin: 0 }}>{exp.jobTitle}</p>
                       <p style={{ fontSize: 11, color: t.sub, margin: "3px 0 0" }}>{exp.company}</p>
                       <p style={{ fontSize: 10, color: t.muted, margin: "4px 0 0", display: "flex", alignItems: "center", gap: 6 }}>
-                        {fmt(exp.startDate)} — {fmt(exp.endDate)}
+                        {/* {fmt(exp.startDate)} — {fmt(exp.endDate)}
                         {!exp.endDate && (
                           <span style={{ padding: "2px 7px", borderRadius: 5, background: t.nowBg, color: t.nowText, fontSize: 9, fontWeight: 700, border: `1px solid ${t.nowBorder}` }}>
                             NOW
                           </span>
-                        )}
+                        )} */}
                       </p>
                     </div>
                   </div>

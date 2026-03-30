@@ -294,6 +294,14 @@ const debounceRef = useRef();
   };
 
 
+  // Removes entries where every field is an empty string
+const cleanArray = (arr) =>
+  arr.filter((item) =>
+    typeof item === "string"
+      ? item.trim() !== ""
+      : Object.values(item).some((v) => typeof v === "string" && v.trim() !== "")
+  );
+
   // ── Save ──────────────────────────────────────────────────────────────────
   const handleSave = async () => {
     const companyId = form._id || company?._id;
@@ -337,16 +345,16 @@ const debounceRef = useRef();
         employeeCount: form.employeeCount,
         foundedYear:   form.foundedYear,
         website:       form.website,
-        tags:          form.tags,
+        tags:     cleanArray(form.tags),
+  members:  cleanArray(form.members),
+  services: cleanArray(form.services),
+  projects: cleanArray(form.projects),
+  gallery:  cleanArray(form.gallery),
+  clients:  cleanArray(form.clients),
         businessPark:  form.businessPark,
         layout:        form.layout,
         address:       form.address,
         contacts:      form.contacts,
-        members:       form.members,
-        services:      form.services,
-        projects:      form.projects,
-        gallery:       form.gallery,
-        clients:       form.clients,
         mapEmbedLink:  form.mapEmbedLink,
       };
 

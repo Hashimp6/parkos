@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import API_BASE from "../../../config";
 import axios from "axios";
+import { Globe, Instagram, Linkedin, Phone } from "lucide-react";
 // ── Sample data matching your exact MongoDB schema ──
 const COMPANIES = [
   {
@@ -385,7 +386,7 @@ function Modal({ company, onClose }) {
 function Card({ company, index, onConnect }) {
   const color = getAccent(company.companyName);
   const park = PARK_STYLES[company.businessPark] || PARK_STYLES["Other"];
-
+  const navigate = useNavigate();
   return (
     <div className="cp-card" style={{ animationDelay: `${index * 50}ms` }}>
       <div className="cp-band" style={{ background: color }} />
@@ -440,8 +441,57 @@ function Card({ company, index, onConnect }) {
         </div>
       </div>
 
-      
-    </div>
+
+      <div className="cp-foot" style={{ padding: "12px 16px 16px", borderTop: "1px solid var(--bd)" }}>
+  {/* Social/contact icon buttons */}
+  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "10px" }}>
+    {company?.phone && (
+      <a href={`tel:${company.contacts.phone}`} title="Call"
+        style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "8px", border: "1.5px solid var(--bd2)", color: "var(--ink3)", textDecoration: "none", transition: "all 0.17s", flexShrink: 0 }}
+        onMouseEnter={e => { e.currentTarget.style.background = "var(--ink)"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "var(--ink)"; }}
+        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--ink3)"; e.currentTarget.style.borderColor = "var(--bd2)"; }}>
+        <Phone size={12} />
+      </a>
+    )}
+    {company.contacts?.linkedin && (
+      <a href={`https://linkedin.com/company/${company.contacts.linkedin}`} target="_blank" rel="noopener noreferrer" title="LinkedIn"
+        style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "8px", border: "1.5px solid var(--bd2)", color: "var(--ink3)", textDecoration: "none", transition: "all 0.17s", flexShrink: 0 }}
+        onMouseEnter={e => { e.currentTarget.style.background = "var(--ink)"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "var(--ink)"; }}
+        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--ink3)"; e.currentTarget.style.borderColor = "var(--bd2)"; }}>
+        <Linkedin size={12} />
+      </a>
+    )}
+    {company.contacts?.instagram && (
+      <a href={`https://instagram.com/${company.contacts.instagram}`} target="_blank" rel="noopener noreferrer" title="Instagram"
+        style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "8px", border: "1.5px solid var(--bd2)", color: "var(--ink3)", textDecoration: "none", transition: "all 0.17s", flexShrink: 0 }}
+        onMouseEnter={e => { e.currentTarget.style.background = "var(--ink)"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "var(--ink)"; }}
+        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--ink3)"; e.currentTarget.style.borderColor = "var(--bd2)"; }}>
+        <Instagram size={12} />
+      </a>
+    )}
+    {company.website && (
+      <a href={company.website} target="_blank" rel="noopener noreferrer" title="Website"
+        style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "8px", border: "1.5px solid var(--bd2)", color: "var(--ink3)", textDecoration: "none", transition: "all 0.17s", flexShrink: 0 }}
+        onMouseEnter={e => { e.currentTarget.style.background = "var(--ink)"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "var(--ink)"; }}
+        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--ink3)"; e.currentTarget.style.borderColor = "var(--bd2)"; }}>
+        <Globe size={12} />
+      </a>
+    )}
+  </div>
+
+  {/* Connect button — full width, separate row */}
+  <button
+  className="cp-cbtn"
+  onClick={() => navigate(`/company/id/${company._id}`)}
+>
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+  </svg>
+  View {company.companyName.split(" ")[0]}
+</button>
+</div>
+  </div>
+  
   );
 }
 
@@ -467,36 +517,31 @@ export default function CompanyServices() {
     setTags(parsedTags);
     setCategory(categoryParam || "");
   
-    console.log("🔥 Category Clicked:", categoryParam);
-    console.log("🔥 Tags:", parsedTags);
+    
   }, [location.search]);
 
 
 
 
-  const fetchCompanies = async (customFilter = filter, customTags = tags) => {
+  const fetchCompanies = async (customFilter = filter) => {
     try {
       setLoading(true);
   
-      const params = {};
-  
-      if (customTags.length > 0) {
-        params.tags = customTags.join(",");
-      }
+      let params = {};
   
       if (customFilter !== "all") {
-        params.industry = customFilter;
+        // ✅ send only selected filter
+        params.tags = customFilter;
+      } else {
+        // ✅ send all tags from URL
+        params.tags = tags.join(",");
       }
-  
-      console.log("JOINED TAGS:", customTags.join(","));
   
       const res = await axios.get(`${API_BASE}/companies/search/by-tags`, {
         params,
       });
   
       if (res.data.success) {
-        console.log("ee",res.data.companies);
-        
         setCompanies(res.data.companies);
       }
     } catch (err) {
@@ -508,29 +553,30 @@ export default function CompanyServices() {
 
   useEffect(() => {
     if (tags.length > 0) {
-      fetchCompanies("all", tags);
+      fetchCompanies(filter);
     }
-  }, [tags]);
+  }, [filter, tags]); // ✅ include tags
+
+
 
   const filtered = companies.filter(c => {
     const q = query.toLowerCase();
   
-    const matchQ =
-      c.companyName.toLowerCase().includes(q) ||
-      (c.tagline || "").toLowerCase().includes(q) ||
-      (c.industry || "").toLowerCase().includes(q) ||
-      (c.services || []).some(s => s.title.toLowerCase().includes(q)) ||
-      (c.tags || []).some(t => t.includes(q));
-  
+  const matchQ =
+  c.companyName.toLowerCase().includes(q) ||
+  (c.tagline || "").toLowerCase().includes(q) ||
+  (c.industry || "").toLowerCase().includes(q) ||
+  (c.services || []).some(s => s.title.toLowerCase().includes(q)) ||
+  (c.tags || []).some(t => t.includes(q));
+
+
     const matchTag =
       tags.length === 0 ||
       (c.tags || []).some(t =>
         tags.some(tag => t.toLowerCase().includes(tag.toLowerCase()))
       );
-  
-    const matchF = filter === "all" || c.industry === filter;
-  
-    return matchQ && matchF && matchTag;
+
+    return matchQ && matchTag;
   });
 
 
@@ -579,7 +625,11 @@ export default function CompanyServices() {
   <button
     key={`tag-${i}`}
     className={`cp-pill ${filter === tag ? "on" : ""}`}
-    onClick={() => setFilter(tag)}
+    onClick={
+      () => {setFilter(tag);
+        fetchCompanies(tag);
+     }
+    }
   >
     {tag}
   </button>
@@ -619,125 +669,3 @@ export default function CompanyServices() {
 
 
 
-
-
-
-//   useEffect(() => {
-//     const params = new URLSearchParams(location.search);
-  
-//     const tagParam = params.get("tags");
-//     const categoryParam = params.get("category");
-  
-//     const parsedTags = tagParam ? tagParam.split(",") : [];
-  
-//     setTags(parsedTags);
-//     setCategory(categoryParam);
-  
-//     console.log("🔥 Category Clicked:", categoryParam);
-//     console.log("🔥 Tags:", parsedTags);
-  
-//   }, [location.search]);
-
-
-//   const filtered = COMPANIES.filter(c => {
-//     const q = query.toLowerCase();
-  
-//     const matchQ =
-//       c.companyName.toLowerCase().includes(q) ||
-//       (c.tagline || "").toLowerCase().includes(q) ||
-//       (c.industry || "").toLowerCase().includes(q) ||
-//       (c.services || []).some(s => s.title.toLowerCase().includes(q)) ||
-//       (c.tags || []).some(t => t.includes(q));
-  
-//     const matchTag =
-//       tags.length === 0 ||
-//       (c.tags || []).some(t =>
-//         tags.some(tag => t.toLowerCase().includes(tag.toLowerCase()))
-//       );
-  
-//     const matchF = filter === "all" || c.industry === filter;
-  
-//     return matchQ && matchF && matchTag;
-//   });
-
-
-  
-
-//   return (
-//     <>
-//       <style>{CSS}</style>
-//       <div className="cp">
-
-//         {/* Hero */}
-//         <div className="cp-hero">
-//           <div>
-//             <div className="cp-ol"><span className="cp-ol-dash"/>Service Directory<span className="cp-ol-dash"/></div>
-//             <h1 className="cp-h1">Companies <em>built</em><br/>to serve you</h1>
-//             <p className="cp-sub">Browse verified businesses, filter by industry, and connect instantly via call, WhatsApp, or email.</p>
-//           </div>
-//           <div className="cp-stat">
-//             <div className="cp-stat-n">{COMPANIES.length}</div>
-//             <div className="cp-stat-l">Active Companies</div>
-//           </div>
-//         </div>
-
-//         {/* Controls */}
-//         <div className="cp-ctrl">
-//           <div className="cp-sw">
-//             <span className="cp-si">
-//               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-//             </span>
-//             <input className="cp-sin" type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies, services, tags…" />
-//           </div>
-//           <div className="cp-frow">
-//             <span className="cp-flabel">Industry</span>
-//            {/* Always show default filters */}
-// <button
-//   className={`cp-pill ${filter === "all" ? "on" : ""}`}
-//   onClick={() => setFilter("all")}
-// >
-//   All
-// </button>
-
-
-
-// {/* Optional: show URL tags ALSO */}
-// {tags.length > 0 && tags.map((tag, i) => (
-//   <button
-//     key={`tag-${i}`}
-//     className={`cp-pill ${filter === tag ? "on" : ""}`}
-//     onClick={() => setFilter(tag)}
-//   >
-//     {tag}
-//   </button>
-// ))}
-//           </div>
-//         </div>
-
-//         {/* Result bar */}
-//         <div className="cp-bar">
-//           <div>Showing <strong>{filtered.length}</strong> of {COMPANIES.length} companies</div>
-//           {(filter !== "all" || query) && (
-//             <button className="cp-clr" onClick={() => { setFilter("all"); setQuery(""); }}>Clear all ✕</button>
-//           )}
-//         </div>
-
-//         {/* Grid */}
-//         <div className="cp-grid">
-//           {filtered.length > 0
-//             ? filtered.map((c, i) => <Card key={c._id} company={c} index={i} onConnect={setSelected} />)
-//             : (
-//               <div className="cp-empty">
-//                 <span className="cp-empty-i">🏢</span>
-//                 <div className="cp-empty-t">No companies found</div>
-//                 <div className="cp-empty-s">Try a different search or clear the filter</div>
-//               </div>
-//             )
-//           }
-//         </div>
-//       </div>
-
-//       {selected && <Modal company={selected} onClose={() => setSelected(null)} />}
-//     </>
-//   );
-// }
