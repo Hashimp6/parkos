@@ -722,6 +722,8 @@ exports.checkCompanyName = async (req, res) => {
 
 exports.getCompaniesByTag = async (req, res) => {
   try {
+    console.log("hii");
+    
     const {
       tags,
       lat,
@@ -831,7 +833,7 @@ exports.getCompaniesByTag = async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("❌ ERROR IN getCompaniesByTag:", err);
     res.status(500).json({
       success: false,
       message: "Server error",

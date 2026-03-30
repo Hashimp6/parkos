@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import API_BASE from "../../../config";
+import axios from "axios";
 // ── Sample data matching your exact MongoDB schema ──
 const COMPANIES = [
   {
@@ -390,7 +391,17 @@ function Card({ company, index, onConnect }) {
       <div className="cp-band" style={{ background: color }} />
       <div className="cp-body">
         <div className="cp-top">
-          <div className="cp-av" style={{ background: color }}>{getInitials(company.companyName)}</div>
+        <div className="cp-av" style={{ background: color, overflow: "hidden" }}>
+  {company.logo ? (
+    <img
+      src={company.logo}
+      alt={company.companyName}
+      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+    />
+  ) : (
+    getInitials(company.companyName)
+  )}
+</div>
           {company.isVerified && (
             <span className="cp-vbadge">
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#0a6e35" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -429,12 +440,7 @@ function Card({ company, index, onConnect }) {
         </div>
       </div>
 
-      <div className="cp-foot">
-        <button className="cp-cbtn" onClick={() => onConnect(company)}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          Connect with {company.companyName.split(" ")[0]}
-        </button>
-      </div>
+      
     </div>
   );
 }
@@ -466,30 +472,32 @@ export default function CompanyServices() {
   }, [location.search]);
 
 
+
+
   const fetchCompanies = async (customFilter = filter, customTags = tags) => {
     try {
       setLoading(true);
   
-      const params = new URLSearchParams();
+      const params = {};
   
       if (customTags.length > 0) {
-        params.append("tags", customTags.join(","));
+        params.tags = customTags.join(",");
       }
   
       if (customFilter !== "all") {
-        params.append("industry", customFilter);
+        params.industry = customFilter;
       }
   
-
+      console.log("JOINED TAGS:", customTags.join(","));
   
-      const res = await fetch(
-        `${API_BASE}/companies/company/by-tags?${params.toString()}`
-      );
+      const res = await axios.get(`${API_BASE}/companies/search/by-tags`, {
+        params,
+      });
   
-      const data = await res.json();
-  
-      if (data.success) {
-        setCompanies(data.companies);
+      if (res.data.success) {
+        console.log("ee",res.data.companies);
+        
+        setCompanies(res.data.companies);
       }
     } catch (err) {
       console.error("Fetch error", err);
