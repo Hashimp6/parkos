@@ -492,7 +492,7 @@ function Journey({ D, fmt }){
               {D.experience.map((e,i)=>(
                 <div key={i} className="exp-item">
                   <div><div className="exp-role">{e.jobTitle}</div><div className="exp-co">{e.company}</div></div>
-                  <div className="exp-date">{fmt(e.startDate)}<br/>—<br/>{fmt(e.endDate)}</div>
+                  {/* <div className="exp-date">{fmt(e.startDate)}<br/>—<br/>{fmt(e.endDate)}</div> */}
                 </div>
               ))}
             </div>
@@ -566,7 +566,7 @@ export default function Profile12({ data }) {
 
   const fmt = d =>
     !d
-      ? "Present"
+      ? " "
       : new Date(d).toLocaleDateString("en-US", {
           month: "short",
           year: "numeric"

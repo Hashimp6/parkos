@@ -439,7 +439,7 @@ function Experience({ experience }) {
               fontFamily: "'JetBrains Mono',monospace",
               fontSize: 11, color: C.sub, textAlign: "right",
             }}>
-              {fmt(e.startDate)} → {fmt(e.endDate)}
+              {/* {fmt(e.startDate)} → {fmt(e.endDate)} */}
             </span>
           </div>
         </Reveal>

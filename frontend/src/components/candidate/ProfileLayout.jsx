@@ -23,7 +23,7 @@ const mockCandidate = {
 };
 
 const fmt = (d) => {
-  if (!d) return "Present";
+  if (!d) return " ";
   return new Date(d).toLocaleDateString("en-IN", { month: "short", year: "numeric" });
 };
 

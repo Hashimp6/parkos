@@ -526,10 +526,10 @@ function Layout6({ data }) {
                   <div className="l6-exp-title">{e.jobTitle}</div>
                   {has(e.company) && <div className="l6-exp-company">@ {e.company}</div>}
                 </div>
-                <div className="l6-exp-date">
+                {/* <div className="l6-exp-date">
                   {has(e.startDate) && <div>{fmt(e.startDate)} → {fmt(e.endDate)}</div>}
                   {!e.endDate && <div className="l6-exp-current">CURRENT</div>}
-                </div>
+                </div> */}
               </div>
             ))}
           </div>

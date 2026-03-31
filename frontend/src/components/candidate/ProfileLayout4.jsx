@@ -1099,7 +1099,7 @@ function Experience({ experience }) {
                 )}
               </div>
               <div style={{ textAlign: "right" }}>
-                {(has(e.startDate)) && (
+                {/* {(has(e.startDate)) && (
                   <span
                     style={{
                       fontFamily: "'Space Mono', monospace",
@@ -1128,7 +1128,7 @@ function Experience({ experience }) {
                   >
                     CURRENT
                   </span>
-                )}
+                )} */}
               </div>
             </div>
           </Reveal>

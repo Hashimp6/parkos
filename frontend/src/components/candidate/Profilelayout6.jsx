@@ -85,7 +85,7 @@ export default function Profile6({ data }) {
   const soc = D.socials?.[0] || {};
 
   const fmt = d =>
-    !d ? "Present" :
+    !d ? "  " :
     new Date(d).toLocaleDateString("en-US",{month:"short",year:"numeric"});
 
   const expYears =
@@ -433,7 +433,7 @@ export default function Profile6({ data }) {
                           <div className="exp-role">{e.jobTitle}</div>
                           <div className="exp-co">{e.company}</div>
                         </div>
-                        <div className="exp-date">{fmt(e.startDate)}<br/>—<br/>{fmt(e.endDate)}</div>
+                        {/* <div className="exp-date">{fmt(e.startDate)}<br/>—<br/>{fmt(e.endDate)}</div> */}
                       </div>
                     ))}
                   </div>

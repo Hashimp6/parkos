@@ -504,7 +504,7 @@ export default function Profile8({ data }) {
 
   const fmt = d =>
     !d
-      ? "Present"
+      ? "  "
       : new Date(d).toLocaleDateString("en-US", {
           month: "short",
           year: "numeric"

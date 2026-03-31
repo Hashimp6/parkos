@@ -581,10 +581,10 @@ function Layout7({ data }) {
                   <div className="l7-exp-role">{e.jobTitle}</div>
                   {has(e.company) && <div className="l7-exp-co">{e.company}</div>}
                 </div>
-                <div className="l7-exp-dates">
+                {/* <div className="l7-exp-dates">
                   {has(e.startDate) && <div>{fmt(e.startDate)} — {fmt(e.endDate)}</div>}
                   {!e.endDate && <div className="l7-exp-current">Current</div>}
-                </div>
+                </div> */}
               </div>
             ))}
           </div>

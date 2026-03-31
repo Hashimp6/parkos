@@ -42,7 +42,7 @@ const DEMO_CANDIDATE =  {
 
 // ── Utility helpers ───────────────────────────────────────────────────────────
 function fmt(dateStr) {
-  if (!dateStr) return "Present";
+  if (!dateStr) return " ";
   const d = new Date(dateStr);
   return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
@@ -437,7 +437,7 @@ function ExperienceSection({ experience }) {
                     {exp.jobTitle}
                   </h3>
                 )}
-                <span
+                {/* <span
                   style={{
                     fontSize: 12,
                     fontWeight: 500,
@@ -448,7 +448,7 @@ function ExperienceSection({ experience }) {
                   }}
                 >
                   {fmt(exp.startDate)} – {fmt(exp.endDate)}
-                </span>
+                </span> */}
               </div>
               {exp.company && (
                 <p style={{ margin: "6px 0 0", fontSize: 14, color: "#1d4ed8", fontWeight: 500 }}>
