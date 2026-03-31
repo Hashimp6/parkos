@@ -335,6 +335,7 @@ function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile,
   const active    = isSelected || hov;
   const shownTags = (job.tags || []).slice(0, isMobile ? 2 : 3);
   const extra     = (job.tags?.length || 0) - shownTags.length;
+console.log("KKK",job);
 
   return (
     <div
@@ -392,11 +393,29 @@ function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile,
         )}
       </h3>
 
-      {(job.company || job.location) && (
-        <p style={{ fontFamily: "'Manrope',sans-serif", fontSize: 12, color: T.g400, margin: "0 0 12px", fontWeight: 500 }}>
-          {[job.company && <strong key="c" style={{ color: T.g600, fontWeight: 600 }}>{job.company?.companyName}</strong>, job.location].filter(Boolean).reduce((acc, el, i) => i === 0 ? [el] : [...acc, <span key={i} style={{ color: T.g200, margin: "0 3px" }}>·</span>, el], [])}
-        </p>
-      )}
+      {(job.company?.companyName || job.location) && (
+  <p
+    style={{
+      fontFamily: "'Manrope',sans-serif",
+      fontSize: 12,
+      color: T.g400,
+      margin: "0 0 12px",
+      fontWeight: 500,
+    }}
+  >
+    {job.company && (
+      <strong style={{ color: T.g600, fontWeight: 600 }}>
+        {job.company}
+      </strong>
+    )}
+
+    {job.company && job.location && (
+      <span style={{ margin: "0 6px", color: T.g300 }}>•</span>
+    )}
+
+    {job.location && <span>{job.location}</span>}
+  </p>
+)}
 
       {/* Divider rule */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, margin: "10px 0" }}>
@@ -632,6 +651,8 @@ export default function JobListings({
           },
         });
         const raw = res.data?.data || [];
+        console.log(raw);
+        
         setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
   
       } catch (err) {
