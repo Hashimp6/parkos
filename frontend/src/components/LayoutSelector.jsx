@@ -182,7 +182,7 @@ export default function LayoutSelector({ data: propData }) {
       });
   
       // after saving → go to profile
-      navigate(`/${pageData?.profileId || pageData?._id}`);
+      navigate(`/profile/${pageData?.profileId || pageData?._id}`);
   
     } catch (error) {
       console.error("Layout update error:", error);
