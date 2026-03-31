@@ -310,7 +310,7 @@ function Footer() {
           ))}
         </div>
       </div>
-      <p className="text-zinc-700 text-xs">© 2025 BizPark. The business park platform. All rights reserved.</p>
+      <p className="text-zinc-700 text-xs">© 2026 ParkOS. All rights reserved.</p>
     </footer>
   );
 }
@@ -343,7 +343,7 @@ export default function Home() {
       <Navbar {...auth} />
       <GotoBar {...auth} />
      <JobsFreelanceHero/>
-      <HowItWorks />
+   
 
       {/* Split section */}
       <div className="grid grid-cols-1 md:grid-cols-2">
