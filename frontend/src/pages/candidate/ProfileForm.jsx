@@ -317,6 +317,20 @@ const [showSuggestions, setShowSuggestions] = useState(false);
       fetchPlaces(val);
     }, 400);
   };
+
+  const normalizePhone = (phone) => {
+    if (!phone) return "";
+  
+    // remove everything except numbers
+    let cleaned = phone.replace(/\D/g, "");
+  
+    // remove leading 91 if already present
+    if (cleaned.startsWith("91")) {
+      cleaned = cleaned.slice(2);
+    }
+  
+    return `+91${cleaned}`;
+  };
   // ── Save handler ─────────────────────────────────────────────────────────
   const handleSave = async () => {
     console.log("usssd",user,form);
@@ -349,7 +363,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
       // Append all other fields
       const payload = {
         name: form.name,
-        phone: form.phone,
+        phone: normalizePhone(form.phone),
         place: form.place,
         about: form.about,
         tagline: form.tagline,

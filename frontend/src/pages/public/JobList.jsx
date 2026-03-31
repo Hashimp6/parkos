@@ -217,10 +217,10 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
           <Logo company={job.company} logo={job.company?.logo ?? job.companyLogo} size={isMobile ? 44 : 52} />
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => onToggleSave(job._id)} title={isSaved ? "Unsave" : "Save"}
+            {/* <button onClick={() => onToggleSave(job._id)} title={isSaved ? "Unsave" : "Save"}
               style={{ width: 34, height: 34, borderRadius: 8, border: `1.5px solid ${isSaved ? T.black : T.g200}`, background: isSaved ? T.black : T.white, cursor: "pointer", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}>
               <span style={{ filter: isSaved ? "invert(1)" : "none" }}>🤍</span>
-            </button>
+            </button> */}
             <button onClick={onClose}
               style={{ width: 34, height: 34, borderRadius: 8, border: `1.5px solid ${T.g200}`, background: T.white, cursor: "pointer", color: T.g400, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", transition: "border-color .15s" }}>
               ✕
@@ -374,11 +374,11 @@ function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile,
               {posted}
             </span>
           )}
-          <button
+          {/* <button
             onClick={e => { e.stopPropagation(); onToggleSave(job._id); }}
             style={{ width: 28, height: 28, borderRadius: 7, border: `1.5px solid ${isSaved ? T.black : T.g200}`, background: isSaved ? T.black : T.white, cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s", flexShrink: 0 }}>
             <span style={{ filter: isSaved ? "invert(1)" : "none" }}>🤍</span>
-          </button>
+          </button> */}
         </div>
       </div>
 

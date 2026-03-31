@@ -399,7 +399,9 @@ exports.getAllJobs = async (req, res) => {
 
     const { page: pg, limit: lmt, skip } = paginate({ page, limit });
 
-    const filter = {};
+    const filter = {
+      isActive: true, // ✅ default only active jobs
+    };
 
     // Text search
     if (search && search.trim()) {
@@ -416,7 +418,9 @@ exports.getAllJobs = async (req, res) => {
     if (jobType) filter.jobType = jobType;
     if (workMode) filter.workMode = workMode;
     if (currency) filter.currency = currency.toUpperCase();
-    if (isActive !== undefined) filter.isActive = isActive === "true";
+    if (isActive !== undefined) {
+      filter.isActive = isActive === "true";
+    }
     if (businessPark) {
       filter.businessPark = businessPark;
     }
