@@ -49,6 +49,10 @@ import FreelanceDashboard from "../pages/freelance/Dashbord";
 import Company4 from "../components/company/Layout4";
 import Company6 from "../components/company/Company6";
 import Company7 from "../components/company/Company7";
+import Portfolio1 from "../components/candidate/Layout1";
+import Portfolio2 from "../components/candidate/Layout2";
+import Portfolio3 from "../components/candidate/Layout3";
+import Portfolio4 from "../components/candidate/Layout4";
 
 function AppRoutes() {
   return (
@@ -70,7 +74,7 @@ function AppRoutes() {
         <Route path="/company/id/:companyId" element={<CompanyProfilePage />} />
         <Route path="/preview/:layoutId"   element={<PreviewPage />} />
         <Route path="/company-preview/:id" element={<CmpnyPreviewPage />} />
-        <Route path="/profile12"           element={<Company7 />} />
+        <Route path="/profile12"           element={<Portfolio1/>} />
 
         {/* ── Guest-only (redirect if already logged in) ───────────────────── */}
         <Route element={<GuestRoute />}>

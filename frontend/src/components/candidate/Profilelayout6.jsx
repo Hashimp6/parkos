@@ -322,10 +322,7 @@ export default function Profile6({ data }) {
               <h2>{D.name}</h2>
               {D.qualification && <p>{D.qualification}</p>}
             </div>
-            <div className="hero-status">
-              <div className="status-dot"/>
-              <span className="status-txt">Available for work</span>
-            </div>
+         
           </div>
         )}
       </section>

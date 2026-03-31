@@ -449,7 +449,10 @@ const handleCompanyNameChange = (e) => {
 
             {/* Form area */}
             <div className="flex-1 flex flex-col justify-center py-6">
-              <h1
+            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">
+    Company Register
+  </h2>
+   <h1
                 className="text-3xl font-bold text-black mb-1"
                 style={{ letterSpacing: "-0.03em" }}
               >

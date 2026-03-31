@@ -317,10 +317,7 @@ function Hero({ D, expYrs }) {
 
       <div className="hero-content">
         <div style={anim(0)}>
-          <div className="hero-eyebrow">
-            <div className="hero-eyebrow-dot"/>
-            <span className="hero-eyebrow-text">Available for projects</span>
-          </div>
+          
         </div>
         <h1 className="hero-name" style={anim(100)}>
           <span className="hero-name-1">{D.firstName}</span>
@@ -331,16 +328,16 @@ function Hero({ D, expYrs }) {
           <button className="btn-glow" onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior:"smooth" })}>
             Let's talk <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
-          {D.cv && <a href={D.cv} className="btn-glass">Download CV</a>}
+         
         </div>
-        <div className="hero-meta" style={anim(450)}>
+        {/* <div className="hero-meta" style={anim(450)}>
           {[[expYrs,"Years Exp."],[D.projects?.length||4,"Projects"],[D.skills?.length||12,"Technologies"]].map(([n,l]) => (
             <div key={l} className="hero-stat">
               <div className="hero-stat-n">{n}+</div>
               <div className="hero-stat-l">{l}</div>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   );

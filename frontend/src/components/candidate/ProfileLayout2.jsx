@@ -217,9 +217,7 @@ function Hero({ c }) {
 
       {/* Main text */}
       <div style={{ position: "relative", zIndex: 2, maxWidth: 860 }}>
-        <div style={{ opacity: on ? 1 : 0, transform: on ? "none" : "translateY(12px)", transition: "all .7s .1s" }}>
-          <Label>↗ Available for work</Label>
-        </div>
+       
 
         <h1 style={{
           fontFamily: "'Bebas Neue',sans-serif",

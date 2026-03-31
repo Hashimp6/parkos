@@ -347,9 +347,7 @@ function Hero({ D, expYrs }){
       {/* CARD A — intro */}
       <div className="card card-a" style={a(0)}>
         <div>
-          <div className="card-a-eyebrow">
-            <div className="avail-pill"><div className="avail-dot" /> Available for work</div>
-          </div>
+         
           <div className="card-a-name">
             {D.firstName}<br />
             <span className="stroke">{D.lastName}</span>

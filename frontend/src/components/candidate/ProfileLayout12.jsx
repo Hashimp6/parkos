@@ -339,10 +339,7 @@ function Hero({ D, expYrs }){
         {/* LEFT TEXT */}
         <div>
           <div style={a(0)}>
-            <div className="hero-badge">
-              <div className="badge-dot"/>
-              <span className="badge-txt">Available for work · {D.place}</span>
-            </div>
+            
           </div>
           <h1 className="hero-name" style={a(100)}>
             <span style={{display:"block"}}>{D.firstName}</span>

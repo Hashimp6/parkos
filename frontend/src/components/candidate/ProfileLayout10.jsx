@@ -304,8 +304,6 @@ function Hero({ D, expYrs }) {
   useEffect(() => { setTimeout(() => setInn(true), 100); }, []);
   const a = (d=0) => ({opacity:inn?1:0, transform:inn?"none":"translateY(24px)", transition:`opacity .8s cubic-bezier(.16,1,.3,1) ${d}ms, transform .8s cubic-bezier(.16,1,.3,1) ${d}ms`});
 
-  const ringText = "Available for Work  ✦  Open to Projects  ✦  Let's Build  ✦  ";
-  const repeated = ringText.repeat(3);
 
   return (
     <section id="hero" className="hero">
@@ -345,9 +343,7 @@ function Hero({ D, expYrs }) {
               <defs>
                 <path id="circle-path" d="M 240,240 m -195,0 a 195,195 0 1,1 390,0 a 195,195 0 1,1 -390,0"/>
               </defs>
-              <text>
-                <textPath href="#circle-path">{repeated}</textPath>
-              </text>
+             
             </svg>
             <div className="photo-circle">
               <img src={D.profilePhoto} alt={D.name}/>

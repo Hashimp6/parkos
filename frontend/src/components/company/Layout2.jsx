@@ -289,18 +289,7 @@ function About({ company }) {
               growth-stage companies, and enterprises across fintech, healthtech, and logistics — bringing
               senior-level engineering talent to every engagement.
             </p>
-            <div className="grid grid-cols-3 gap-4 pt-4">
-              {[
-                { n: "7+", label: "Years of Excellence" },
-                { n: "80+", label: "Products Shipped" },
-                { n: "40+", label: "Enterprise Clients" },
-              ].map((s) => (
-                <div key={s.label} className="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
-                  <div className="text-3xl font-black text-amber-400 mb-1">{s.n}</div>
-                  <div className="text-zinc-500 text-xs">{s.label}</div>
-                </div>
-              ))}
-            </div>
+           
           </div>
         </div>
       </div>

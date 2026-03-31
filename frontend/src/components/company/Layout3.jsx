@@ -416,27 +416,7 @@ function Hero({ company }) {
         </div>
 
         {/* Bottom row */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 0, marginTop: 64, borderTop: `2px solid ${C.ink}` }}>
-          {[
-            { n: "7+", label: "Years of excellence", sub: "Est. 2017" },
-            { n: "80+", label: "Products shipped", sub: "Across 12 sectors" },
-            { n: "40+", label: "Enterprise clients", sub: "India & beyond" },
-          ].map((s, i) => (
-            <div
-              key={s.label}
-              className="fade-up"
-              style={{
-                padding: "32px 40px",
-                borderRight: i < 2 ? `1px solid ${C.border}` : "none",
-                animationDelay: `${0.4 + i * 0.1}s`,
-              }}
-            >
-              <div className="display-heading" style={{ fontSize: "clamp(40px, 5vw, 64px)", color: C.rust, marginBottom: 4 }}>{s.n}</div>
-              <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500, fontSize: 14, color: C.ink, marginBottom: 4 }}>{s.label}</div>
-              <div className="mono-label" style={{ color: C.stone }}>{s.sub}</div>
-            </div>
-          ))}
-        </div>
+       
       </div>
 
       {/* Full-width tagline band */}

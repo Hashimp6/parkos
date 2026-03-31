@@ -414,12 +414,7 @@ function Layout6({ data }) {
       {/* HERO */}
       <section className="l6-hero">
         <div className="l6-hero-left">
-          {has(c.lookingVacancy) && (
-            <div className="l6-tag">
-              <span className="l6-tag-dot" />
-              Available for work
-            </div>
-          )}
+        
           <h1 className="l6-name">
             {has(c.name) ? c.name.split(" ").map((w, i) => (
               <span key={i} style={{ display: "block" }}>

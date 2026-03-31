@@ -239,9 +239,7 @@ function Hero({ c }) {
               background: C.red, padding: "5px 12px",
             }}>
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: C.white, animation: "spin 2s linear infinite" }} />
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: C.white, letterSpacing: "0.15em" }}>
-                AVAILABLE FOR WORK
-              </span>
+            
             </div>
           </div>
         )}

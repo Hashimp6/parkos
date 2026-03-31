@@ -313,10 +313,10 @@ function Nav({ D }){
   const links = [D.services?.length&&["services","Services"],D.projects?.length&&["projects","Work"],(D.experience?.length||D.education?.length)&&["journey","Journey"],["contact","Contact"]].filter(Boolean);
   return (
     <nav className={`nav${s?" s":""}`}>
-      <div className="nlogo" onClick={()=>go("hero")}>{D.firstName}<span>.</span></div>
+      <div className="nlogo" onClick={()=>go("hero")}>{D.name}<span>.</span></div>
       <ul className="nlinks desk-nav" style={{display:"flex",gap:"2rem",listStyle:"none",alignItems:"center"}}>
         {links.map(([id,lbl])=><li key={id}><button className="nlk" onClick={()=>go(id)}>{lbl}</button></li>)}
-        {D.cv&&<li><button className="ncv" onClick={()=>window.open(D.cv)}>CV ↓</button></li>}
+
       </ul>
       <button className="mob-ham" onClick={()=>setOpen(o=>!o)} style={{display:"none",background:"none",border:"none",cursor:"none",flexDirection:"column",gap:5}}>
         {[0,1,2].map(i=><span key={i} style={{display:"block",width:22,height:2,background:"var(--ink)",transition:"all .25s",transform:open&&i===0?"translateY(7px) rotate(45deg)":open&&i===2?"translateY(-7px) rotate(-45deg)":open&&i===1?"scaleX(0)":"none"}}/>)}
@@ -373,10 +373,7 @@ function Hero({ D, expYrs }) {
               onMouseEnter={e=>{e.currentTarget.style.background="var(--lime)";e.currentTarget.style.color="var(--ink)";e.currentTarget.style.borderColor="var(--ink)"}}
               onMouseLeave={e=>{e.currentTarget.style.background="var(--ink)";e.currentTarget.style.color="var(--w)";e.currentTarget.style.borderColor="var(--ink)"}}
             >LET'S TALK →</button>
-            {D.cv&&<a href={D.cv} style={{padding:"13px 28px",border:"2px solid var(--ink)",fontFamily:"'Unbounded',sans-serif",fontWeight:900,fontSize:".72rem",letterSpacing:".06em",cursor:"none",borderRadius:"3px",color:"var(--ink)",boxShadow:"4px 4px 0 var(--border)",transition:"box-shadow .2s"}}
-              onMouseEnter={e=>e.currentTarget.style.boxShadow="4px 4px 0 var(--ink)"}
-              onMouseLeave={e=>e.currentTarget.style.boxShadow="4px 4px 0 var(--border)"}
-            >CV ↓</a>}
+            
           </div>
         </div>
 
@@ -387,12 +384,12 @@ function Hero({ D, expYrs }) {
             <div className="hero-circle">
               <img src={D.profilePhoto} alt={D.name}/>
             </div>
-            {D.qualification&&(
+            {/* {D.qualification&&(
               <div className="circle-badge">
                 <div className="circle-badge-n">{expYrs}+</div>
                 <div className="circle-badge-l">years</div>
               </div>
-            )}
+            )} */}
           </div>
         )}
 
@@ -409,14 +406,14 @@ function Hero({ D, expYrs }) {
       </div>
 
       {/* bottom stats bar */}
-      <div className="hero-bottom">
+      {/* <div className="hero-bottom">
         {[[expYrs,"Yrs Exp."],[D.projects?.length||4,"Projects"],[D.skills?.length||12,"Skills"]].map(([n,l])=>(
           <div key={l} className="hb-item">
             <div className="hb-n"><Ctr to={n}/>+</div>
             <div className="hb-l">{l}</div>
           </div>
         ))}
-      </div>
+      </div> */}
     </section>
   );
 }

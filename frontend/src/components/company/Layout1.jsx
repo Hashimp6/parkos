@@ -469,12 +469,12 @@ export default function Company1({ data}) {
                       <span>{addrStr}</span>
                     </div>
                   )}
-                  <div className="cp-facts">
+                  {/* <div className="cp-facts">
                     {age && <div className="cp-fact"><div className="cp-fact-n">{age}+</div><div className="cp-fact-l">Years of Excellence</div></div>}
                     {has(d.companySize) && <div className="cp-fact"><div className="cp-fact-n">{d.companySize}</div><div className="cp-fact-l">Team Size</div></div>}
                     {has(d.clients) && <div className="cp-fact"><div className="cp-fact-n">{d.clients.length * 5}+</div><div className="cp-fact-l">Happy Clients</div></div>}
                     {has(d.projects) && <div className="cp-fact"><div className="cp-fact-n">{d.projects.length * 10}+</div><div className="cp-fact-l">Projects Shipped</div></div>}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

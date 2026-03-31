@@ -16,15 +16,11 @@ const THUMB_W = 1000;
 const THUMB_H = 1400;
 
 // ✅ Add new layouts here — everything else scales automatically
-const LAYOUTS = [
-  { id: 1, label: "Classic",  tag: "Professional" },
-  { id: 2, label: "Modern",   tag: "Clean"        },
-  { id: 3, label: "Minimal",  tag: "Simple"       },
-  { id: 4, label: "Minimal",  tag: "Simple" },
-    { id: 5, label: "Minimal",  tag: "Simple"       },
-    { id: 6, label: "Minimal",  tag: "Simple"       },
-    { id: 7, label: "Minimal",  tag: "Simple"       },
-];
+const LAYOUTS = Array.from({ length: 20 }, (_, i) => ({
+  id: i + 1,
+  label: `Layout ${i + 1}`,
+  tag: ["Professional", "Clean", "Simple", "Tech", "Creative"][i % 5],
+}));
 
 const TEMPLATE_COUNT = LAYOUTS.length;
 
@@ -424,7 +420,7 @@ export default function CompanyLayoutSelector({ data: propData }) {
           <div className="flex items-center gap-3">
             {/* dot indicators — capped at 15 dots max */}
             <div className="flex gap-1">
-              {LAYOUTS.slice(0, 15).map((l) => (
+            {LAYOUTS.map((l) => (
                 <button
                   key={l.id}
                   onClick={() => handleSelect(l.id)}

@@ -660,19 +660,7 @@ function Hero({ c }) {
         )}
       </div>
 
-      {/* Available badge — only if lookingVacancy has entries */}
-      {has(c.lookingVacancy) && (
-        <div
-          style={{
-            opacity: on ? 1 : 0,
-            transform: on ? "none" : "translateY(-10px)",
-            transition: "all .6s .35s",
-            marginBottom: 24,
-          }}
-        >
-          <Tag>Available for work</Tag>
-        </div>
-      )}
+      
 
       {/* Name */}
       <div

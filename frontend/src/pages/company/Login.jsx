@@ -82,7 +82,11 @@ export default function CompanyLoginPage() {
 
           {/* Form area */}
           <div className="flex-1 flex flex-col justify-center py-8">
-            <h1 className="text-3xl font-bold text-black mb-1" style={{ letterSpacing: "-0.03em" }}>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">
+    Company Login
+  </h2>
+
+ <h1 className="text-3xl font-bold text-black mb-1" style={{ letterSpacing: "-0.03em" }}>
               Welcome back!
             </h1>
             <p className="text-sm text-gray-400 mb-8">Sign in to your company account</p>
