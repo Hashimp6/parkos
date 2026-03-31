@@ -335,10 +335,10 @@ const [showSuggestions, setShowSuggestions] = useState(false);
   const handleSave = async () => {
     console.log("usssd",user,form);
     
-    const candidateId = form._id || user?._id;
+    const candidateId = form._id || user?._id ||user?.id;
 
     if (!candidateId) {
-      toast.error("No company ID found. Please log in.");
+      toast.error("No user ID found. Please log in.");
       return;
     }
   
