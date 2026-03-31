@@ -165,11 +165,6 @@ candidateSchema.pre("save", async function () {
 candidateSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
-candidateSchema.pre("save", function (next) {
-  if (!this.profileId) {
-    this.profileId = `${this.name.toLowerCase().replace(/\s+/g, "-")}-${nanoid(6)}`;
-  }
-  next();
-});
+
 
 module.exports = mongoose.model("Candidate", candidateSchema);
