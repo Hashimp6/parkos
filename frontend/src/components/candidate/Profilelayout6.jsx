@@ -328,7 +328,7 @@ export default function Profile6({ data }) {
       </section>
 
       {/* STATS */}
-      <div className="stats">
+      {/* <div className="stats">
         {[
           [expYears, "Years Experience"],
           [D.projects?.length || 0, "Projects Built"],
@@ -340,7 +340,7 @@ export default function Profile6({ data }) {
             <div className="stat-l">{l}</div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* SERVICES */}
       {D.services?.length > 0 && (

@@ -407,37 +407,27 @@ const portfolio=data || Demo
 </section>
 
       {/* SERVICES */}
-      <section id="services" style={{ padding: "8rem 4rem", position: "relative", zIndex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "2rem", marginBottom: "4rem" }}>
-          <span className="section-label">What I Do</span>
-          <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(79,184,200,0.3), transparent)" }} />
-        </div>
+      {portfolio.services?.length > 0 && (
+  <section id="services" style={{ padding: "8rem 4rem", position: "relative", zIndex: 1 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "2rem", marginBottom: "4rem" }}>
+      <span className="section-label">What I Do</span>
+      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(79,184,200,0.3), transparent)" }} />
+    </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1px", background: "rgba(79,184,200,0.08)" }}>
-         
-         
-        {portfolio.services?.length > 0 && (
-  <section>
-    {portfolio.services.map((s, i) => (
-            <div key={i} className="service-card"
-              onMouseEnter={() => setHovering(true)}
-              onMouseLeave={() => setHovering(false)}
-              style={{ background: "#030e0e" }}
-            >
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "0.6rem", color: "#4fb8c8", marginBottom: "1.5rem", opacity: 0.6 }}>
-                0{i + 1}
-              </div>
-              <h3 style={{ fontSize: "1.5rem", fontWeight: 400, marginBottom: "1rem", color: "#d8eef0" }}>{s.heading}</h3>
-              <p style={{ fontSize: "1rem", lineHeight: 1.7, color: "rgba(200,230,230,0.5)", fontWeight: 300 }}>{s.description}</p>
-            </div>
-          ))}
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1px", background: "rgba(79,184,200,0.08)" }}>
+      {portfolio.services.map((s, i) => (
+        <div key={i} className="service-card">
+          <div>0{i + 1}</div>
+          <h3>{s.heading}</h3>
+          <p>{s.description}</p>
+        </div>
+      ))}
+    </div>
   </section>
 )}
-         
-        </div>
-      </section>
 
       {/* PROJECTS */}
+      {portfolio.projects?.length > 0 && (
       <section id="work" style={{ padding: "8rem 4rem", position: "relative", zIndex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "2rem", marginBottom: "4rem" }}>
           <span className="section-label">Selected Work</span>
@@ -487,9 +477,10 @@ const portfolio=data || Demo
          
        
         </div>
-      </section>
+      </section>)}
 
       {/* EXPERIENCE */}
+      {portfolio.experience?.length > 0 && (
       <section id="experience" style={{ padding: "8rem 4rem", position: "relative", zIndex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "2rem", marginBottom: "5rem" }}>
           <span className="section-label">Journey</span>
@@ -526,6 +517,7 @@ const portfolio=data || Demo
           </div>
 
           {/* Education */}
+          {portfolio.education?.length > 0 && (
           <div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: 400, color: "#4fb8c8", marginBottom: "3rem", fontFamily: "'Space Mono', monospace", fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>Education</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
@@ -552,9 +544,9 @@ const portfolio=data || Demo
             
              
             </div>
-          </div>
+          </div>)}
         </div>
-      </section>
+      </section>)}
 
       {/* CONTACT */}
       <section id="contact" style={{ padding: "8rem 4rem 6rem", position: "relative", zIndex: 1, borderTop: "1px solid rgba(79,184,200,0.08)" }}>
@@ -580,6 +572,30 @@ const portfolio=data || Demo
             }}>
             Say Hello →
           </a>
+          {portfolio.phone && (
+  <a
+    href={`tel:${portfolio.phone}`}
+    onMouseEnter={() => setHovering(true)}
+    onMouseLeave={() => setHovering(false)}
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "1rem",
+      fontFamily: "'Space Mono', monospace",
+      fontSize: "0.75rem",
+      letterSpacing: "0.2em",
+      textTransform: "uppercase",
+      color: "#4fb8c8",
+      border: "1px solid #4fb8c8",
+      padding: "1rem 2.5rem",
+      textDecoration: "none",
+      marginLeft: "1rem",
+      transition: "all 0.2s",
+    }}
+  >
+    Call →
+  </a>
+)}
 
           <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap", marginTop: "4rem" }}>
           

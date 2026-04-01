@@ -759,7 +759,7 @@ function Hero({ c }) {
       )}
 
       {/* Stats row — only rendered if at least one stat exists */}
-      {stats.length > 0 && (
+      {/* {stats.length > 0 && (
         <div
           style={{
             display: "flex",
@@ -800,7 +800,7 @@ function Hero({ c }) {
             </div>
           ))}
         </div>
-      )}
+      )} */}
 
       {/* CTAs — only email CTA (no phone, no CV download to keep professional) */}
       {has(c.email) && (
@@ -1501,6 +1501,12 @@ function Contact({ c }) {
       value: c.email,
       icon: "✉",
       href: `mailto:${c.email}`,
+    },
+    has(c.phone) && {
+      label: "Phone",
+      value: c.phone,
+      icon: "📞",
+      href: `tel:${c.phone.replace(/\s+/g, "")}`,
     },
     has(c.place) && {
       label: "Location",

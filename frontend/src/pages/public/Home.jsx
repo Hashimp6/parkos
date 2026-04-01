@@ -195,7 +195,7 @@ function CandidateSide() {
       </div>
 
       <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-zinc-900 leading-tight mb-4" style={{ fontFamily: "'Syne', sans-serif" }}>
-        Your next role<br />is here.
+      Candidate login
       </h2>
       <p className="text-sm text-zinc-400 leading-relaxed max-w-sm mb-8">
         Discover jobs that match your skills, experience, and ambitions. Apply with your BizPark profile — no need to send the same CV a hundred times.
@@ -255,8 +255,8 @@ function CompanySide() {
       </div>
 
       <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-white leading-tight mb-4" style={{ fontFamily: "'Syne', sans-serif" }}>
-        Build your<br />
-        <span className="text-[#d4ff4a]">dream team</span>.
+        Company login<br />
+        
       </h2>
       <p className="text-sm text-zinc-500 leading-relaxed max-w-sm mb-8">
         Post jobs, manage your hiring pipeline, and connect with pre-screened candidates who are actively looking. Built for fast-moving teams.
@@ -302,7 +302,7 @@ function Footer() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#d4ff4a] border-2 border-white inline-block" />
-          <span className="font-black text-white text-base" style={{ fontFamily: "'Syne', sans-serif" }}>BizPark</span>
+          <span className="font-black text-white text-base" style={{ fontFamily: "'Syne', sans-serif" }}>ParkOS</span>
         </div>
         <div className="flex gap-5 flex-wrap">
           {["About", "Blog", "Pricing", "Privacy", "Terms"].map((l) => (

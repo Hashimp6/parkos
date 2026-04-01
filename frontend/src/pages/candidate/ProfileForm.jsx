@@ -618,7 +618,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
       />
     </div>
 
-    <div>
+    {/* <div>
       <label className={labelCls}>Facebook</label>
       <input
         className={inputCls}
@@ -628,7 +628,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           set("socials", [{ ...form.socials?.[0], facebook: e.target.value }])
         }
       />
-    </div>
+    </div> */}
 
     <div>
       <label className={labelCls}>LinkedIn</label>
@@ -642,7 +642,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
       />
     </div>
 
-    <div>
+    {/* <div>
       <label className={labelCls}>Twitter</label>
       <input
         className={inputCls}
@@ -652,9 +652,9 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           set("socials", [{ ...form.socials?.[0], twitter: e.target.value }])
         }
       />
-    </div>
+    </div> */}
 
-    <div>
+    {/* <div>
       <label className={labelCls}>GitHub</label>
       <input
         className={inputCls}
@@ -664,9 +664,9 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           set("socials", [{ ...form.socials?.[0], github: e.target.value }])
         }
       />
-    </div>
+    </div> */}
 
-    <div className="sm:col-span-2">
+    {/* <div className="sm:col-span-2">
       <label className={labelCls}>Website</label>
       <input
         className={inputCls}
@@ -676,7 +676,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           set("socials", [{ ...form.socials?.[0], website: e.target.value }])
         }
       />
-    </div>
+    </div> */}
 
   </div>
 </Card>

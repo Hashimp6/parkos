@@ -283,10 +283,10 @@ export default function Portfolio2({ data }) {
             ))}
         </div>
 
-        <a href="mailto:hello@alexmercer.dev" className="outline-btn"
+        {/* <a href="mailto:hello@alexmercer.dev" className="outline-btn"
           onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>
           Hire Me
-        </a>
+        </a> */}
       </nav>
 
       {/* ── HERO ── */}
@@ -518,59 +518,218 @@ export default function Portfolio2({ data }) {
       )}
 
       {/* ── CONTACT ── */}
-      <section id="contact" style={{ padding: "8rem 4rem", background: "#3E362E", color: "#f5efe6", position: "relative", zIndex: 1, overflow: "hidden" }}>
-        <div style={{ position: "absolute", bottom: "-2rem", right: "-1rem", fontFamily: "'Playfair Display', serif", fontSize: "18rem", fontWeight: 700, fontStyle: "italic", opacity: 0.04, lineHeight: 1, userSelect: "none", color: "#f5efe6" }}>
-          Hello
-        </div>
+     {/* ── CONTACT ── */}
+<section
+  id="contact"
+  style={{
+    padding: "8rem 4rem",
+    background: "#3E362E",
+    color: "#f5efe6",
+    position: "relative",
+    zIndex: 1,
+    overflow: "hidden",
+  }}
+>
+  {/* Background text */}
+  <div
+    style={{
+      position: "absolute",
+      bottom: "-2rem",
+      right: "-1rem",
+      fontFamily: "'Playfair Display', serif",
+      fontSize: "18rem",
+      fontWeight: 700,
+      fontStyle: "italic",
+      opacity: 0.04,
+      lineHeight: 1,
+      userSelect: "none",
+      color: "#f5efe6",
+    }}
+  >
+    Hello
+  </div>
 
-        <div style={{ position: "relative", zIndex: 2 }}>
-          <span style={{ fontFamily: "'Jost', sans-serif", fontSize: "0.65rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "#AC8960" }}>04 — Contact</span>
+  <div style={{ position: "relative", zIndex: 2 }}>
+    {/* LABEL */}
+    <span
+      style={{
+        fontFamily: "'Jost', sans-serif",
+        fontSize: "0.65rem",
+        letterSpacing: "0.25em",
+        textTransform: "uppercase",
+        color: "#AC8960",
+      }}
+    >
+      04 — Contact
+    </span>
 
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2.5rem, 6vw, 6rem)", fontWeight: 400, lineHeight: 1, marginTop: "2rem", marginBottom: "3rem" }}>
-            Have an idea?<br />
-            <em style={{ color: "#AC8960" }}>Let's create it.</em>
-          </h2>
+    {/* HEADING */}
+    <h2
+      style={{
+        fontFamily: "'Playfair Display', serif",
+        fontSize: "clamp(2.5rem, 6vw, 6rem)",
+        fontWeight: 400,
+        lineHeight: 1,
+        marginTop: "2rem",
+        marginBottom: "3rem",
+      }}
+    >
+      Have an idea?<br />
+      <em style={{ color: "#AC8960" }}>Let's create it.</em>
+    </h2>
 
-          <p style={{ fontFamily: "'Jost', sans-serif", fontSize: "1rem", lineHeight: 1.8, color: "rgba(245,239,230,0.55)", fontWeight: 300, maxWidth: 440, marginBottom: "3rem" }}>
-            Whether you're looking to collaborate, build something meaningful, or just want to talk craft — my inbox is always open.
-          </p>
+    {/* DESCRIPTION */}
+    <p
+      style={{
+        fontFamily: "'Jost', sans-serif",
+        fontSize: "1rem",
+        lineHeight: 1.8,
+        color: "rgba(245,239,230,0.55)",
+        fontWeight: 300,
+        maxWidth: 440,
+        marginBottom: "3rem",
+      }}
+    >
+      Whether you're looking to collaborate, build something meaningful, or just want to talk craft — I'm always open.
+    </p>
 
-          <a href="mailto:hello@alexmercer.dev"
-            onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}
-            style={{ display: "inline-flex", alignItems: "center", gap: "1rem", fontFamily: "'Jost', sans-serif", fontSize: "0.75rem", fontWeight: 500, letterSpacing: "0.22em", textTransform: "uppercase", background: "#AC8960", color: "#3E362E", padding: "1.1rem 2.8rem", textDecoration: "none", transition: "background 0.25s", cursor: "none" }}
-            onMouseOver={e => e.currentTarget.style.background = "#f5efe6"}
-            onMouseOut={e => e.currentTarget.style.background = "#AC8960"}>
-            Say Hello →
-          </a>
+    {/* CTA BUTTONS */}
+    <div
+      style={{
+        display: "flex",
+        gap: "1rem",
+        flexWrap: "wrap",
+        marginBottom: "3rem",
+      }}
+    >
+      {/* PHONE */}
+      {data.phone && (
+        <a
+          href={`tel:${data.phone}`}
+          onMouseEnter={() => setHovering(true)}
+          onMouseLeave={() => setHovering(false)}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "1rem",
+            fontFamily: "'Jost', sans-serif",
+            fontSize: "0.75rem",
+            fontWeight: 500,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            background: "#AC8960",
+            color: "#3E362E",
+            padding: "1.1rem 2.8rem",
+            textDecoration: "none",
+            transition: "all 0.25s",
+            cursor: "none",
+          }}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.background = "#f5efe6")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.background = "#AC8960")
+          }
+        >
+          Call Me →
+        </a>
+      )}
 
-          {/* Footer row */}
-          <div style={{ marginTop: "5rem", paddingTop: "3rem", borderTop: "1px solid rgba(245,239,230,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "2rem" }}>
+      {/* EMAIL */}
+      {data.email && (
+        <a
+          href={`mailto:${data.email}`}
+          onMouseEnter={() => setHovering(true)}
+          onMouseLeave={() => setHovering(false)}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "1rem",
+            fontFamily: "'Jost', sans-serif",
+            fontSize: "0.75rem",
+            fontWeight: 500,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            background: data.phone ? "transparent" : "#AC8960",
+            color: data.phone
+              ? "rgba(245,239,230,0.7)"
+              : "#3E362E",
+            border: data.phone
+              ? "1px solid rgba(245,239,230,0.2)"
+              : "none",
+            padding: "1.1rem 2.8rem",
+            textDecoration: "none",
+            transition: "all 0.25s",
+            cursor: "none",
+          }}
+          onMouseOver={(e) => {
+            if (data.phone) {
+              e.currentTarget.style.color = "#AC8960";
+              e.currentTarget.style.borderColor = "#AC8960";
+            } else {
+              e.currentTarget.style.background = "#f5efe6";
+            }
+          }}
+          onMouseOut={(e) => {
+            if (data.phone) {
+              e.currentTarget.style.color =
+                "rgba(245,239,230,0.7)";
+              e.currentTarget.style.borderColor =
+                "rgba(245,239,230,0.2)";
+            } else {
+              e.currentTarget.style.background = "#AC8960";
+            }
+          }}
+        >
+          Say Hello →
+        </a>
+      )}
+    </div>
 
-            {/* Socials — only if at least one social link exists */}
-            {hasSocials && (
-              <div style={{ display: "flex", gap: "2.5rem", flexWrap: "wrap" }}>
-                {Object.entries(portfolio.socials[0]).map(([k, v]) =>
-                  v ? (
-                    <a key={k} href={`https://${v}`}
-                      onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}
-                      style={{ fontFamily: "'Jost', sans-serif", fontSize: "0.65rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(245,239,230,0.35)", textDecoration: "none", transition: "color 0.2s", cursor: "none" }}
-                      onMouseOver={e => e.target.style.color = "#AC8960"}
-                      onMouseOut={e => e.target.style.color = "rgba(245,239,230,0.35)"}>
-                      {k}
-                    </a>
-                  ) : null
-                )}
-              </div>
-            )}
+    {/* FOOTER ROW */}
+    <div
+      style={{
+        marginTop: "4rem",
+        paddingTop: "2rem",
+        borderTop: "1px solid rgba(245,239,230,0.1)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "1.5rem",
+      }}
+    >
+      {/* NAME */}
+      {data.name && (
+        <span
+          style={{
+            fontFamily: "'Jost', sans-serif",
+            fontSize: "10px",
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: "rgba(245,239,230,0.25)",
+          }}
+        >
+          © {new Date().getFullYear()} {data.name}
+        </span>
+      )}
 
-            {hasName && (
-              <span style={{ fontFamily: "'Jost', sans-serif", fontSize: "0.62rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(245,239,230,0.2)" }}>
-                © {new Date().getFullYear()} {portfolio.name}
-              </span>
-            )}
-          </div>
-        </div>
-      </section>
+      {/* PHONE */}
+      {data.phone && (
+        <span
+          style={{
+            fontFamily: "'Jost', sans-serif",
+            fontSize: "10px",
+            letterSpacing: "0.18em",
+            color: "rgba(245,239,230,0.25)",
+          }}
+        >
+          {data.phone}
+        </span>
+      )}
+    </div>
+  </div>
+</section>
     </div>
   );
 }

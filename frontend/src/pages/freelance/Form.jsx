@@ -4,8 +4,34 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import API_BASE from "../../../config";
 
-const CATEGORIES = ["Web Development", "Design", "Backend", "Mobile", "Marketing", "Writing", "Data Science", "Other"];
-
+const CATEGORIES = [
+  "Web Development",
+  "App Development",
+  "Software Development",
+  "UI/UX Design",
+  "Graphic Design",
+  "Logo Design",
+  "Poster & Banner Design",
+  "Video Editing",
+  "Videography",
+  "Photography",
+  "Content Writing",
+  "Digital Marketing",
+  "Social Media Marketing",
+  "Accounting & Finance",
+  "Education & Training",
+  "Makeup & Beauty",
+  "Henna / Mehndi Art",
+  "Drawing & Illustration",
+  "Gifting Services",
+  "Event Management",
+  "Hosting / Presenters",
+  "Food & Catering",
+  "Fashion Design",
+  "Tailoring",
+  "Cleaning Services",
+  "Others"
+];
 const EMPTY_FORM = {
   title: "",
   category: "",
