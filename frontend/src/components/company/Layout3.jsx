@@ -960,7 +960,7 @@ function Footer({ company }) {
 /* ─────────────────────────────────────────────
    ROOT EXPORT
 ───────────────────────────────────────────── */
-export default function Layout3({ data }) {
+export default function Company3({ data }) {
   console.log("ggg",data);
   
   const companyData = data ||DUMMY;

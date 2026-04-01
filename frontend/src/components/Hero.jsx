@@ -23,11 +23,11 @@ export default function JobsFreelanceHero() {
             style={{ fontFamily: "'Syne', sans-serif" }}>
             JOBS
           </h2>
-          <span className="mt-1.5 inline-flex items-center gap-1 bg-zinc-800 text-zinc-400
+          {/* <span className="mt-1.5 inline-flex items-center gap-1 bg-zinc-800 text-zinc-400
             border border-zinc-700 text-[8.5px] font-extrabold uppercase tracking-wide
             px-2 py-0.5 rounded-full">
             🔥 1,200+ live
-          </span>
+          </span> */}
         </div>
 
         <button
@@ -73,11 +73,11 @@ export default function JobsFreelanceHero() {
             style={{ fontFamily: "'Syne', sans-serif" }}>
             FREE-<br />LANCE
           </h2>
-          <span className="mt-1.5 inline-flex items-center gap-1 bg-white text-zinc-500
+          {/* <span className="mt-1.5 inline-flex items-center gap-1 bg-white text-zinc-500
             border border-zinc-300 text-[8.5px] font-extrabold uppercase tracking-wide
             px-2 py-0.5 rounded-full">
             ✦ 800+ projects
-          </span>
+          </span> */}
         </div>
 
         <button

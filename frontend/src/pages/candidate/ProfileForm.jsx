@@ -10,10 +10,8 @@ import { useNavigate } from "react-router-dom";
 
 const TABS = [
   { id: "basic",      label: "Identity",   sym: "✦" },
-  { id: "profile",    label: "Story",      sym: "◈" },
-  { id: "skills",     label: "Skills",     sym: "◉" },
-  { id: "education",  label: "Education",  sym: "◎" },
-  { id: "experience", label: "Experience", sym: "◐" },
+ { id: "skills&education",     label: "Skills&Education",     sym: "◉" },
+ { id: "experience", label: "Experience", sym: "◐" },
   // { id: "settings",   label: "Layout",     sym: "◧" },
 ];
 
@@ -602,6 +600,37 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           
               </Card>
               <Card>
+                <CardTitle>Professional Identity</CardTitle>
+                <div className="space-y-4">
+                  <div>
+                    <label className={labelCls}>Tagline</label>
+                    <input className={inputCls} placeholder="Full-Stack Dev & Design Thinker"
+                      value={form.tagline} onChange={e => set("tagline", e.target.value)} />
+                  </div>
+                  <div>
+  <label className={labelCls}>Company</label>
+  <input
+    className={inputCls}
+    placeholder="e.g. Google, Amazon"
+    value={form.company || ""}
+    onChange={(e) => set("company", e.target.value)}
+  />
+</div>
+                  <div>
+                    <label className={labelCls}>Highest Qualification</label>
+                    <input className={inputCls} placeholder="B.Tech Computer Science"
+                      value={form.qualification} onChange={e => set("qualification", e.target.value)} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>About Me</label>
+                    <textarea className={`${inputCls} resize-none min-h-32`}
+                      placeholder="Tell your story — who you are, what drives you…"
+                      value={form.about} onChange={e => set("about", e.target.value)} />
+                    <p className="text-[11px] text-zinc-400 mt-1 text-right">{form.about.length} chars</p>
+                  </div>
+                </div>
+              </Card>
+              <Card>
   <CardTitle>Social Links</CardTitle>
 
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -680,59 +709,14 @@ const [showSuggestions, setShowSuggestions] = useState(false);
 
   </div>
 </Card>
+
             </>
           )}
 
-          {/* STORY */}
-          {tab === "profile" && (
-            <>
-              <Card>
-                <CardTitle>Professional Identity</CardTitle>
-                <div className="space-y-4">
-                  <div>
-                    <label className={labelCls}>Tagline</label>
-                    <input className={inputCls} placeholder="Full-Stack Dev & Design Thinker"
-                      value={form.tagline} onChange={e => set("tagline", e.target.value)} />
-                  </div>
-                  <div>
-  <label className={labelCls}>Company</label>
-  <input
-    className={inputCls}
-    placeholder="e.g. Google, Amazon"
-    value={form.company || ""}
-    onChange={(e) => set("company", e.target.value)}
-  />
-</div>
-                  <div>
-                    <label className={labelCls}>Highest Qualification</label>
-                    <input className={inputCls} placeholder="B.Tech Computer Science"
-                      value={form.qualification} onChange={e => set("qualification", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>About Me</label>
-                    <textarea className={`${inputCls} resize-none min-h-32`}
-                      placeholder="Tell your story — who you are, what drives you…"
-                      value={form.about} onChange={e => set("about", e.target.value)} />
-                    <p className="text-[11px] text-zinc-400 mt-1 text-right">{form.about.length} chars</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card>
-                <CardTitle>Open to Roles</CardTitle>
-                <DynArray
-                  items={form.lookingVacancy}
-                  placeholder="e.g. Frontend Developer"
-                  onAdd={(t) => addArr("lookingVacancy", t)}
-                  onRemove={(i) => remArr("lookingVacancy", i)}
-                  onUpdate={(i, _, v) => updArr("lookingVacancy", i, null, v)}
-                />
-              </Card>
-            </>
-          )}
+     
 
           {/* SKILLS */}
-          {tab === "skills" && (
+          {tab === "skills&education" && (
             <>
               <Card>
                 <CardTitle>Skills</CardTitle>
@@ -751,7 +735,22 @@ const [showSuggestions, setShowSuggestions] = useState(false);
                   onUpdate={(i, _, v) => updArr("skills", i, null, v)}
                 />
               </Card>
-
+              <Card>
+              <CardTitle>Education History</CardTitle>
+              <DynArray
+                items={form.education}
+                template={{ education: "", institution: "", year: "", percentage: "" }}
+                fields={[
+                  { key: "education",   label: "Degree",       placeholder: "e.g. B.Tech, MBA" },
+                  { key: "institution", label: "Institution",   placeholder: "University name" },
+                  { key: "year",        label: "Year",          placeholder: "2022", type: "number" },
+                  { key: "percentage",  label: "Score / CGPA",  placeholder: "85% or 8.5 CGPA" },
+                ]}
+                onAdd={(t) => addArr("education", t)}
+                onRemove={(i) => remArr("education", i)}
+                onUpdate={(i, k, v) => updArr("education", i, k, v)}
+              />
+            </Card>
               <Card>
                 <CardTitle>Services Offered</CardTitle>
                 <DynArray
@@ -769,29 +768,21 @@ const [showSuggestions, setShowSuggestions] = useState(false);
             </>
           )}
 
-          {/* EDUCATION */}
-          {tab === "education" && (
-            <Card>
-              <CardTitle>Education History</CardTitle>
-              <DynArray
-                items={form.education}
-                template={{ education: "", institution: "", year: "", percentage: "" }}
-                fields={[
-                  { key: "education",   label: "Degree",       placeholder: "e.g. B.Tech, MBA" },
-                  { key: "institution", label: "Institution",   placeholder: "University name" },
-                  { key: "year",        label: "Year",          placeholder: "2022", type: "number" },
-                  { key: "percentage",  label: "Score / CGPA",  placeholder: "85% or 8.5 CGPA" },
-                ]}
-                onAdd={(t) => addArr("education", t)}
-                onRemove={(i) => remArr("education", i)}
-                onUpdate={(i, k, v) => updArr("education", i, k, v)}
-              />
-            </Card>
-          )}
+        
 
           {/* EXPERIENCE */}
           {tab === "experience" && (
             <>
+               <Card>
+                <CardTitle>Open to Roles</CardTitle>
+                <DynArray
+                  items={form.lookingVacancy}
+                  placeholder="e.g. Frontend Developer"
+                  onAdd={(t) => addArr("lookingVacancy", t)}
+                  onRemove={(i) => remArr("lookingVacancy", i)}
+                  onUpdate={(i, _, v) => updArr("lookingVacancy", i, null, v)}
+                />
+              </Card>
             <Card>
               <CardTitle>Work Experience</CardTitle>
               <DynArray

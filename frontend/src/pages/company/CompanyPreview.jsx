@@ -15,8 +15,80 @@ import toast from "react-hot-toast";
 const THUMB_W = 1000;
 const THUMB_H = 1400;
 
+
+const COMPANY_DUMMY= {
+  companyName: "Axiom Digital",
+  tagline: "Building Products That Define Markets.",
+  about:
+    "We are a full-service technology company delivering world-class software, design, and strategy to ambitious businesses. From Technopark's innovation corridor, we partner with startups and enterprises to engineer digital products that create lasting competitive advantage.",
+  industry: "Software & Technology",
+  companySize: "51–200",
+  foundedYear: 2018,
+  businessPark: "Technopark",
+  website: "https://axiomdigital.io",
+  tags: ["SaaS", "AI", "Cloud", "Mobile", "Enterprise"],
+  logo: "",
+  banner: "",
+  address: {
+    building: "Nila Building, Floor 4",
+    street: "Technopark Phase I",
+    city: "Thiruvananthapuram",
+    state: "Kerala",
+    pincode: "695581",
+    country: "India",
+  },
+  contacts: {
+    email: "hello@axiomdigital.io",
+    phone: "+91 98765 43210",
+    linkedin: "#",
+    twitter: "#",
+    instagram: "#",
+    whatsapp: "919876543210",
+  },
+  services: [
+    { title: "Product Engineering",    description: "End-to-end web & mobile products built for scale — from idea to launch and beyond." },
+    { title: "AI & Automation",        description: "LLM integration, ML pipelines, and intelligent automation that makes your product smarter." },
+    { title: "UI/UX Design",           description: "Research-driven interfaces and design systems that convert visitors into loyal users." },
+    { title: "Cloud & DevOps",         description: "AWS/GCP/Azure architecture, CI/CD, and zero-downtime deployments at any scale." },
+    { title: "Data & Analytics",       description: "Real-time dashboards, ETL pipelines, and BI tools that turn raw data into decisions." },
+    { title: "Technology Consulting",  description: "CTO advisory, architecture audits, and technology roadmap planning for growth-stage companies." },
+  ],
+  projects: [
+    { name: "PayFlow",    category: "FinTech",    year: "2024", description: "Real-time B2B payment rails processing ₹300 Cr/month for 800+ merchants across India.", link: "#" },
+    { name: "CareSync",  category: "HealthTech", year: "2023", description: "Clinical workflow platform adopted by 60+ hospitals, cutting patient wait times by 45%.", link: "#" },
+    { name: "TrackPro",  category: "Logistics",  year: "2024", description: "IoT fleet intelligence SaaS monitoring 60,000+ shipments daily with live GPS tracking.", link: "#" },
+    { name: "EduPulse",  category: "EdTech",     year: "2022", description: "AI-adaptive learning platform serving 250K+ students with personalised curriculum paths.", link: "#" },
+  ],
+  members: [
+    { name: "Arun Nair",      position: "Founder & CEO",   image: "", url: "", bio: "2x entrepreneur. Built and scaled tech teams across fintech and healthtech." },
+    { name: "Divya Menon",    position: "CTO",             image: "", url: "", bio: "Ex-Amazon engineer. Distributed systems expert who ships at startup velocity." },
+    { name: "Rahul George",   position: "Head of Design",  image: "", url: "", bio: "Formerly at Zomato. Turns complex problems into interfaces people love." },
+    { name: "Sneha Krishnan", position: "VP Engineering",  image: "", url: "", bio: "15 years building production systems. Champion of clean code and fast deploys." },
+    { name: "Kiran Pillai",   position: "Head of AI/ML",   image: "", url: "", bio: "PhD. Bridges research and production — ML that actually works at scale." },
+    { name: "Meera Das",      position: "Director Growth", image: "", url: "", bio: "Scaled 3 startups to ₹100 Cr ARR. Growth strategy grounded in data." },
+  ],
+  clients: [
+    { name: "Federal Bank",    sector: "Banking",       logo: "", website: "" },
+    { name: "KIMS Health",     sector: "Healthcare",    logo: "", website: "" },
+    { name: "UST Global",      sector: "Technology",    logo: "", website: "" },
+    { name: "IBS Software",    sector: "Aviation",      logo: "", website: "" },
+    { name: "Muthoot Finance", sector: "Finance",       logo: "", website: "" },
+    { name: "Tata Elxsi",      sector: "Engineering",   logo: "", website: "" },
+    { name: "HCLTech",         sector: "IT Services",   logo: "", website: "" },
+    { name: "Kerala Govt.",    sector: "Public Sector", logo: "", website: "" },
+  ],
+  gallery: [
+    { imageUrl: "", caption: "Design Week 2024",      tag: "Event"   },
+    { imageUrl: "", caption: "Product Launch — PayFlow", tag: "Launch" },
+    { imageUrl: "", caption: "Team Retreat, Munnar",  tag: "Culture" },
+    { imageUrl: "", caption: "Hackathon Champions",   tag: "Award"   },
+    { imageUrl: "", caption: "Sprint Workshop",       tag: "Work"    },
+    { imageUrl: "", caption: "Client Summit 2023",    tag: "Client"  },
+  ],
+};
+
 // ✅ Add new layouts here — everything else scales automatically
-const LAYOUTS = Array.from({ length: 20 }, (_, i) => ({
+const LAYOUTS = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   label: `Layout ${i + 1}`,
   tag: ["Professional", "Clean", "Simple", "Tech", "Creative"][i % 5],
@@ -85,7 +157,7 @@ function SideThumb({ layout, isActive, onSelect }) {
       >
         {/* ✅ iframe — same route as right panel, guaranteed CSS match */}
         <iframe
-          src={`/company-preview/${id}`}
+         src={`/company-preview/${id}?mode=dummy`}
           title={`Layout ${id}`}
           scrolling="no"
           style={{
@@ -164,7 +236,7 @@ function StripThumb({ layout, isActive, onSelect }) {
         style={{ width: STRIP_W, height: h }}
       >
         <iframe
-          src={`/company-preview/${id}`}
+       src={`/company-preview/${id}?mode=dummy`}
           title={`Layout ${id}`}
           scrolling="no"
           style={{
@@ -216,7 +288,11 @@ export default function CompanyLayoutSelector({ data: propData }) {
   useEffect(() => {
     if (pageData && Object.keys(pageData).length > 0) {
       try {
+        // REAL (right preview)
         localStorage.setItem("companyPreviewData", JSON.stringify(pageData));
+  
+        // DUMMY (left thumbnails)
+        localStorage.setItem("companyPreviewDummy", JSON.stringify(COMPANY_DUMMY));
       } catch (_) {}
     }
   }, [pageData]);
@@ -305,7 +381,7 @@ export default function CompanyLayoutSelector({ data: propData }) {
         <div className="flex-1 overflow-hidden relative bg-stone-50">
           <iframe
             key={`m-${activeId}-${liveKey}`}
-            src={`/company-preview/${activeId}`}
+            src={`/company-preview/${activeId}?mode=real`}
             title={`Preview ${activeId}`}
             className="w-full h-full border-none block"
           />
@@ -514,7 +590,7 @@ export default function CompanyLayoutSelector({ data: propData }) {
             <div className="w-full h-full rounded-xl overflow-hidden bg-white">
               <iframe
                 key={`d-${activeId}-${liveKey}`}
-                src={`/company-preview/${activeId}`}
+                src={`/company-preview/${activeId}?mode=real`}
                 title={`Preview ${activeId}`}
                 className="w-full h-full border-none block"
               />

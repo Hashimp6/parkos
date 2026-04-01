@@ -53,6 +53,12 @@ import Portfolio1 from "../components/candidate/Layout1";
 import Portfolio2 from "../components/candidate/Layout2";
 import Portfolio3 from "../components/candidate/Layout3";
 import Portfolio4 from "../components/candidate/Layout4";
+import Company8 from "../components/company/Company8";
+import Company5 from "../components/company/Layout5";
+import Layout3 from "../components/company/Layout3";
+import Company2 from "../components/company/Layout2";
+import Company1 from "../components/company/Layout1";
+import Company9 from "../components/company/Company9";
 
 function AppRoutes() {
   return (
@@ -74,7 +80,7 @@ function AppRoutes() {
         <Route path="/company/id/:companyId" element={<CompanyProfilePage />} />
         <Route path="/preview/:layoutId"   element={<PreviewPage />} />
         <Route path="/company-preview/:id" element={<CmpnyPreviewPage />} />
-        <Route path="/profile12"           element={<Portfolio1/>} />
+        <Route path="/profile12"           element={<Company9/>} />
 
         {/* ── Guest-only (redirect if already logged in) ───────────────────── */}
         <Route element={<GuestRoute />}>
