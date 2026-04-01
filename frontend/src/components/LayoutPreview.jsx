@@ -44,10 +44,17 @@ const TEMPLATES = {
 export default function PreviewPage() {
   const { layoutId } = useParams();
   const [data, setData] = useState({});
-
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("portfolioPreviewData");
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get("mode");
+  
+      const key =
+        mode === "dummy"
+          ? "portfolioPreviewDummy"
+          : "portfolioPreviewData";
+  
+      const raw = localStorage.getItem(key);
       if (raw) setData(JSON.parse(raw));
     } catch (_) {}
   }, []);

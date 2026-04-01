@@ -8,6 +8,41 @@ import { useUser } from "../context/UserContext";
 import axios from "axios";
 import API_BASE from "../../config";
 
+
+const DUMMY_DATA = {
+  name: "Alex Mercer",
+  tagline: "Crafting digital experiences that leave a mark",
+  qualification: "Full Stack Developer",
+  company: "currently @ Niche Studios",
+  profilePhoto: "https://www.fotoria.com/fotoria-ai-professional-headshots-hero3.jpg",
+  place: "Kerala, India",
+  about:
+    "I build products that live at the intersection of elegant design and robust engineering. With a deep obsession for clean code and intentional UX, I turn complex problems into seamless experiences.",
+  skills: ["React", "Node.js", "MongoDB", "TypeScript", "Python", "Figma", "AWS", "GraphQL", "Docker", "Redis"],
+  services: [
+    { heading: "Web Development", description: "Full-stack applications built with modern frameworks, focused on performance and scalability." },
+    { heading: "UI/UX Design", description: "Interfaces that feel intuitive and look stunning — from wireframe to pixel-perfect reality." },
+    { heading: "API Architecture", description: "Robust REST & GraphQL APIs designed for scale, security, and developer happiness." },
+    { heading: "Consulting", description: "Strategic technical guidance for startups and growing teams navigating complexity." },
+  ],
+  experience: [
+    { jobTitle: "Senior Full Stack Engineer", company: "Niche Studios", startDate: "2023", endDate: "Present" },
+    { jobTitle: "Frontend Engineer", company: "Axiom Labs", startDate: "2021", endDate: "2023" },
+    { jobTitle: "Junior Developer", company: "ByteForge", startDate: "2019", endDate: "2021" },
+  ],
+  education: [
+    { education: "B.Tech Computer Science", institution: "NIT Calicut", year: 2019, percentage: "8.7 CGPA" },
+    { education: "Higher Secondary", institution: "Kerala State Board", year: 2015, percentage: "94%" },
+  ],
+  projects: [
+    { title: "Lumina", description: "An AI-powered design system generator that creates production-ready component libraries from natural language prompts.", link: "#" },
+    { title: "Vantage", description: "Real-time analytics dashboard with 3D data visualizations processing 10M+ events/day.", link: "#" },
+    { title: "Drift Protocol", description: "Decentralized file-sharing network with end-to-end encryption and zero-knowledge proofs.", link: "#" },
+    { title: "Echospace", description: "Collaborative music production platform with live jam sessions and AI-assisted mixing.", link: "#" },
+  ],
+  socials: [{ github: "github.com/alexmercer", linkedin: "linkedin.com/in/alexmercer", twitter: "@alexmercer", instagram: "@alexmercer.dev" }],
+};
+
 /* ── config ──────────────────────────────────────────────────────── */
 const TEMPLATE_COUNT = 10;
 const THUMB_W        = 1000;
@@ -58,7 +93,7 @@ function SideThumb({ id, isActive, onSelect }) {
       {/* thumbnail */}
       <div ref={boxRef} className="relative w-full overflow-hidden bg-stone-50" style={{ height: h }}>
         <iframe
-          src={`/preview/${id}`}
+           src={`/preview/${id}?mode=dummy`}
           title={`Layout ${id}`}
           scrolling="no"
           style={{
@@ -108,7 +143,7 @@ function StripThumb({ id, isActive, onSelect }) {
         style={{ width: STRIP_W, height: h }}
       >
         <iframe
-          src={`/preview/${id}`}
+         src={`/preview/${id}?mode=dummy`}
           title={`Layout ${id}`}
           scrolling="no"
           style={{
@@ -149,11 +184,16 @@ export default function LayoutSelector({ data: propData }) {
 
   useEffect(() => {
     try {
+      // actual data (RIGHT SIDE)
       localStorage.setItem("portfolioPreviewData", JSON.stringify(pageData));
+  
+      // dummy data (LEFT SIDE)
+      localStorage.setItem("portfolioPreviewDummy", JSON.stringify(DUMMY_DATA));
+  
       setLiveKey(k => k + 1);
     } catch (_) {}
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(pageData)]);
+  
 
   const handleSelect = (id) => {
     setActiveId(id);
@@ -192,7 +232,7 @@ export default function LayoutSelector({ data: propData }) {
   /* ── MOBILE LAYOUT ──────────────────────────────────────────────── */
   if (isMobile) {
     return (
-      <div className="flex flex-col h-screen bg-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="flex flex-col h-dvh bg-white overflow-hidden" style={{ fontFamily: "'DM Sans', sans-serif" }}>
 
         {/* top bar */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 shrink-0 bg-white">
@@ -220,13 +260,17 @@ export default function LayoutSelector({ data: propData }) {
         </div>
 
         {/* live preview — fills remaining space */}
-        <div className="flex-1 overflow-hidden relative bg-stone-50">
-          <iframe
-            key={`m-${activeId}-${liveKey}`}
-            src={`/preview/${activeId}`}
-            title={`Preview ${activeId}`}
-            className="w-full h-full border-none block"
-          />
+        <div className="flex-1 overflow-auto relative bg-stone-50">
+        <iframe
+  key={`m-${activeId}-${liveKey}`}
+  src={`/preview/${activeId}?mode=real`}
+  title={`Preview ${activeId}`}
+  className="w-full h-full border-none block"
+  style={{
+    pointerEvents: "auto",
+    touchAction: "pan-y"
+  }}
+/>
 
           {/* prev / next floating arrows */}
           <button
@@ -255,11 +299,14 @@ export default function LayoutSelector({ data: propData }) {
 
         {/* film-strip at bottom */}
         <div className="shrink-0 bg-white border-t border-stone-200">
-          <div
-            ref={stripRef}
-            className="flex gap-2 px-3 py-3 overflow-x-auto"
-            style={{ scrollbarWidth: "none" }}
-          >
+        <div
+  ref={stripRef}
+  className="flex gap-2 px-3 py-3 overflow-x-auto"
+  style={{
+    scrollbarWidth: "none",
+    WebkitOverflowScrolling: "touch"
+  }}
+>
             {Array.from({ length: TEMPLATE_COUNT }, (_, i) => i + 1).map((id) => (
               <div key={id} data-mid={id}>
                 <StripThumb id={id} isActive={id === activeId} onSelect={handleSelect} />
@@ -397,7 +444,7 @@ export default function LayoutSelector({ data: propData }) {
             <div className="w-full h-full rounded-xl overflow-hidden bg-white">
               <iframe
                 key={`d-${activeId}-${liveKey}`}
-                src={`/preview/${activeId}`}
+                src={`/preview/${activeId}?mode=real`}
                 title={`Preview ${activeId}`}
                 className="w-full h-full border-none block"
               />
