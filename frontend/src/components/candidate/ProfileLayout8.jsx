@@ -267,7 +267,7 @@ function Nav({ D }) {
   const go = id => { setMob(false); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); };
   return (
     <nav className={`nav${solid ? " solid" : ""}`}>
-      <div className="nav-logo" onClick={() => go("hero")}>{D.firstName}<span style={{ opacity: .5 }}> {D.lastName}</span></div>
+      <div className="nav-logo" onClick={() => go("hero")}>{D.name}<span style={{ opacity: .5 }}> {D.lastName}</span></div>
       <ul className="nav-links desk-nav" style={{ display: "flex", gap: "2rem", listStyle: "none", alignItems: "center" }}>
         {[D.services?.length && ["services","Services"], D.projects?.length && ["projects","Work"], ["journey","Journey"], ["contact","Contact"]].filter(Boolean).map(([id,lbl]) => (
           <li key={id}><button className="nav-btn" onClick={() => go(id)}>{lbl}</button></li>
