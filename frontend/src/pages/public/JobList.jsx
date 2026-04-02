@@ -637,7 +637,9 @@ export default function JobListings({
 }) {
   const isMobile = useIsMobile();
   const { user } = useUser();
-
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [search,     setSearch]  = useState("");
   const [activePark, setPark]    = useState("All");
   const [openJob,    setOpenJob] = useState(null);

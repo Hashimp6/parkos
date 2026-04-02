@@ -34,17 +34,24 @@ export function CompanyRoute() {
 // companyRedirect:   where to send a logged-in company     (default /company/Home)
 export function GuestRoute({
   candidateRedirect = "/home",
-  companyRedirect = "/company/Home",
 }) {
   const { user } = useUser();
-  const { company } = useCompany();
 
   if (user)    return <Navigate to={candidateRedirect} replace />;
-  if (company) return <Navigate to={companyRedirect}   replace />;
 
   return <Outlet />;
 }
 
+export function GuestCompanyRoute({
+  companyRedirect = "/company/Home",
+}) {
+  const { company } = useCompany();
+
+
+  if (company) return <Navigate to={companyRedirect}   replace />;
+
+  return <Outlet />;
+}
 
 
 

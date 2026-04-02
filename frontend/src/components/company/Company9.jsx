@@ -14,7 +14,7 @@ const C = {
 };
 
 // ── Sample company data (mirrors schema) ─────────────────────────────────────
-const COMPANY = {
+const dummy = {
   companyName: "NovaTech Solutions",
   tagline: "Engineering Tomorrow, Today.",
   about:
@@ -749,7 +749,8 @@ function Footer({ company }) {
 }
 
 // ── App ───────────────────────────────────────────────────────────────────────
-export default function Company9() {
+export default function Company9({ data}) {
+    const COMPANY=data||dummy
   return (
     <>
       <style>{`

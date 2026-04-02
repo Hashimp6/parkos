@@ -19,7 +19,7 @@ const COLORS = {
 };
 
 // ── Sample data mirroring the schema ────────────────────────────────────────
-const COMPANY = {
+const Dummy = {
   companyName: "NovaTech Solutions",
   tagline: "Engineering Tomorrow, Today.",
   about:
@@ -1133,7 +1133,8 @@ function Footer({ company }) {
 }
 
 // ── App ──────────────────────────────────────────────────────────────────────
-export default function Company8() {
+export default function Company8({ data}) {
+    const COMPANY=data||Dummy
   return (
     <>
       <style>{`

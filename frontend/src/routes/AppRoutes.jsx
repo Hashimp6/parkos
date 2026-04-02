@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
-import { CandidateRoute, CompanyRoute, GuestRoute } from "../components/candidate/ProtectedUserRoute"; // adjust path
+import { CandidateRoute, CompanyRoute, GuestCompanyRoute, GuestRoute } from "../components/candidate/ProtectedUserRoute"; // adjust path
 
 // Public Pages
 import Home from "../pages/public/Home";
@@ -87,6 +87,12 @@ function AppRoutes() {
           <Route path="/login"                      element={<Login />} />
           <Route path="/register"                   element={<Register />} />
           <Route path="/forgot-password"            element={<ForgotPasswordPage />} />
+          <Route path="/company/login"              element={<CompanyLoginPage />} />
+          <Route path="/company/register"           element={<CompanyRegisterPage />} />
+          <Route path="/company/forgot-password"    element={<ForgotPasswordPageCompany />} />
+        </Route>
+
+        <Route element={<GuestCompanyRoute />}>
           <Route path="/company/login"              element={<CompanyLoginPage />} />
           <Route path="/company/register"           element={<CompanyRegisterPage />} />
           <Route path="/company/forgot-password"    element={<ForgotPasswordPageCompany />} />
