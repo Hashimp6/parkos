@@ -51,8 +51,7 @@ const T = {
   black:  "#0A0A0B",
 };
 
-const PARK_OPTIONS = [ "All","Business Park", "Cyber Park","others"];
-
+const PARK_OPTIONS = ["All", "Business Park", "Cyber Park", "Other"];
 /* ─── Global styles ───────────────────────────────────────────────────── */
 const GLOBAL_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@300;400;500;600;700;800&display=swap');
@@ -184,7 +183,20 @@ function Pill({ children, dark }) {
 /* ─── Detail Panel ────────────────────────────────────────────────────── */
 function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile }) {
   const min    = job.salary ?? job.salary;
-  
+  const handleShare = async () => {
+    const url = `${window.location.origin}/jobs/${job._id}`;
+    const shareData = {
+      title: job.title,
+      text: `Check out this job: ${job.title} at ${job.company?.name ?? job.company}`,
+      url,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch (_) {}
+    } else {
+      await navigator.clipboard.writeText(url);
+      // optionally show a small toast
+    }
+  };
   const salary = !min? "Not mentioned" : min;
   const posted = timeAgo(job.postedDate ?? job.postedAt);
 
@@ -614,20 +626,7 @@ function SectionLabel({ children, count }) {
   );
 }
 
-const handleShare = async () => {
-  const url = `${window.location.origin}/jobs/${job._id}`;
-  const shareData = {
-    title: job.title,
-    text: `Check out this job: ${job.title} at ${job.company?.name ?? job.company}`,
-    url,
-  };
-  if (navigator.share) {
-    try { await navigator.share(shareData); } catch (_) {}
-  } else {
-    await navigator.clipboard.writeText(url);
-    // optionally show a small toast
-  }
-};
+
 
 /* ─── Main Export ─────────────────────────────────────────────────────── */
 export default function JobListings({
@@ -637,15 +636,16 @@ export default function JobListings({
 }) {
   const isMobile = useIsMobile();
   const { user } = useUser();
-
-  const [search,     setSearch]  = useState("");
-  const [activePark, setPark]    = useState("All");
-  const [openJob,    setOpenJob] = useState(null);
-  const [savedIds,   setSaved]   = useState(new Set());
-  const [toast,      setToast]   = useState(null);
-  const [jobs,       setJobs]    = useState([]);
-  const [isLoading,  setLoading] = useState(true);
-  const [error,      setError]   = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [search, setSearch] = useState("");
+  const [activePark, setPark] = useState("All");
+  const [openJob, setOpenJob] = useState(null);
+  const [savedIds, setSaved] = useState(new Set());
+  const [toast, setToast] = useState(null);
+  const [jobs, setJobs] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const toggleSave = id => setSaved(p => {
     const n = new Set(p);
@@ -653,41 +653,33 @@ export default function JobListings({
     return n;
   });
   const navigate = useNavigate();
+
+  // Debounce search
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 400); // 400ms delay
-  
-    return () => {
-      clearTimeout(handler); // cancel previous timeout
-    };
+    const handler = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(handler);
   }, [search]);
 
+  // Reset page on filter/search change
+  useEffect(() => { setPage(1); }, [debouncedSearch, activePark]);
+
+  // Effect 1: text search
   useEffect(() => {
+    if (!debouncedSearch.trim()) return;
+
     const fetchJobs = async () => {
       try {
         setLoading(true);
         setError(null);
-  
-        const params = {
-          sort: "newest",
-          search: debouncedSearch || undefined, // ✅ use debounced value
-        };
-  
-        if (activePark !== "All") {
-          params.businessPark = activePark;
-        }
-  
+
         const res = await axios.get(`${API_BASE}/jobs/search`, {
-          params: {
-            search: debouncedSearch,
-          },
+          params: { search: debouncedSearch, page, limit: 12 },
         });
-        const raw = res.data?.data || [];
-        console.log(raw);
-        
-        setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
-  
+
+        const { data: raw, pagination } = res.data;
+        setHasMore(pagination?.hasNextPage ?? false);
+        setJobs(prev => page === 1 ? raw.map(normalizeJob) : [...prev, ...raw.map(normalizeJob)]);
+
       } catch (err) {
         console.error(err);
         setError("Failed to load jobs.");
@@ -695,28 +687,41 @@ export default function JobListings({
         setLoading(false);
       }
     };
-  
-    fetchJobs();
-  }, [apiUrl, activePark, debouncedSearch]); // ✅ depend on debouncedSearch
 
+    fetchJobs();
+  }, [debouncedSearch, page]);
+
+  // Effect 2: park filter + normal listing
   useEffect(() => {
+    if (debouncedSearch.trim()) return;
+
     const fetchJobs = async () => {
       try {
-        setLoading(true); setError(null);
-        const params = { sort: "newest", search: search || undefined };
-        if (activePark !== "All") params.businessPark = activePark;
-        const res = await axios.get(apiUrl, { params });
-        const raw = res.data?.data || [];
-        setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
+        setLoading(true);
+        setError(null);
+
+        const res = await axios.get(`${API_BASE}/jobs`, {
+          params: {
+            page,
+            limit: 12,
+            ...(activePark !== "All" && { businessPark: activePark }),
+          },
+        });
+
+        const { data: raw, pagination } = res.data;
+        setHasMore(pagination?.hasNextPage ?? false);
+        setJobs(prev => page === 1 ? raw.map(normalizeJob) : [...prev, ...raw.map(normalizeJob)]);
+
       } catch (err) {
-        console.error(err); setError("Failed to load jobs.");
+        console.error(err);
+        setError("Failed to load jobs.");
       } finally {
         setLoading(false);
       }
     };
-    fetchJobs();
-  }, [apiUrl, activePark, search]);
 
+    fetchJobs();
+  }, [activePark, debouncedSearch, page]);
   const handleApply = async (job) => {
     try {
       if (!user?._id) {
@@ -802,7 +807,7 @@ export default function JobListings({
 
       {/* ── Content ── */}
       <div style={{ maxWidth: 1100, margin: "0 auto", paddingBottom: 60 }}>
-        {isLoading ? (
+      {isLoading && page === 1 ? (
           <div style={{ paddingTop: 24 }}><Skeleton /></div>
         ) : error ? (
           <div style={{ textAlign: "center", padding: "80px 24px" }}>
@@ -836,7 +841,23 @@ export default function JobListings({
                       isSelected={openJob?._id === job._id} />
                   ))}
                 </div>
+                
               </>
+            )}
+             {!isLoading && hasMore && (
+              <div style={{ textAlign: "center", padding: "24px 0" }}>
+                <button
+                  onClick={() => setPage(p => p + 1)}
+                  style={{ padding: "12px 32px", borderRadius: 10, background: T.black, color: T.white, border: "none", fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                  Load More
+                </button>
+              </div>
+            )}
+
+            {isLoading && page > 1 && (
+              <div style={{ textAlign: "center", padding: "24px 0", fontFamily: "'Manrope',sans-serif", fontSize: 13, color: T.g400 }}>
+                Loading…
+              </div>
             )}
           </>
         )}
