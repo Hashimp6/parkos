@@ -708,7 +708,7 @@ function Team({ company }) {
                 {has(m.bio) && (
                   <p className="fb" style={{ fontSize:13, lineHeight:1.7 }}>{m.bio}</p>
                 )}
-                {has(m.url) && (
+                {has(m.image) && (
                   <a href={m.url} target="_blank" rel="noreferrer"
                     style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:11, letterSpacing:"0.14em", textTransform:"uppercase", color:T.g500, marginTop:10, display:"inline-block", transition:"color .2s" }}
                     onMouseEnter={e => e.target.style.color = T.black}

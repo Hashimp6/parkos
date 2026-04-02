@@ -864,8 +864,8 @@ function Team({ company }) {
                   marginBottom: 6,
                 }}
               >
-                {m.url ? (
-                  <a href={m.url} target="_blank" rel="noreferrer" style={{ color: "inherit", textDecoration: "none" }}>
+                {m.image ? (
+                  <a href={m.image} target="_blank" rel="noreferrer" style={{ color: "inherit", textDecoration: "none" }}>
                     {m.name}
                   </a>
                 ) : (

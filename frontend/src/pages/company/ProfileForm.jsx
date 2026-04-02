@@ -14,14 +14,10 @@ const COMPANY_SIZES = ["1-10", "11-50", "51-200", "201-500", "500+"];
 
 const TABS = [
   { id: "branding",  label: "Branding",   sym: "✦" },
-  { id: "about",     label: "About",      sym: "◈" },
   { id: "location",  label: "Location",   sym: "◉" },
-  { id: "team",      label: "Team",       sym: "◎" },
-  { id: "projects",  label: "Projects",   sym: "◆" },
-  { id: "services",  label: "Services",   sym: "◐" },
+{ id: "projects&services",  label: "Projects&Services",   sym: "◐" },
   // { id: "gallery",   label: "Gallery",    sym: "◧" },
   // { id: "clients",   label: "Clients",    sym: "◫" },
-  { id: "contact",   label: "Contact",    sym: "◬" },
   // { id: "settings",  label: "Layout",     sym: "◭" },
 ];
 
@@ -537,12 +533,6 @@ const cleanArray = (arr) =>
                   onRemove={(i) => remArr("tags", i)}
                   onUpdate={(i, _, v) => updArr("tags", i, null, v)} />
               </Card>
-            </>
-          )}
-
-          {/* ── ABOUT ── */}
-          {tab === "about" && (
-            <>
               <Card>
                 <CardTitle>Company Details</CardTitle>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -576,6 +566,7 @@ const cleanArray = (arr) =>
             </>
           )}
 
+  
           {/* ── LOCATION ── */}
           {tab === "location" && (
             <>
@@ -653,13 +644,65 @@ const cleanArray = (arr) =>
                   ))}
                 </div>
               </Card>
-
+              <Card>
+              <CardTitle>Contact & Social Links</CardTitle>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  { k: "email",     l: "Email",       p: "hello@company.com",     icon: "✉" },
+                  { k: "phone",     l: "Phone",       p: "+91 98765 43210",        icon: "☎" },
+                  { k: "whatsapp",  l: "WhatsApp",    p: "+91 98765 43210",        icon: "💬" },
+                  { k: "website",   l: "Website",     p: "https://company.com",    icon: "🌐" },
+                  { k: "linkedin",  l: "LinkedIn",    p: "linkedin.com/company/…", icon: "in" },
+                  { k: "instagram", l: "Instagram",   p: "@yourcompany",           icon: "📷" },
+                ].map(f => (
+                  <div key={f.k}>
+                    <label className={labelCls}>
+                      <span className="mr-1 text-zinc-600">{f.icon}</span> {f.l}
+                    </label>
+                    <input className={inputCls} placeholder={f.p}
+                      value={f.k === "website" ? form.website : (form.contacts?.[f.k] || "")}
+                      onChange={e => f.k === "website" ? set("website", e.target.value) : setNested("contacts", f.k, e.target.value)} />
+                  </div>
+                ))}
+              </div>
+            </Card>
             </>
           )}
 
-          {/* ── TEAM ── */}
-          {tab === "team" && (
+      
+          {/* ── SERVICES ── */}
+          {tab === "projects&services" && (
+         <>  <Card>
+              <CardTitle>Services Offered</CardTitle>
+              <DynArray
+                items={form.services}
+                template={{ title: "", description: "" }}
+                fields={[
+                  { key: "title",       label: "Service Title",  placeholder: "e.g. Cloud Consulting" },
+                  { key: "description", label: "Description",    placeholder: "What you deliver…", textarea: true, full: true },
+                ]}
+                onAdd={(t) => addArr("services", t)}
+                onRemove={(i) => remArr("services", i)}
+                onUpdate={(i, k, v) => updArr("services", i, k, v)}
+              />
+            </Card>
             <Card>
+              <CardTitle>Projects</CardTitle>
+              <DynArray
+                items={form.projects}
+                template={{ name: "", description: "", link: "" }}
+                fields={[
+                  { key: "name",        label: "Project Name",  placeholder: "Project Alpha" },
+                  { key: "description", label: "Description",   placeholder: "Short description...", textarea: true, full: true },
+                  { key: "link",        label: "Project Link",  placeholder: "https://project.com", type: "url", full: true },
+                ]}
+                onAdd={(t) => addArr("projects", t)}
+                onRemove={(i) => remArr("projects", i)}
+                onUpdate={(i, k, v) => updArr("projects", i, k, v)}
+              />
+            </Card>
+               <Card>
+
               <CardTitle>Team Members</CardTitle>
               <DynArray
                 items={form.members}
@@ -677,44 +720,10 @@ const cleanArray = (arr) =>
                 onFileChange={(i, _key, file) => setNestedFile("members", i, file)}
               />
             </Card>
+            </> 
           )}
 
-          {/* ── SERVICES ── */}
-          {tab === "services" && (
-            <Card>
-              <CardTitle>Services Offered</CardTitle>
-              <DynArray
-                items={form.services}
-                template={{ title: "", description: "" }}
-                fields={[
-                  { key: "title",       label: "Service Title",  placeholder: "e.g. Cloud Consulting" },
-                  { key: "description", label: "Description",    placeholder: "What you deliver…", textarea: true, full: true },
-                ]}
-                onAdd={(t) => addArr("services", t)}
-                onRemove={(i) => remArr("services", i)}
-                onUpdate={(i, k, v) => updArr("services", i, k, v)}
-              />
-            </Card>
-          )}
-
-          {/* ── PROJECTS ── */}
-          {tab === "projects" && (
-            <Card>
-              <CardTitle>Projects</CardTitle>
-              <DynArray
-                items={form.projects}
-                template={{ name: "", description: "", link: "" }}
-                fields={[
-                  { key: "name",        label: "Project Name",  placeholder: "Project Alpha" },
-                  { key: "description", label: "Description",   placeholder: "Short description...", textarea: true, full: true },
-                  { key: "link",        label: "Project Link",  placeholder: "https://project.com", type: "url", full: true },
-                ]}
-                onAdd={(t) => addArr("projects", t)}
-                onRemove={(i) => remArr("projects", i)}
-                onUpdate={(i, k, v) => updArr("projects", i, k, v)}
-              />
-            </Card>
-          )}
+        
 
           {/* ── GALLERY ── */}
           {/* {tab === "gallery" && (
@@ -780,34 +789,7 @@ const cleanArray = (arr) =>
             </Card>
           )} */}
 
-          {/* ── CONTACT ── */}
-          {tab === "contact" && (
-            <Card>
-              <CardTitle>Contact & Social Links</CardTitle>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { k: "email",     l: "Email",       p: "hello@company.com",     icon: "✉" },
-                  { k: "phone",     l: "Phone",       p: "+91 98765 43210",        icon: "☎" },
-                  { k: "whatsapp",  l: "WhatsApp",    p: "+91 98765 43210",        icon: "💬" },
-                  { k: "website",   l: "Website",     p: "https://company.com",    icon: "🌐" },
-                  { k: "linkedin",  l: "LinkedIn",    p: "linkedin.com/company/…", icon: "in" },
-                  { k: "instagram", l: "Instagram",   p: "@yourcompany",           icon: "📷" },
-                  { k: "facebook",  l: "Facebook",    p: "facebook.com/…",         icon: "f" },
-                  { k: "twitter",   l: "Twitter / X", p: "@yourcompany",           icon: "𝕏" },
-                  { k: "youtube",   l: "YouTube",     p: "youtube.com/@…",         icon: "▶" },
-                ].map(f => (
-                  <div key={f.k}>
-                    <label className={labelCls}>
-                      <span className="mr-1 text-zinc-600">{f.icon}</span> {f.l}
-                    </label>
-                    <input className={inputCls} placeholder={f.p}
-                      value={f.k === "website" ? form.website : (form.contacts?.[f.k] || "")}
-                      onChange={e => f.k === "website" ? set("website", e.target.value) : setNested("contacts", f.k, e.target.value)} />
-                  </div>
-                ))}
-              </div>
-            </Card>
-          )}
+       
 
           {/* ── SETTINGS / LAYOUT ── */}
           {/* {tab === "settings" && (

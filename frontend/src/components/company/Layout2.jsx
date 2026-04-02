@@ -391,7 +391,7 @@ function Team({ company }) {
           {company.members.map((m, i) => (
             <a
               key={m.name}
-              href={m.url}
+              href={m.image}
               className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/40 transition-all duration-300 hover:-translate-y-1"
             >
               <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${avatarGradients[i % 4]} flex items-center justify-center text-white font-black text-xl mb-5 group-hover:scale-110 transition-transform`}>

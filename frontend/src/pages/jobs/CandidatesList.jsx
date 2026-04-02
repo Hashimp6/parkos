@@ -110,118 +110,175 @@ function StatCard({ label, value, accent }) {
 
 // ─── Job Details Page ──────────────────────────────────────────────────────
 function JobDetailsPage({ job, applications, onViewApplicants, loadingApps, onBack }) {
-    const navigate = useNavigate();
-    console.log("job",job);
-    
-    const fields = [
-    { label: "Department", value: job.department },
-    { label: "Location",   value: job.location },
-    { label: "Job Type",   value: job.jobType },
-    { label: "Work Mode",  value: job.workMode },
-    { label: "Salary",     value: job.salary},
-    { label: "Last Date",  value: fmtDate(job.lastDateToApply) },
-    { label: "Company",    value: job.company.name },
-    { label: "Industry",   value: job.company.industry },
+  const navigate = useNavigate();
+
+  const fmt = (dateStr) =>
+    dateStr
+      ? new Date(dateStr).toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : "—";
+
+  const gridFields = [
+    { label: "Job type",            value: job.jobType,            type: "text" },
+    { label: "Work mode",           value: job.workMode,           type: "badge" },
+    { label: "Salary",              value: job.salary
+                                      ? `${job.currency ?? ""} ${job.salary.toLocaleString()}`
+                                      : "—",                       type: "text" },
+    { label: "Openings",            value: job.openings ? `${job.openings} position${job.openings > 1 ? "s" : ""}` : "—", type: "text" },
+    { label: "Location",            value: job.location || "—",   type: "text" },
+    { label: "Business park",       value: job.businessPark || "—", type: "text" },
+    { label: "Experience",          value: job.experienceRequired || "—", type: "text" },
+    { label: "Last date to apply",  value: fmt(job.lastDateToApply), type: "text" },
+    { label: "Posted",              value: fmt(job.postedDate),    type: "text" },
+    { label: "Department",          value: job.department || "—", type: "text" },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      {/* Page Header — matches CompanyJobsAdmin header style */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          {onBack && (
-            <>
-              <button
-                onClick={onBack}
-                className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-700 transition-colors"
-              >
-                <IconArrowLeft />
-                Jobs
-              </button>
-              <span className="w-px h-4 bg-zinc-200" />
-            </>
-          )}
-     
-          <div>
-            <h1 className="text-lg font-semibold text-zinc-900 leading-tight tracking-tight">{job.role}</h1>
-            <p className="text-xs text-zinc-400 mt-0.5">{job.company.name}</p>
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2.5 mb-6">
+        {onBack && (
+          <>
+            <button
+              onClick={onBack}
+              className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-600 transition-colors"
+            >
+              <IconArrowLeft size={14} />
+              Jobs
+            </button>
+            <span className="w-px h-3.5 bg-zinc-200" />
+          </>
+        )}
+        <span className="text-sm text-zinc-300 truncate">{job.role}</span>
+      </div>
+
+      {/* Main card */}
+      <div className="bg-white rounded-2xl border border-zinc-100 overflow-hidden mb-3">
+
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-zinc-100 flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3.5">
+            {/* Company logo */}
+            <div className="w-13 h-13 rounded-xl border border-zinc-100 overflow-hidden flex-shrink-0 bg-zinc-50 flex items-center justify-center"
+                 style={{ width: 52, height: 52 }}>
+              {job.company?.logo ? (
+                <img src={job.company.logo} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-lg font-medium text-zinc-400">
+                  {job.company?.name?.[0] ?? "C"}
+                </span>
+              )}
+            </div>
+            <div>
+              <h1 className="text-lg font-medium text-zinc-900 leading-tight">{job.role}</h1>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                {job.company?.name}
+                {job.department ? ` · ${job.department}` : ""}
+              </p>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => navigate("/jobs/form", { state: { job } })}
+              className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors font-medium"
+            >
+              <IconEdit size={12} />
+              Edit
+            </button>
+            <span
+              className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
+                job.isActive
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-zinc-100 text-zinc-400 border-zinc-200"
+              }`}
+            >
+              {job.isActive ? "Active" : "Closed"}
+            </span>
           </div>
         </div>
 
-        {/* Status badge — same style as table rows */}
-        <div className="flex items-center gap-2">
-        <button
-  onClick={() => navigate("/jobs/form", { state: { job } })}
-  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-blue-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium"
-  title="Edit Job"
->
-  <IconEdit />
-  Edit
-</button>
+        {/* Description */}
+        {job.description && (
+          <div className="px-5 py-4 border-b border-zinc-100">
+            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+              Description
+            </p>
+            <p className="text-sm text-zinc-500 leading-relaxed">{job.description}</p>
+          </div>
+        )}
 
-  <span
-    className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
-      job.isActive
-        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-        : "bg-zinc-100 text-zinc-400 border-zinc-200"
-    }`}
-  >
-    {job.isActive ? "Active" : "Closed"}
-  </span>
-</div>
-      </div>
-
- 
-
-      {/* Job Info Card */}
-      <div className="bg-white rounded-2xl border border-zinc-100 overflow-hidden mb-4">
-        <div className="px-5 py-3.5 border-b border-zinc-100">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Job Details</p>
-        </div>
-        <div className="divide-y divide-zinc-50">
-          {fields.map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between px-5 py-3.5">
-              <span className="text-sm text-zinc-400">{label}</span>
-              {label === "Work Mode" ? (
-                <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${WORK_MODE_STYLES[value] || "bg-zinc-100 text-zinc-600 border-zinc-200"}`}>
+        {/* Detail grid — 2-column */}
+        <div className="grid grid-cols-2 divide-x divide-y divide-zinc-50">
+          {gridFields.map(({ label, value, type }, i) => (
+            <div key={label} className="px-5 py-3.5">
+              <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-1">
+                {label}
+              </p>
+              {type === "badge" ? (
+                <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-600 border border-zinc-200">
                   {value}
                 </span>
-              ) : label === "Job Type" ? (
-                <span className={`text-sm font-medium ${JOB_TYPE_STYLES[value] || "text-zinc-700"}`}>{value}</span>
               ) : (
-                <span className="text-sm font-medium text-zinc-800">{value}</span>
+                <p className="text-sm font-medium text-zinc-800">{value}</p>
               )}
             </div>
           ))}
         </div>
+
+        {/* Skills */}
+        {job.skills?.length > 0 && (
+          <div className="px-5 py-4 border-t border-zinc-100">
+            <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2.5">
+              Skills required
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {job.skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="text-xs px-2.5 py-1 rounded-lg bg-zinc-50 text-zinc-600 border border-zinc-200"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* View Applicants CTA — same button style as table action buttons but prominent */}
+      {/* View Applicants CTA */}
       <button
         onClick={onViewApplicants}
         disabled={loadingApps}
         className="w-full flex items-center justify-between px-5 py-4 bg-zinc-900 hover:bg-zinc-800 active:scale-[0.99] text-white rounded-2xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-            <IconUsers />
+          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+            <IconUsers size={16} />
           </div>
-          <div className="flex flex-col items-start">
-            <span className="text-sm font-semibold">
-              {loadingApps ? "Loading applicants…" : "View Applicants"}
-            </span>
-            <span className="text-xs text-zinc-400 mt-0.5">
-              {loadingApps ? "Fetching from server" : `${applications.length > 0 ? applications.length : "—"} people applied for this role`}
-            </span>
+          <div className="text-left">
+            <p className="text-sm font-medium">
+              {loadingApps ? "Loading applicants…" : "View applicants"}
+            </p>
+            <p className="text-xs text-white/40 mt-0.5">
+              {loadingApps
+                ? "Fetching from server"
+                : `${applications.length > 0 ? applications.length : "0"} people applied for this role`}
+            </p>
           </div>
         </div>
         {loadingApps ? (
-          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 animate-spin opacity-50" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
           </svg>
         ) : (
-          <IconArrowRight />
+          <IconArrowRight size={16} className="opacity-40" />
         )}
       </button>
     </div>
