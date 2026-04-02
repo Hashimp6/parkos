@@ -457,46 +457,75 @@ exports.getAllJobs = async (req, res) => {
 
 exports.searchJobs = async (req, res) => {
   try {
-    const { search = "", page, limit } = req.query;
-    const { page: pg, limit: lmt, skip } = paginate({ page, limit }); // add this
+    const { search = "", page = 1, limit = 10 } = req.query;
+
+    const skip = (page - 1) * limit;
 
     const pipeline = [];
-    pipeline.push({ $lookup: { from: "companies", localField: "company", foreignField: "_id", as: "company" } });
-    pipeline.push({ $unwind: { path: "$company", preserveNullAndEmptyArrays: true } });
 
+    // 🔗 JOIN company collection
+    pipeline.push({
+      $lookup: {
+        from: "companies", // ⚠️ collection name (must be correct)
+        localField: "company",
+        foreignField: "_id",
+        as: "company",
+      },
+    });
+
+    // convert array → object
+    pipeline.push({
+      $unwind: {
+        path: "$company",
+        preserveNullAndEmptyArrays: true,
+      },
+    });
+
+    // 🔍 SEARCH logic
     if (search.trim()) {
       const regex = new RegExp(search.trim(), "i");
-      pipeline.push({ $match: { $or: [{ role: regex }, { department: regex }, { description: regex }, { skills: { $elemMatch: { $regex: regex } } }, { "company.companyName": regex }] } });
+
+      pipeline.push({
+        $match: {
+          $or: [
+            { role: regex },
+            { department: regex },
+            { description: regex },
+            { skills: { $elemMatch: { $regex: regex } } },
+            { "company.companyName": regex }, // ✅ company name search
+          ],
+        },
+      });
     }
 
-    pipeline.push({ $match: { isActive: true } });
-    pipeline.push({ $sort: { postedDate: -1 } });
+    // only active jobs (optional but recommended)
+    pipeline.push({
+      $match: { isActive: true },
+    });
 
-    // Count total before paginating
-    const countPipeline = [...pipeline, { $count: "total" }];
-    const [countResult] = await Job.aggregate(countPipeline);
-    const total = countResult?.total || 0;
+    // sorting
+    pipeline.push({
+      $sort: { postedDate: -1 },
+    });
 
-    // Then paginate
-    pipeline.push({ $skip: skip });
-    pipeline.push({ $limit: lmt });
+    // pagination
+    pipeline.push({ $skip: Number(skip) });
+    pipeline.push({ $limit: Number(limit) });
 
+    // ▶ run aggregation
     const jobs = await Job.aggregate(pipeline);
 
     return res.status(200).json({
       success: true,
       data: jobs,
-      pagination: {               // add this
-        total,
-        page: pg,
-        limit: lmt,
-        totalPages: Math.ceil(total / lmt),
-        hasNextPage: pg < Math.ceil(total / lmt),
-        hasPrevPage: pg > 1,
-      },
     });
+
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    console.error("Search Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
