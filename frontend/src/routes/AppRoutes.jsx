@@ -70,7 +70,7 @@ function AppRoutes() {
         <Route path="/jobs"                element={<JobListings />} />
         <Route path="/freelance"           element={<FreelancerCategories />} />
         <Route path="/company/category-grid"             element={<CompanyServices />} />
-        
+        <Route path="/clock"                    element={<ClockScroll3D/>} />
         </Route>
 
 
@@ -87,10 +87,7 @@ function AppRoutes() {
           <Route path="/login"                      element={<Login />} />
           <Route path="/register"                   element={<Register />} />
           <Route path="/forgot-password"            element={<ForgotPasswordPage />} />
-          <Route path="/company/login"              element={<CompanyLoginPage />} />
-          <Route path="/company/register"           element={<CompanyRegisterPage />} />
-          <Route path="/company/forgot-password"    element={<ForgotPasswordPageCompany />} />
-        </Route>
+       </Route>
 
         <Route element={<GuestCompanyRoute />}>
           <Route path="/company/login"              element={<CompanyLoginPage />} />

@@ -638,6 +638,7 @@ export default function JobListings({
   const isMobile = useIsMobile();
   const { user } = useUser();
   const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [search,     setSearch]  = useState("");
@@ -655,6 +656,8 @@ export default function JobListings({
     return n;
   });
   const navigate = useNavigate();
+
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -665,30 +668,28 @@ export default function JobListings({
     };
   }, [search]);
 
+  useEffect(() => { setPage(1); }, [debouncedSearch, activePark]);
+
+
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         setLoading(true);
         setError(null);
   
-        const params = {
-          sort: "newest",
-          search: debouncedSearch || undefined, // ✅ use debounced value
-        };
-  
-        if (activePark !== "All") {
-          params.businessPark = activePark;
-        }
-  
         const res = await axios.get(`${API_BASE}/jobs/search`, {
           params: {
-            search: debouncedSearch,
+            search: debouncedSearch || undefined,
+            page,
+            limit: 12,
+            ...(activePark !== "All" && { businessPark: activePark }), // ✅ fixed
           },
         });
-        const raw = res.data?.data || [];
-        console.log(raw);
-        
-        setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
+  
+        const { data: raw, pagination } = res.data;
+        setHasMore(pagination?.hasNextPage ?? false);
+        setJobs(prev => page === 1 ? raw.map(normalizeJob) : [...prev, ...raw.map(normalizeJob)]);
   
       } catch (err) {
         console.error(err);
@@ -699,25 +700,8 @@ export default function JobListings({
     };
   
     fetchJobs();
-  }, [apiUrl, activePark, debouncedSearch]); // ✅ depend on debouncedSearch
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        setLoading(true); setError(null);
-        const params = { sort: "newest", search: search || undefined };
-        if (activePark !== "All") params.businessPark = activePark;
-        const res = await axios.get(apiUrl, { params });
-        const raw = res.data?.data || [];
-        setJobs(Array.isArray(raw) ? raw.map(normalizeJob) : []);
-      } catch (err) {
-        console.error(err); setError("Failed to load jobs.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchJobs();
-  }, [apiUrl, activePark, search]);
+  }, [apiUrl, activePark, debouncedSearch, page]);
+ 
 
   const handleApply = async (job) => {
     try {
@@ -770,11 +754,11 @@ export default function JobListings({
   return (
     <div style={{ background: T.bg, minHeight: "100vh" }}>
       <style>{GLOBAL_CSS}</style>
-
+  
       {/* ── Sticky header ── */}
       <div style={{ background: T.white, borderBottom: `1px solid ${T.g100}`, position: "sticky", top: 0, zIndex: 50, backdropFilter: "blur(12px)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "16px 16px 14px" : "28px 28px 20px" }}>
-
+  
           {/* Title row */}
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 20 }}>
             <div>
@@ -793,7 +777,7 @@ export default function JobListings({
               </span>
             </div>
           </div>
-
+  
           <FilterBar
             search={search} onSearch={setSearch}
             activePark={activePark} onPark={setPark}
@@ -801,10 +785,10 @@ export default function JobListings({
           />
         </div>
       </div>
-
+  
       {/* ── Content ── */}
       <div style={{ maxWidth: 1100, margin: "0 auto", paddingBottom: 60 }}>
-        {isLoading ? (
+        {isLoading && page === 1 ? (
           <div style={{ paddingTop: 24 }}><Skeleton /></div>
         ) : error ? (
           <div style={{ textAlign: "center", padding: "80px 24px" }}>
@@ -827,6 +811,7 @@ export default function JobListings({
                 </div>
               </>
             )}
+  
             {regular.length > 0 && (
               <>
                 <SectionLabel count={regular.length}>{featured.length > 0 ? "All Roles" : "Roles"}</SectionLabel>
@@ -840,10 +825,28 @@ export default function JobListings({
                 </div>
               </>
             )}
+  
+            {/* ✅ Load More button — correctly inside return */}
+            {!isLoading && hasMore && (
+              <div style={{ textAlign: "center", padding: "24px 0" }}>
+                <button
+                  onClick={() => setPage(p => p + 1)}
+                  style={{ padding: "12px 32px", borderRadius: 10, background: T.black, color: T.white, border: "none", fontFamily: "'Manrope',sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                  Load More
+                </button>
+              </div>
+            )}
+  
+            {/* ✅ Loading spinner for page 2+ */}
+            {isLoading && page > 1 && (
+              <div style={{ textAlign: "center", padding: "24px 0", fontFamily: "'Manrope',sans-serif", fontSize: 13, color: T.g400 }}>
+                Loading…
+              </div>
+            )}
           </>
         )}
       </div>
-
+  
       {openJob && (
         <DetailPanel
           job={openJob} isMobile={isMobile}
@@ -851,8 +854,8 @@ export default function JobListings({
           isSaved={savedIds.has(openJob._id)} onToggleSave={toggleSave}
         />
       )}
-
-{toast && <Toast data={toast} onClose={() => setToast(null)} />}
+  
+      {toast && <Toast data={toast} onClose={() => setToast(null)} />}
     </div>
   );
 }
