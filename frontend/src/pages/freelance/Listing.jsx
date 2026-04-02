@@ -483,6 +483,9 @@ export default function FreelancerList() {
   const [freelancers, setFreelancers] = useState([]);
   const [loading, setLoading]         = useState(true);
   const [search, setSearch]           = useState("");
+  const [page, setPage]               = useState(1);      // ✅ add
+  const [hasMore, setHasMore]         = useState(true);   // ✅ add
+  const [loadingMore, setLoadingMore] = useState(false);  // ✅ add
 
   useEffect(() => {
     const id = "fl3-styles";
@@ -493,13 +496,23 @@ export default function FreelancerList() {
     }
   }, []);
 
+  // ✅ Reset page when category changes
+  useEffect(() => { setPage(1); setFreelancers([]); }, [selectedCategory]);
+
   useEffect(() => {
     (async () => {
       try {
+        page === 1 ? setLoading(true) : setLoadingMore(true);
+
         const res = await axios.get(`${API_BASE}/freelance`, {
-          params: { category: selectedCategory !== "All" ? selectedCategory : undefined },
+          params: {
+            category: selectedCategory !== "All" ? selectedCategory : undefined,
+            page,
+            limit: 12,
+          },
         });
-        setFreelancers(res.data.services.map(s => ({
+
+        const mapped = res.data.services.map(s => ({
           _id: s._id,
           name: s.candidate?.name,
           tagline: s.title,
@@ -507,11 +520,21 @@ export default function FreelancerList() {
           profilePhoto: s.candidate?.profilePhoto,
           skills: s.skills || [],
           rating: s.rating || 4.5,
-        })));
-      } catch { setFreelancers(dummyFreelancers); }
-      setLoading(false);
+        }));
+
+        // ✅ append on page > 1, replace on page 1
+        setFreelancers(prev => page === 1 ? mapped : [...prev, ...mapped]);
+        setHasMore(page < res.data.totalPages);
+
+      } catch {
+        if (page === 1) setFreelancers(dummyFreelancers);
+        setHasMore(false);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     })();
-  }, [selectedCategory]);
+  }, [selectedCategory, page]); // ✅ depend on page
 
   const filtered = freelancers.filter(f =>
     f.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -520,7 +543,7 @@ export default function FreelancerList() {
 
   return (
     <div className="fl3-root">
-      <div className="fl3-hero">
+     <div className="fl3-hero">
         <div className="fl3-hero-left">
           <div className="fl3-eyebrow">
             <span className="fl3-eyebrow-dot" />
@@ -532,7 +555,6 @@ export default function FreelancerList() {
       </div>
 
       <div className="fl3-divider" />
-
       <div className="fl3-body">
         <div className="fl3-bar">
           <span className="fl3-bar-label">
@@ -551,11 +573,37 @@ export default function FreelancerList() {
             <p>No freelancers found.</p>
           </div>
         ) : (
-          <div className="fl3-grid">
-            {filtered.map((f, i) => (
-              <FreelancerCard key={f._id} freelancer={f} index={i} />
-            ))}
-          </div>
+          <>
+            <div className="fl3-grid">
+              {filtered.map((f, i) => (
+                <FreelancerCard key={f._id} freelancer={f} index={i} />
+              ))}
+            </div>
+
+            {/* ✅ Load More button */}
+            {!loadingMore && hasMore && (
+              <div style={{ textAlign: "center", padding: "32px 0 0" }}>
+                <button
+                  onClick={() => setPage(p => p + 1)}
+                  style={{
+                    padding: "12px 36px", borderRadius: 100,
+                    background: "#111", color: "#fff", border: "none",
+                    fontFamily: "'Instrument Sans', sans-serif",
+                    fontWeight: 600, fontSize: 13, cursor: "pointer",
+                    letterSpacing: "0.04em",
+                  }}>
+                  Load More
+                </button>
+              </div>
+            )}
+
+            {/* ✅ Loading spinner for page 2+ */}
+            {loadingMore && (
+              <div style={{ textAlign: "center", padding: "32px 0 0", color: "#bbb", fontSize: 13 }}>
+                Loading more…
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
