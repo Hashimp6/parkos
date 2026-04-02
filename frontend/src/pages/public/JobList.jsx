@@ -13,8 +13,7 @@ const normalizeJob = (j) => ({
                  : (j.company || ""),
   companyLogo: (typeof j.company === "object" ? j.company?.logo : null) || j.companyLogo || null,
   workType:    j.workMode === "On-site" ? "Onsite" : (j.workMode || j.workType || ""),
-  salaryMin:   j.salaryFrom  ?? j.salaryMin  ?? null,
-  salaryMax:   j.salaryTo    ?? j.salaryMax  ?? null,
+  salaryMin:   j.salary ?? j.salary ?? null,
   tags:        j.skills      || j.tags       || [],
   postedAt:    j.postedDate  || j.postedAt   || null,
   businessPark: j.businessPark || null,
@@ -184,9 +183,9 @@ function Pill({ children, dark }) {
 
 /* ─── Detail Panel ────────────────────────────────────────────────────── */
 function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile }) {
-  const min    = job.salaryFrom ?? job.salaryMin;
-  const max    = job.salaryTo   ?? job.salaryMax;
-  const salary = !min && !max ? "Not mentioned" : fmtSalary(min, max, job.currency);
+  const min    = job.salary ?? job.salary;
+  
+  const salary = !min? "Not mentioned" : min;
   const posted = timeAgo(job.postedDate ?? job.postedAt);
 
   useEffect(() => {

@@ -28,8 +28,7 @@ exports.createJob = async (req, res) => {
       jobCode,
       description,
       skills,
-      salaryFrom,
-      salaryTo,
+      salary,
       currency,
       jobType,
       workMode,
@@ -53,12 +52,7 @@ exports.createJob = async (req, res) => {
         .json({ success: false, message: "Invalid company ID." });
     }
 
-    if (salaryFrom && salaryTo && Number(salaryFrom) > Number(salaryTo)) {
-      return res.status(400).json({
-        success: false,
-        message: "salaryFrom cannot be greater than salaryTo.",
-      });
-    }
+   
 
     const job = await Job.create({
       company,
@@ -67,8 +61,7 @@ exports.createJob = async (req, res) => {
       jobCode,
       description,
       skills: skills || [],
-      salaryFrom,
-      salaryTo,
+      salary,
       currency,
       jobType,
       workMode,
@@ -111,8 +104,7 @@ exports.updateJob = async (req, res) => {
     }
 
     const {
-      salaryFrom,
-      salaryTo,
+      salary,
       role,
       department,
       jobCode,
@@ -129,14 +121,7 @@ exports.updateJob = async (req, res) => {
       businessPark
     } = req.body;
 
-    if (salaryFrom !== undefined && salaryTo !== undefined) {
-      if (Number(salaryFrom) > Number(salaryTo)) {
-        return res.status(400).json({
-          success: false,
-          message: "salaryFrom cannot be greater than salaryTo.",
-        });
-      }
-    }
+  
 
     const allowedUpdates = {
       role,
@@ -144,8 +129,7 @@ exports.updateJob = async (req, res) => {
       jobCode,
       description,
       skills,
-      salaryFrom,
-      salaryTo,
+      salary,
       currency,
       jobType,
       workMode,
@@ -351,29 +335,9 @@ exports.getJobsByCompany = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────
-// GET ALL JOBS — with filter + search + pagination
-// GET /api/jobs
-//
-// Query params:
-//   search        — text search on role / description / skills
-//   company       — company ObjectId
-//   jobType       — Full-time | Part-time | Internship | Contract
-//   workMode      — Remote | On-site | Hybrid
-//   location      — partial match
-//   department    — partial match
-//   skills        — comma-separated list (e.g. React,Node)
-//   isActive      — true | false
-//   salaryMin     — min salaryFrom
-//   salaryMax     — max salaryTo
-//   currency      — INR | USD …
-//   postedAfter   — ISO date string
-//   postedBefore  — ISO date string
-//   sortBy        — postedDate | salaryFrom | openings (default: postedDate)
-//   sortOrder     — asc | desc (default: desc)
-//   page          — page number (default: 1)
-//   limit         — items per page (default: 10, max: 100)
-// ─────────────────────────────────────────────
+
+
+
 exports.getAllJobs = async (req, res) => {
   try {
     const {
@@ -386,7 +350,6 @@ exports.getAllJobs = async (req, res) => {
       skills,
       isActive,
       salaryMin,
-      salaryMax,
       currency,
       postedAfter,
       postedBefore,
@@ -445,10 +408,9 @@ exports.getAllJobs = async (req, res) => {
     }
 
     // Salary range
-    if (salaryMin || salaryMax) {
-      filter.salaryFrom = {};
-      if (salaryMin) filter.salaryFrom.$gte = Number(salaryMin);
-      if (salaryMax) filter.salaryTo = { $lte: Number(salaryMax) };
+    if (salaryMin ) {
+      filter.salary = {};
+      if (salaryMin) filter.salary.$gte = Number(salaryMin);
     }
 
     // Date range
@@ -459,7 +421,7 @@ exports.getAllJobs = async (req, res) => {
     }
 
     // Sorting
-    const allowedSortFields = ["postedDate", "salaryFrom", "openings", "createdAt"];
+    const allowedSortFields = ["postedDate", "salary", "openings", "createdAt"];
     const sortField = allowedSortFields.includes(sortBy) ? sortBy : "postedDate";
     const sortDir = sortOrder === "asc" ? 1 : -1;
 

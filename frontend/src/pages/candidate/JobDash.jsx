@@ -17,8 +17,7 @@ const MOCK_APPLICATIONS = [
       jobType: "Full-time",
       workMode: "Hybrid",
       company: "TechCorp Solutions",
-      salaryFrom: 25,
-      salaryTo: 40,
+      salary: 25,
       currency: "LPA",
     },
     candidate: {
@@ -52,8 +51,7 @@ const MOCK_APPLICATIONS = [
       jobType: "Full-time",
       workMode: "Remote",
       company: "Designly Inc.",
-      salaryFrom: 18,
-      salaryTo: 28,
+      salary: 18,
       currency: "LPA",
     },
     candidate: {
@@ -86,8 +84,7 @@ const MOCK_APPLICATIONS = [
       jobType: "Contract",
       workMode: "On-site",
       company: "BuildFast Pvt Ltd",
-      salaryFrom: 20,
-      salaryTo: 30,
+      salary: 20,
       currency: "LPA",
     },
     candidate: {
@@ -119,8 +116,7 @@ const MOCK_APPLICATIONS = [
       jobType: "Full-time",
       workMode: "Hybrid",
       company: "CloudNine Systems",
-      salaryFrom: 22,
-      salaryTo: 35,
+      salary: 22,
       currency: "LPA",
     },
     candidate: {
@@ -154,8 +150,7 @@ const MOCK_APPLICATIONS = [
       jobType: "Full-time",
       workMode: "Hybrid",
       company: "Appify Studio",
-      salaryFrom: 16,
-      salaryTo: 24,
+      salary: 16,
       currency: "LPA",
     },
     candidate: {
@@ -328,7 +323,7 @@ function DetailPanel({ app, onClose }) {
                     ["Location", job.location],
                     ["Work Mode", `${WORK_MODE_ICON[job.workMode] || ""} ${job.workMode}`],
                     ["Type", job.jobType],
-                    ["Salary", `${job.salaryFrom}–${job.salaryTo} ${job.currency}`],
+                    ["Salary", `${job.salary}–$ ${job.currency}`],
                   ].map(([label, val]) => (
                     <div key={label} className="bg-zinc-50 rounded-xl px-3 py-2.5">
                       <p className="text-[9px] text-zinc-400 uppercase tracking-wider font-bold mb-0.5">{label}</p>
@@ -510,7 +505,7 @@ function ApplicationCard({ app, onClick, index }) {
       {/* Salary + applied */}
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-zinc-900">
-          {job.salaryFrom}–{job.salaryTo}
+          {job.salary}
           <span className="text-xs font-medium text-zinc-400 ml-1">{job.currency}</span>
         </span>
         <span className="text-[10px] text-zinc-300">{timeAgo(appliedAt)}</span>

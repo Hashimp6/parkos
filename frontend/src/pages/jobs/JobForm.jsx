@@ -16,7 +16,7 @@ const BUSINESS_PARKS = [
 const INITIAL_FORM = {
   role: "", department: "", jobCode: "", description: "",
   skills: [], skillInput: "",
-  salaryFrom: "", salaryTo: "", currency: "INR",
+  salary: "",  currency: "INR",
   jobType: "Full-time", workMode: "On-site",
   experienceRequired: "", location: "",
   businessPark: "Other",
@@ -400,7 +400,6 @@ export default function JobForm({ onSuccess, onCancel }) {
   const validate = () => {
     const e = {};
     if (!form.role.trim()) e.role = "Job role is required.";
-    if (form.salaryFrom && form.salaryTo && Number(form.salaryFrom) > Number(form.salaryTo)) e.salaryTo = "Max must be ≥ min.";
     if (Number(form.openings) < 1) e.openings = "At least 1 opening required.";
     setErrors(e);
     return !Object.keys(e).length;
@@ -427,8 +426,7 @@ export default function JobForm({ onSuccess, onCancel }) {
         jobCode: form.jobCode.trim() || undefined,
         description: form.description.trim(),
         skills: form.skills,
-        salaryFrom: Number(form.salaryFrom) || 0,
-        salaryTo: Number(form.salaryTo) || 0,
+        salary: Number(form.salary) || 0,
         currency: form.currency,
         jobType: form.jobType,
         workMode: form.workMode,
@@ -569,15 +567,10 @@ Hi-{company?.companyName}
                   </div>
                   <div>
                     <Label>Minimum</Label>
-                    <input className="jf-input" type="number" placeholder="0" min={0}
-                      value={form.salaryFrom} onChange={e => set("salaryFrom", e.target.value)} />
+                    <input className="jf-input"  placeholder="0" 
+                      value={form.salary} onChange={e => set("salary", e.target.value)} />
                   </div>
-                  <div>
-                    <Label>Maximum</Label>
-                    <input className="jf-input" type="number" placeholder="0" min={0}
-                      value={form.salaryTo} onChange={e => set("salaryTo", e.target.value)} />
-                    <FieldError msg={errors.salaryTo} />
-                  </div>
+                
                 </div>
                 <p className="jf-hint">Leave as 0 to keep salary undisclosed.</p>
               </div>

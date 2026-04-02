@@ -11,8 +11,7 @@ const DEV_MOCK_JOB = {
   location: "Bangalore, India",
   jobType: "Full-time",
   workMode: "Hybrid",
-  salaryFrom: 1800000,
-  salaryTo: 2800000,
+  salary: 1800000,
   currency: "INR",
   isActive: true,
   lastDateToApply: "2025-02-28",
@@ -112,12 +111,14 @@ function StatCard({ label, value, accent }) {
 // ─── Job Details Page ──────────────────────────────────────────────────────
 function JobDetailsPage({ job, applications, onViewApplicants, loadingApps, onBack }) {
     const navigate = useNavigate();
+    console.log("job",job);
+    
     const fields = [
     { label: "Department", value: job.department },
     { label: "Location",   value: job.location },
     { label: "Job Type",   value: job.jobType },
     { label: "Work Mode",  value: job.workMode },
-    { label: "Salary",     value: fmtSalary(job.salaryFrom, job.salaryTo, job.currency) },
+    { label: "Salary",     value: job.salary},
     { label: "Last Date",  value: fmtDate(job.lastDateToApply) },
     { label: "Company",    value: job.company.name },
     { label: "Industry",   value: job.company.industry },

@@ -47,17 +47,13 @@ const jobSchema = new mongoose.Schema(
       },
     ],
 
-    salaryFrom: {
+    salary: {
       type: Number,
       default: 0,
       min: 0,
     },
 
-    salaryTo: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
+   
 
     currency: {
       type: String,

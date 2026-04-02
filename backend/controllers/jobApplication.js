@@ -144,7 +144,7 @@ exports.getApplicationById = async (req, res) => {
     }
 
     const application = await JobApplication.findById(id)
-      .populate("job", "role department location jobType workMode company salaryFrom salaryTo currency")
+      .populate("job", "role department location jobType workMode company salary currency")
       .populate("candidate", "name email phone profilePhoto cv profileId tagline skills");
 
     if (!application) {
@@ -178,7 +178,7 @@ exports.getApplicationsByCandidate = async (req, res) => {
       JobApplication.find(filter)
       .populate({
         path: "job",
-        select: "role department location jobType workMode salaryFrom salaryTo currency isActive lastDateToApply",
+        select: "role department location jobType workMode salary currency isActive lastDateToApply",
         populate: {
           path: "company",
           select: "companyName logo",
