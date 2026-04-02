@@ -51,7 +51,7 @@ const T = {
   black:  "#0A0A0B",
 };
 
-const PARK_OPTIONS = ["Business Park", "Cyber Park", "All"];
+const PARK_OPTIONS = [ "All","Business Park", "Cyber Park","others"];
 
 /* ─── Global styles ───────────────────────────────────────────────────── */
 const GLOBAL_CSS = `
@@ -184,7 +184,20 @@ function Pill({ children, dark }) {
 /* ─── Detail Panel ────────────────────────────────────────────────────── */
 function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile }) {
   const min    = job.salary ?? job.salary;
-  
+  const handleShare = async () => {
+    const url = `${window.location.origin}/jobs/${job._id}`;
+    const shareData = {
+      title: job.title,
+      text: `Check out this job: ${job.title} at ${job.company?.name ?? job.company}`,
+      url,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch (_) {}
+    } else {
+      await navigator.clipboard.writeText(url);
+      // optionally show a small toast
+    }
+  };
   const salary = !min? "Not mentioned" : min;
   const posted = timeAgo(job.postedDate ?? job.postedAt);
 
@@ -220,7 +233,26 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
               style={{ width: 34, height: 34, borderRadius: 8, border: `1.5px solid ${isSaved ? T.black : T.g200}`, background: isSaved ? T.black : T.white, cursor: "pointer", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}>
               <span style={{ filter: isSaved ? "invert(1)" : "none" }}>🤍</span>
             </button> */}
-            <button onClick={onClose}
+           <button
+  onClick={handleShare}
+  title="Share job"
+  style={{ 
+    width: 34, height: 34, borderRadius: 8,
+    border: `1.5px solid ${T.g200}`,
+    background: T.white, cursor: "pointer",
+    color: T.g400, fontSize: 15,
+    display: "flex", alignItems: "center",
+    justifyContent: "center", transition: "border-color .15s",
+  }}
+>
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <circle cx="18" cy="5" r="3"/>
+  <circle cx="6" cy="12" r="3"/>
+  <circle cx="18" cy="19" r="3"/>
+  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+</svg>
+</button> <button onClick={onClose}
               style={{ width: 34, height: 34, borderRadius: 8, border: `1.5px solid ${T.g200}`, background: T.white, cursor: "pointer", color: T.g400, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", transition: "border-color .15s" }}>
               ✕
             </button>
@@ -595,6 +627,8 @@ function SectionLabel({ children, count }) {
   );
 }
 
+
+
 /* ─── Main Export ─────────────────────────────────────────────────────── */
 export default function JobListings({
   onApply,
@@ -605,7 +639,7 @@ export default function JobListings({
   const { user } = useUser();
 
   const [search,     setSearch]  = useState("");
-  const [activePark, setPark]    = useState("Business Park");
+  const [activePark, setPark]    = useState("All");
   const [openJob,    setOpenJob] = useState(null);
   const [savedIds,   setSaved]   = useState(new Set());
   const [toast,      setToast]   = useState(null);
