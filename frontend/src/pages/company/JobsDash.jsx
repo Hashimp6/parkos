@@ -261,6 +261,24 @@ export default function CompanyJobsAdmin() {
   };
 
   const toggleActive = async (id, currentStatus) => {
+    // Only block when trying to activate (inactive → active)
+    if (!currentStatus) {
+      const job = jobs.find((j) => j._id === id);
+      if (job?.lastDateToApply) {
+        const last = new Date(job.lastDateToApply);
+        const today = new Date();
+  
+        // Compare dates only, ignore time — user picked a day, not a timestamp
+        const lastDateOnly = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+        const todayOnly    = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  
+        if (lastDateOnly < todayOnly) {
+          showToast("Last date to apply has passed. Please edit the date first.", "error");
+          return;
+        }
+      }
+    }
+  
     try {
       const newStatus = !currentStatus;
       await axios.put(`${API_BASE}/jobs/${id}`, { isActive: newStatus });

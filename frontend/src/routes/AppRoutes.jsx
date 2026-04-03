@@ -59,6 +59,7 @@ import Layout3 from "../components/company/Layout3";
 import Company2 from "../components/company/Layout2";
 import Company1 from "../components/company/Layout1";
 import Company9 from "../components/company/Company9";
+import TermsAndConditions from "../pages/public/Termsandcondition";
 
 function AppRoutes() {
   return (
@@ -71,6 +72,7 @@ function AppRoutes() {
         <Route path="/freelance"           element={<FreelancerCategories />} />
         <Route path="/company/category-grid"             element={<CompanyServices />} />
         <Route path="/clock"                    element={<ClockScroll3D/>} />
+        <Route path="/terms" element={<TermsAndConditions />} />
         </Route>
 
 
