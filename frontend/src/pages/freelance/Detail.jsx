@@ -39,27 +39,10 @@ export default function FreelancerDetail() {
   const s = data.service;
   const f = s?.candidate || {};
   const handleShare = async () => {
-    const handleShare = async () => {
-      const shareData = {
-        title: `${f?.name || "Freelancer"} on ParkOS`,
-        text: `Hey! 👋 Are you looking for a freelancer?\n\nCheck out my profile on ParkOS! 🚀\n\n👤 ${f?.name}\n💼 ${s?.title}\n📍 ${f?.place || "Kerala"}\n💰 Starting from ₹${s?.price}\n\n🛠️ Skills: ${s?.skills?.slice(0, 3).join(", ")}\n\nI'm available for work — let's connect! 🤝\n`,
-        url: window.location.href
-      };
-    
-      try {
-        if (navigator.share) {
-          await navigator.share(shareData);
-        } else {
-          await navigator.clipboard.writeText(
-            `${shareData.text}\n🔗 ${shareData.url}`
-          );
-          alert("Link copied!");
-        }
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          console.log("Share failed:", err);
-        }
-      }
+    const shareData = {
+      title: `${f?.name || "Freelancer"} on ParkOS`,
+      text: `Hey! 👋 Are you looking for a freelancer?\n\nCheck out my profile on ParkOS! 🚀\n\n👤 ${f?.name}\n💼 ${s?.title}\n📍 ${f?.place || "Kerala"}\n💰 Starting from ₹${s?.price}\n\n🛠️ Skills: ${s?.skills?.slice(0, 3).join(", ")}\n\nI'm available for work — let's connect! 🤝\n`,
+      url: window.location.href
     };
   
     try {
@@ -67,9 +50,9 @@ export default function FreelancerDetail() {
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(
-          `${shareData.title}\n\n${shareData.text}\n\n${shareData.url}`
+          `${shareData.text}\n🔗 ${shareData.url}`
         );
-        alert("Link copied to clipboard!");
+        alert("Link copied!");
       }
     } catch (err) {
       if (err.name !== "AbortError") {
