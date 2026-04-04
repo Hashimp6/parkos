@@ -5,6 +5,7 @@ import { useUser } from "../../context/UserContext";
 import API_BASE from "../../../config";
 import LayoutSelector from "../../components/LayoutSelector";
 import { useNavigate } from "react-router-dom";
+import { User } from "lucide-react";
 
 
 
@@ -78,9 +79,9 @@ function AvatarUpload({ value, onChange }) {
         {preview ? (
           <img src={preview} alt="avatar" className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl select-none bg-gradient-to-br from-zinc-100 to-zinc-200">
-            🧑
-          </div>
+          <div className="w-24 h-24 rounded-full flex items-center justify-center bg-zinc-100 border-4 border-white shadow-md ring-2 ring-zinc-200">
+          <User className="w-10 h-10 text-zinc-500" />
+        </div>
         )}
       </div>
 
