@@ -41,7 +41,7 @@ export default function FreelancerDetail() {
   const handleShare = async () => {
     const shareData = {
       title: `${f?.name || "Freelancer"} on ParkOS`,
-      text: `Hey! 👋 Are you looking for a freelancer?\n\nCheck out my profile on ParkOS! 🚀\n\n👤 ${f?.name}\n💼 ${s?.title}\n📍 ${f?.place || "Kerala"}\n💰 Starting from ₹${s?.price}\n\n🛠️ Skills: ${s?.skills?.slice(0, 3).join(", ")}\n\nI'm available for work — let's connect! 🤝\n`,
+      text: `Hey! 👋 Are you looking for a freelancer?\n\nCheck out this profile on ParkOS! 🚀\n\n👤 ${f?.name}\n💼 ${s?.title}\n📍 ${f?.place || "Kerala"}\n💰 Starting from ₹${s?.price}\n\n🛠️ Skills: ${s?.skills?.slice(0, 3).join(", ")}\n\nI'm available for work — let's connect! 🤝\n`,
       url: window.location.href
     };
   

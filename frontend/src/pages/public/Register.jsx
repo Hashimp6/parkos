@@ -319,10 +319,14 @@ export default function RegisterPage() {
     setShowOtp(false);
     const token = verifyData?.token ?? pendingData?.token;
     const user  = verifyData?.data  ?? pendingData?.user;
-    loginUser(user);
+  
+    // ✅ persist both so Home can read them
     localStorage.setItem("token", token);
+    localStorage.setItem("candidate", JSON.stringify(user)); // <-- add this
+  
+    loginUser(user);
     setSuccess(true);
-    showToast("Account created successfully!", "success"); // ✅
+    showToast("Account created successfully!", "success");
     setTimeout(() => navigate("/home"), 800);
   };
 
