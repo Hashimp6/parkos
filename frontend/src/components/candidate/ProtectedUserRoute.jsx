@@ -6,56 +6,33 @@ import { useCompany } from "../../context/CompanyContext"; // adjust path as nee
 // Requires a logged-in candidate (user + token).
 // If not logged in → redirects to /login
 export function CandidateRoute() {
-  const { user, token } = useUser();
+  const { user, token, loading } = useUser();
 
-  if (!user || !token) {
-    return <Navigate to="/login" replace />;
-  }
-
+  if (loading) return null; // or a spinner
+  if (!user || !token) return <Navigate to="/login" replace />;
   return <Outlet />;
 }
 
-// ── Company-only routes ───────────────────────────────────────────────────────
-// Requires a logged-in company (company + token).
-// If not logged in → redirects to /company/login
 export function CompanyRoute() {
-  const { company, token } = useCompany();
+  const { company, token, loading } = useCompany();
 
-  if (!company || !token) {
-    return <Navigate to="/company/login" replace />;
-  }
-
+  if (loading) return null;
+  if (!company || !token) return <Navigate to="/company/login" replace />;
   return <Outlet />;
 }
 
-// ── Guest-only routes (redirect away if already logged in) ───────────────────
-// Useful for login/register pages so logged-in users don't see them again.
-// candidateRedirect: where to send a logged-in candidate   (default /home)
-// companyRedirect:   where to send a logged-in company     (default /company/Home)
-export function GuestRoute({
-  candidateRedirect = "/home",
-}) {
-  const { user } = useUser();
+export function GuestRoute({ candidateRedirect = "/home" }) {
+  const { user, loading } = useUser();
 
-  if (user)    return <Navigate to={candidateRedirect} replace />;
-
+  if (loading) return null;
+  if (user) return <Navigate to={candidateRedirect} replace />;
   return <Outlet />;
 }
 
-export function GuestCompanyRoute({
-  companyRedirect = "/company/Home",
-}) {
-  const { company } = useCompany();
+export function GuestCompanyRoute({ companyRedirect = "/company/Home" }) {
+  const { company, loading } = useCompany();
 
-
-  if (company) return <Navigate to={companyRedirect}   replace />;
-
+  if (loading) return null;
+  if (company) return <Navigate to={companyRedirect} replace />;
   return <Outlet />;
 }
-
-
-
-
-
-
-

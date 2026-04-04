@@ -5,7 +5,7 @@ const CompanyContext = createContext();
 export const CompanyProvider = ({ children }) => {
   const [company, setCompany] = useState(null);
   const [token, setToken] = useState(null);
-
+  const [loading, setLoading] = useState(true)
   // Load from localStorage on refresh
   useEffect(() => {
     const storedCompany = localStorage.getItem("company");
@@ -20,8 +20,9 @@ export const CompanyProvider = ({ children }) => {
         setToken(storedToken);
       }
     } catch (error) {
-      console.error("LocalStorage parse error:", error);
       localStorage.removeItem("company");
+    } finally {
+      setLoading(false); // ← add
     }
   }, []);
 
@@ -51,15 +52,7 @@ export const CompanyProvider = ({ children }) => {
   };
 
   return (
-    <CompanyContext.Provider
-      value={{
-        company,
-        token,
-        loginCompany,
-        logoutCompany,
-        updateCompany,
-      }}
-    >
+    <CompanyContext.Provider value={{ company, token, loading, loginCompany, logoutCompany, updateCompany }}>
       {children}
     </CompanyContext.Provider>
   );

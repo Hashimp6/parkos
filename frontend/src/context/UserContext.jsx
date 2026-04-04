@@ -7,6 +7,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     try {
@@ -18,37 +19,11 @@ export const UserProvider = ({ children }) => {
       console.error("Failed to load user:", err);
       localStorage.removeItem("candidate");
       localStorage.removeItem("token");
+    } finally {
+      setLoading(false); // ← always mark done
     }
   }, []);
 
-  // ✅ INSIDE the component so it can access setUser
-  // const refreshUser = useCallback(async () => {
-  //   try {
-  //     const storedToken = localStorage.getItem("token");
-  //     const storedUser = localStorage.getItem("candidate");
-      
-  //     if (!storedToken || !storedUser) return;
-  
-  //     const parsedUser = JSON.parse(storedUser);
-  //     const candidateId = parsedUser._id; // get ID from stored user
-  
-  //     console.log("Fetching candidate:", candidateId);
-  
-  //     const res = await axios.get(
-  //       `${API_BASE}/api/candidate/profile/${candidateId}`,
-  //       { headers: { Authorization: `Bearer ${storedToken}` } }
-  //     );
-  
-  //     console.log("Fresh user data:", res.data);
-  
-  //     const freshUser = res.data; // change to res.data.candidate if needed
-  //     setUser(freshUser);
-  //     localStorage.setItem("candidate", JSON.stringify(freshUser));
-  //   } catch (err) {
-  //     console.error("❌ refreshUser failed:", err.response?.status, err.response?.data);
-  //     // don't clear user on failure — keep showing cached data
-  //   }
-  // }, []);
 
   const loginUser = (data, tkn) => {
     setUser(data);
@@ -70,9 +45,10 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, token, updateUser, loginUser, logoutUser}}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={{ user, token, loading, updateUser, loginUser, logoutUser }}>
+    {children}
+  </UserContext.Provider>
+
   );
 };
 

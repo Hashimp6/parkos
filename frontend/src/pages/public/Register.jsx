@@ -320,11 +320,7 @@ export default function RegisterPage() {
     const token = verifyData?.token ?? pendingData?.token;
     const user  = verifyData?.data  ?? pendingData?.user;
   
-    // ✅ persist both so Home can read them
-    localStorage.setItem("token", token);
-    localStorage.setItem("candidate", JSON.stringify(user)); // <-- add this
-  
-    loginUser(user);
+    loginUser(user, token); // ✅ pass both args — let loginUser handle localStorage
     setSuccess(true);
     showToast("Account created successfully!", "success");
     setTimeout(() => navigate("/home"), 800);
