@@ -609,7 +609,6 @@ export default function CompanyServices() {
             <input className="cp-sin" type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies, services, tags…" />
           </div>
           <div className="cp-frow">
-            <span className="cp-flabel">Industry</span>
            {/* Always show default filters */}
 <button
   className={`cp-pill ${filter === "all" ? "on" : ""}`}

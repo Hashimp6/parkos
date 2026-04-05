@@ -513,7 +513,7 @@ function CategoryCard({ cat, navigate, index }) {
   const handleClick = () => {
     // Pass all tags to the next page via query params or state
     const tagParam = cat.tags.join(",");
-    navigate(`/company/category-grid?tags=${encodeURIComponent(tagParam)}&category=${encodeURIComponent(cat.tag)}`);
+    navigate(`/company/search?tags=${encodeURIComponent(tagParam)}&category=${encodeURIComponent(cat.tag)}`);
   };
 
   return (

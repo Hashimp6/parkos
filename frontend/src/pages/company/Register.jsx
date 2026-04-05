@@ -559,7 +559,7 @@ const handleCompanyNameChange = (e) => {
                   {/* Password */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                      Password <span className="text-red-400">*</span>
+                     Create New Password <span className="text-red-400">*</span>
                     </label>
                     <div className="relative">
                       <input

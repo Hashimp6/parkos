@@ -485,7 +485,13 @@ const [showSuggestions, setShowSuggestions] = useState(false);
             </div>
           </div>
         </div>
-
+        <div className="max-w-xl mx-auto px-4 pt-4">
+  <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-center">
+    <p className="text-sm text-blue-700 font-medium">
+    Don’t worry — just fill what you want. Everything here is optional.
+    </p>
+  </div>
+</div>
         {/* ── CONTENT ── */}
         <div className="max-w-xl mx-auto px-4 py-5 space-y-4 fade-up" key={tab}>
 
@@ -496,7 +502,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
               <Card>
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                   {/* Round avatar */}
-                  <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                  <div className="flex flex-col items-center gap-3 flex-shrink-0">
                   <AvatarUpload value={form.profilePhoto} onChange={(file) => set("profilePhoto", file)} />
                     <p className="text-[10px] text-zinc-400 font-semibold">Profile Photo</p>
                   </div>
@@ -504,7 +510,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
                   {/* CV + name preview */}
                   <div className="flex-1 min-w-0 space-y-3 w-full">
                     <div>
-                      <p className={labelCls}>CV / Resume</p>
+                      <p className={labelCls}>CV / Resume (Optional)</p>
                       <CVUpload
                         value={form.cv}
                         fileName={form.cvFileName}

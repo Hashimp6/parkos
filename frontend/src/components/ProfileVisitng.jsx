@@ -1,5 +1,4 @@
-
-  import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import QRCode from "https://esm.sh/react-qr-code@2.0.15";
 
 // ── Edit your details here ────────────────────────────────────────────────────
@@ -47,7 +46,7 @@ async function renderQRToCanvas(url, size) {
   });
 }
 
-// ── Canvas export for download / WhatsApp ─────────────────────────────────────
+// ── Canvas export ─────────────────────────────────────────────────────────────
 async function buildCardCanvas({ name, designation, company, phone, email, domain, website }) {
   const W = 920, H = 520;
   const canvas = document.createElement("canvas");
@@ -68,11 +67,9 @@ async function buildCardCanvas({ name, designation, company, phone, email, domai
     ctx.closePath();
   }
 
-  // Background
   ctx.fillStyle = "#f5f0e8";
   rrect(0, 0, W, H, 32); ctx.fill();
 
-  // Hex pattern
   const hs = 32;
   ctx.strokeStyle = "rgba(155,122,32,0.06)"; ctx.lineWidth = 0.8;
   for (let r = 0; r < H / hs + 2; r++) {
@@ -89,18 +86,15 @@ async function buildCardCanvas({ name, designation, company, phone, email, domai
     }
   }
 
-  // Gold border
   ctx.strokeStyle = "rgba(218,165,32,0.4)"; ctx.lineWidth = 1.5;
   rrect(0.75, 0.75, W - 1.5, H - 1.5, 32); ctx.stroke();
 
-  // Left gold strip
   const sg = ctx.createLinearGradient(0, 0, 0, H);
   sg.addColorStop(0, "#3d2800"); sg.addColorStop(0.2, "#B8860B");
   sg.addColorStop(0.45, "#FFD700"); sg.addColorStop(0.55, "#DAA520");
   sg.addColorStop(0.8, "#B8860B"); sg.addColorStop(1, "#3d2800");
   ctx.fillStyle = sg; ctx.fillRect(0, 0, 8, H);
 
-  // Top gold hairline
   const tg = ctx.createLinearGradient(8, 0, W, 0);
   tg.addColorStop(0, "rgba(218,165,32,0.9)");
   tg.addColorStop(0.5, "rgba(255,215,0,0.5)");
@@ -108,7 +102,6 @@ async function buildCardCanvas({ name, designation, company, phone, email, domai
   ctx.strokeStyle = tg; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(8, 1.5); ctx.lineTo(W, 1.5); ctx.stroke();
 
-  // Corner ornaments
   const drawCorner = (x, y, s, flip) => {
     const d = flip ? 1 : -1;
     ctx.strokeStyle = "rgba(218,165,32,0.35)"; ctx.lineWidth = 1.5;
@@ -121,12 +114,10 @@ async function buildCardCanvas({ name, designation, company, phone, email, domai
   drawCorner(32, 32, 78, false);
   drawCorner(W - 32, H - 32, 78, true);
 
-  // Name
   ctx.fillStyle = "#1a1208";
   ctx.font = "500 46px 'Playfair Display', Georgia, serif";
   ctx.fillText(name, 68, 110);
 
-  // Gold rule + designation
   const gr = ctx.createLinearGradient(68, 0, 146, 0);
   gr.addColorStop(0, "#B8860B"); gr.addColorStop(0.5, "#FFD700"); gr.addColorStop(1, "rgba(218,165,32,0.3)");
   ctx.strokeStyle = gr; ctx.lineWidth = 2;
@@ -135,7 +126,6 @@ async function buildCardCanvas({ name, designation, company, phone, email, domai
   ctx.font = "400 13px 'DM Mono', monospace";
   ctx.fillText(designation.toUpperCase(), 156, 137);
 
-  // Contacts
   const contacts = [{ t: "phone", v: phone }, { t: "mail", v: email }, { t: "globe", v: domain }];
   contacts.forEach(({ t, v }, i) => {
     const y = 210 + i * 58;
@@ -162,12 +152,10 @@ async function buildCardCanvas({ name, designation, company, phone, email, domai
     ctx.fillText(v, 120, y + 6);
   });
 
-  // Company italic
   ctx.fillStyle = "rgba(100,78,20,0.4)";
   ctx.font = "300 italic 28px 'Cormorant Garamond', Georgia, serif";
   ctx.fillText(company, 68, H - 54);
 
-  // Vertical divider
   const divX = W - 280;
   const dg = ctx.createLinearGradient(0, 50, 0, H - 50);
   dg.addColorStop(0, "rgba(218,165,32,0)"); dg.addColorStop(0.25, "rgba(218,165,32,0.25)");
@@ -175,7 +163,6 @@ async function buildCardCanvas({ name, designation, company, phone, email, domai
   ctx.strokeStyle = dg; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(divX, 50); ctx.lineTo(divX, H - 50); ctx.stroke();
 
-  // QR code
   const qrSize = 170;
   const qrX = divX + Math.floor((W - divX - qrSize) / 2);
   const qrY = Math.floor((H - qrSize - 50) / 2);
@@ -270,15 +257,54 @@ const WAIcon = () => (
   </svg>
 );
 
+// ── Responsive hook ───────────────────────────────────────────────────────────
+function useContainerWidth(ref) {
+  const [width, setWidth] = useState(500);
+  useEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver(([e]) => setWidth(e.contentRect.width));
+    ro.observe(ref.current);
+    setWidth(ref.current.offsetWidth);
+    return () => ro.disconnect();
+  }, [ref]);
+  return width;
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 export default function BusinessCard({ name, designation, company, phone, email, profileId, website }) {
-  
-  const domain = website.replace(/^https?:\/\//, "").split("/")[0];
+  // Fall back to DATA defaults so it works standalone
+  name        = name        ?? DATA.name;
+  designation = designation ?? DATA.designation;
+  company     = company     ?? DATA.company;
+  phone       = phone       ?? DATA.phone;
+  email       = email       ?? DATA.email;
+  profileId   = profileId   ?? DATA.profileId;
+  website     = website     ?? DATA.website;
+
+  const domain   = website.replace(/^https?:\/\//, "").split("/")[0];
   const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
-  const [flipped, setFlipped] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [flipped,   setFlipped]   = useState(false);
+  const [mounted,   setMounted]   = useState(false);
   const [capturing, setCapturing] = useState(false);
+
+  // Responsive sizing
+  const wrapRef    = useRef(null);
+  const ctnWidth   = useContainerWidth(wrapRef);
+
+  // Card is 500×282 at full size. Scale to fit container with padding.
+  const BASE_W     = 500;
+  const BASE_H     = 282;
+  const PADDING     = 32; // horizontal padding on each side
+  const availW     = Math.min(ctnWidth - PADDING * 2, BASE_W);
+  const scale      = availW / BASE_W;
+  const cardW      = BASE_W;   // internal dimensions stay constant
+  const cardH      = BASE_H;
+  const displayW   = cardW * scale;
+  const displayH   = cardH * scale;
+
+  // Font sizes scale with card
+  const fs = (base) => `${Math.round(base * scale)}px`;
 
   useEffect(() => { setTimeout(() => setMounted(true), 120); }, []);
 
@@ -321,6 +347,11 @@ export default function BusinessCard({ name, designation, company, phone, email,
     } catch (e) { console.log("Share cancelled", e); }
   };
 
+  // QR size scales with card
+  const qrDisplaySize = Math.round(82 * scale);
+  // Contact font size
+  const contactFs = Math.max(7, Math.round(9 * scale));
+
   return (
     <>
       <style>{`
@@ -329,181 +360,201 @@ export default function BusinessCard({ name, designation, company, phone, email,
         .bc-scene { perspective: 1600px; }
         .bc-inner { position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1s cubic-bezier(0.23,1,0.32,1); }
         .bc-inner.flipped { transform: rotateY(180deg); }
-        .bc-face { position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;overflow:hidden; }
+        .bc-face { position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:${Math.round(20 * scale)}px;overflow:hidden; }
         .bc-back-face { transform: rotateY(180deg); }
         .bc-mount { opacity:0;transform:translateY(30px) scale(0.95);transition:opacity 0.9s cubic-bezier(0.23,1,0.32,1),transform 0.9s cubic-bezier(0.23,1,0.32,1); }
         .bc-mount.on { opacity:1;transform:none; }
         @keyframes bc-spin { to { transform: rotate(360deg); } }
         .bc-spin { width:11px;height:11px;border-radius:50%;animation:bc-spin 0.7s linear infinite;display:inline-block; }
-        .bc-btn { display:flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.3s ease;min-width:170px;justify-content:center;border:none; }
+        .bc-btn {
+          display:flex;align-items:center;justify-content:center;gap:8px;
+          padding:14px 20px;border-radius:12px;
+          font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.12em;
+          text-transform:uppercase;cursor:pointer;transition:all 0.3s ease;
+          border:none;flex:1;min-width:0;
+        }
         .bc-btn:disabled { opacity:0.45;cursor:wait; }
         .bc-btn-dl { background:transparent;color:rgba(212,180,80,0.85);border:1px solid rgba(196,168,60,0.25); }
         .bc-btn-dl:hover:not(:disabled) { background:rgba(196,168,60,0.08);border-color:rgba(196,168,60,0.5);transform:translateY(-2px); }
         .bc-btn-wa { background:#1da851;color:#fff;border:1px solid #1da851; }
         .bc-btn-wa:hover:not(:disabled) { background:#18923f;transform:translateY(-2px); }
+        .bc-buttons { display:flex;gap:12px;width:100%; }
+        @media (max-width: 340px) {
+          .bc-buttons { flex-direction:column; }
+          .bc-btn { width:100%; }
+        }
       `}</style>
 
       {/* Page */}
-      <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:28, padding:"40px 20px", background:"radial-gradient(ellipse at 30% 20%,#1e1508 0%,#0a0806 60%)", fontFamily:"'DM Mono',monospace" }}>
-
+      <div
+        ref={wrapRef}
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 20,
+          padding: "32px 16px",
+          background: "radial-gradient(ellipse at 30% 20%,#1e1508 0%,#0a0806 60%)",
+          fontFamily: "'DM Mono',monospace",
+          width: "100%",
+        }}
+      >
         {/* 3D Card Scene */}
         <div
           className={`bc-mount bc-scene ${mounted ? "on" : ""}`}
-          style={{ width:500, height:282, cursor: capturing ? "wait" : "pointer", flexShrink:0 }}
+          style={{
+            width: displayW,
+            height: displayH,
+            cursor: capturing ? "wait" : "pointer",
+            flexShrink: 0,
+          }}
           onClick={() => !capturing && setFlipped((f) => !f)}
         >
+          {/* Scale wrapper — keeps internal layout at 500×282 */}
           <div className={`bc-inner ${flipped ? "flipped" : ""}`}>
 
             {/* ── FRONT ── */}
-            <div className="bc-face" style={{ background:"#f5f0e8", boxShadow:"0 0 0 1px rgba(196,168,60,0.4),0 4px 6px rgba(0,0,0,0.4),0 20px 60px rgba(0,0,0,0.6),0 40px 80px rgba(0,0,0,0.3)" }}>
-              <HexPattern width={500} height={282} />
+            <div
+              className="bc-face"
+              style={{
+                background: "#f5f0e8",
+                boxShadow: `0 0 0 1px rgba(196,168,60,0.4),0 4px 6px rgba(0,0,0,0.4),0 ${Math.round(20*scale)}px ${Math.round(60*scale)}px rgba(0,0,0,0.6),0 ${Math.round(40*scale)}px ${Math.round(80*scale)}px rgba(0,0,0,0.3)`,
+              }}
+            >
+              {/* Scale inner content */}
+              <div style={{ position: "absolute", inset: 0, transformOrigin: "top left", transform: `scale(${scale})`, width: BASE_W, height: BASE_H }}>
+                <HexPattern width={BASE_W} height={BASE_H} />
 
-              {/* Gold border overlay */}
-              <div style={{ position:"absolute", inset:0, borderRadius:20, border:"1px solid rgba(220,185,80,0.45)", pointerEvents:"none" }} />
+                <div style={{ position:"absolute", inset:0, borderRadius:20, border:"1px solid rgba(220,185,80,0.45)", pointerEvents:"none" }} />
+                <div style={{ position:"absolute", left:0, top:0, bottom:0, width:5, background:"linear-gradient(180deg,#3d2800 0%,#B8860B 20%,#FFD700 45%,#DAA520 55%,#B8860B 80%,#3d2800 100%)", borderRadius:"20px 0 0 20px" }} />
+                <div style={{ position:"absolute", top:0, left:5, right:0, height:2, background:"linear-gradient(90deg,rgba(218,165,32,0.9),rgba(255,215,0,0.6),rgba(218,165,32,0.2))" }} />
 
-              {/* Left gold strip */}
-              <div style={{ position:"absolute", left:0, top:0, bottom:0, width:5, background:"linear-gradient(180deg,#3d2800 0%,#B8860B 20%,#FFD700 45%,#DAA520 55%,#B8860B 80%,#3d2800 100%)", borderRadius:"20px 0 0 20px" }} />
+                <svg style={{ position:"absolute", top:0, left:5 }} width="52" height="52" viewBox="0 0 52 52" fill="none">
+                  <path d="M6 46L6 6L46 6" stroke="rgba(218,165,32,0.35)" strokeWidth="1.5" fill="none" />
+                  <path d="M12 40L12 12L40 12" stroke="rgba(218,165,32,0.15)" strokeWidth="0.75" fill="none" />
+                  <circle cx="6" cy="6" r="2" fill="rgba(218,165,32,0.5)" />
+                </svg>
+                <svg style={{ position:"absolute", bottom:0, right:0 }} width="52" height="52" viewBox="0 0 52 52" fill="none">
+                  <path d="M46 6L46 46L6 46" stroke="rgba(218,165,32,0.35)" strokeWidth="1.5" fill="none" />
+                  <path d="M40 12L40 40L12 40" stroke="rgba(218,165,32,0.15)" strokeWidth="0.75" fill="none" />
+                  <circle cx="46" cy="46" r="2" fill="rgba(218,165,32,0.5)" />
+                </svg>
 
-              {/* Top gold hairline */}
-              <div style={{ position:"absolute", top:0, left:5, right:0, height:2, background:"linear-gradient(90deg,rgba(218,165,32,0.9),rgba(255,215,0,0.6),rgba(218,165,32,0.2))" }} />
-
-              {/* Corner TL */}
-              <svg style={{ position:"absolute", top:0, left:5 }} width="52" height="52" viewBox="0 0 52 52" fill="none">
-                <path d="M6 46L6 6L46 6" stroke="rgba(218,165,32,0.35)" strokeWidth="1.5" fill="none" />
-                <path d="M12 40L12 12L40 12" stroke="rgba(218,165,32,0.15)" strokeWidth="0.75" fill="none" />
-                <circle cx="6" cy="6" r="2" fill="rgba(218,165,32,0.5)" />
-              </svg>
-              {/* Corner BR */}
-              <svg style={{ position:"absolute", bottom:0, right:0 }} width="52" height="52" viewBox="0 0 52 52" fill="none">
-                <path d="M46 6L46 46L6 46" stroke="rgba(218,165,32,0.35)" strokeWidth="1.5" fill="none" />
-                <path d="M40 12L40 40L12 40" stroke="rgba(218,165,32,0.15)" strokeWidth="0.75" fill="none" />
-                <circle cx="46" cy="46" r="2" fill="rgba(218,165,32,0.5)" />
-              </svg>
-
-              {/* Content */}
-              <div style={{ position:"absolute", inset:0, left:5, display:"flex", padding:"20px 18px 16px 22px", gap:14 }}>
-
-                {/* Left column */}
-                <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"space-between", minWidth:0 }}>
-                  <div>
-                    <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:500, color:"#1a1208", letterSpacing:"-0.01em", lineHeight:1.1 }}>
-                      {name}
-                    </div>
-                    <div style={{ display:"flex", alignItems:"center", gap:9, marginTop:8 }}>
-                      <div style={{ height:1, width:28, background:"linear-gradient(90deg,#B8860B,#FFD700,rgba(218,165,32,0.3))" }} />
-                      <span style={{ fontFamily:"'DM Mono',monospace", fontSize:7.5, letterSpacing:"0.28em", textTransform:"uppercase", color:"#8B6914" }}>
-                        {designation}
-                      </span>
-                      <div style={{ height:1, flex:1, background:"linear-gradient(90deg,rgba(218,165,32,0.3),transparent)" }} />
-                    </div>
-                  </div>
-
-                  <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                    {[
-                      { icon: <PhoneIcon />, val: phone },
-                      { icon: <MailIcon />,  val: email },
-                      { icon: <GlobeIcon />, val: domain },
-                    ].map(({ icon, val }, i) => (
-                      <div key={i} style={{ display:"flex", alignItems:"center", gap:9 }}>
-                        <div style={{ width:24, height:24, borderRadius:7, background:"rgba(26,18,8,0.08)", border:"0.5px solid rgba(184,134,11,0.2)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                          {icon}
-                        </div>
-                        <span style={{ fontFamily:"'DM Mono',monospace", fontSize:9, color:"#3d2e12", letterSpacing:"0.03em" }}>
-                          {val}
-                        </span>
+                <div style={{ position:"absolute", inset:0, left:5, display:"flex", padding:"20px 18px 16px 22px", gap:14 }}>
+                  <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"space-between", minWidth:0 }}>
+                    <div>
+                      <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:500, color:"#1a1208", letterSpacing:"-0.01em", lineHeight:1.1 }}>
+                        {name}
                       </div>
-                    ))}
-                  </div>
+                      <div style={{ display:"flex", alignItems:"center", gap:9, marginTop:8 }}>
+                        <div style={{ height:1, width:28, background:"linear-gradient(90deg,#B8860B,#FFD700,rgba(218,165,32,0.3))" }} />
+                        <span style={{ fontFamily:"'DM Mono',monospace", fontSize:7.5, letterSpacing:"0.28em", textTransform:"uppercase", color:"#8B6914" }}>
+                          {designation}
+                        </span>
+                        <div style={{ height:1, flex:1, background:"linear-gradient(90deg,rgba(218,165,32,0.3),transparent)" }} />
+                      </div>
+                    </div>
 
-                  <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:13.5, fontStyle:"italic", color:"rgba(100,78,20,0.45)", letterSpacing:"0.06em" }}>
-                    {company}
-                  </div>
-                </div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                      {[
+                        { icon: <PhoneIcon />, val: phone },
+                        { icon: <MailIcon />,  val: email },
+                      ].map(({ icon, val }, i) => (
+                        <div key={i} style={{ display:"flex", alignItems:"center", gap:9 }}>
+                          <div style={{ width:24, height:24, borderRadius:7, background:"rgba(26,18,8,0.08)", border:"0.5px solid rgba(184,134,11,0.2)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                            {icon}
+                          </div>
+                          <span style={{ fontFamily:"'DM Mono',monospace", fontSize:9, color:"#3d2e12", letterSpacing:"0.03em" }}>
+                            {val}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
 
-                {/* Divider */}
-                <div style={{ width:1, alignSelf:"stretch", flexShrink:0, background:"linear-gradient(180deg,transparent 0%,rgba(218,165,32,0.15) 20%,rgba(218,165,32,0.3) 50%,rgba(218,165,32,0.15) 80%,transparent 100%)" }} />
-
-                {/* QR column */}
-                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-end", gap:7, flexShrink:0, paddingBottom:2, width:100 }}>
-                  <div style={{ background:"#fff", borderRadius:12, padding:8, border:"1px solid rgba(184,134,11,0.35)", boxShadow:"0 2px 12px rgba(0,0,0,0.12)" }}>
-                    <div style={{ width:82, height:82, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                      <QRCode value={website} size={82} bgColor="#ffffff" fgColor="#1a1208" level="M" />
+                    <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:13.5, fontStyle:"italic", color:"rgba(100,78,20,0.45)", letterSpacing:"0.06em" }}>
+                      {company}
                     </div>
                   </div>
-                  <span style={{ fontFamily:"'DM Mono',monospace", fontSize:7, letterSpacing:"0.2em", textTransform:"uppercase", color:"#B8860B" }}>
-                    scan profile
-                  </span>
-                </div>
-              </div>
 
-              {/* Tap hint */}
-              <div style={{ position:"absolute", bottom:7, left:"50%", transform:"translateX(-50%)" }}>
-                <span style={{ fontFamily:"'DM Mono',monospace", fontSize:7, color:"rgba(150,110,30,0.25)", letterSpacing:"0.22em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
-                  tap to flip
-                </span>
-              </div>
-            </div>
+                  <div style={{ width:1, alignSelf:"stretch", flexShrink:0, background:"linear-gradient(180deg,transparent 0%,rgba(218,165,32,0.15) 20%,rgba(218,165,32,0.3) 50%,rgba(218,165,32,0.15) 80%,transparent 100%)" }} />
 
-            {/* ── BACK ── */}
-            <div className="bc-face bc-back-face" style={{ background:"#080604", boxShadow:"0 0 0 1px rgba(196,168,60,0.3),0 20px 60px rgba(0,0,0,0.8)" }}>
-              <DiamondPattern width={500} height={282} />
-
-              {/* Gold bands */}
-              <div style={{ position:"absolute", top:0, left:0, right:0, height:4, background:"linear-gradient(90deg,#3d2800 0%,#B8860B 20%,#FFD700 40%,#DAA520 50%,#FFD700 60%,#B8860B 80%,#3d2800 100%)", borderRadius:"20px 20px 0 0" }} />
-              <div style={{ position:"absolute", bottom:0, left:0, right:0, height:4, background:"linear-gradient(90deg,#3d2800 0%,#B8860B 20%,#FFD700 40%,#DAA520 50%,#FFD700 60%,#B8860B 80%,#3d2800 100%)", borderRadius:"0 0 20px 20px" }} />
-
-              {/* Inner borders */}
-              <div style={{ position:"absolute", inset:12, borderRadius:12, border:"1px solid rgba(196,168,60,0.12)" }} />
-              <div style={{ position:"absolute", inset:18, borderRadius:8, border:"0.5px solid rgba(196,168,60,0.06)" }} />
-
-              {/* Corner marks */}
-              <svg style={{ position:"absolute", top:16, left:16 }} width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M2 30L2 2L30 2" stroke="rgba(218,165,32,0.35)" strokeWidth="1.5" fill="none" />
-                <circle cx="2" cy="2" r="1.5" fill="rgba(218,165,32,0.5)" />
-              </svg>
-              <svg style={{ position:"absolute", bottom:16, right:16 }} width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M30 2L30 30L2 30" stroke="rgba(218,165,32,0.35)" strokeWidth="1.5" fill="none" />
-                <circle cx="30" cy="30" r="1.5" fill="rgba(218,165,32,0.5)" />
-              </svg>
-
-              {/* Concentric diamond motif */}
-              <svg style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", opacity:0.055 }} width="220" height="220" viewBox="0 0 220 220" fill="none">
-                <rect x="20" y="20" width="180" height="180" rx="4" transform="rotate(45,110,110)" stroke="#DAA520" strokeWidth="2" fill="none" />
-                <rect x="44" y="44" width="132" height="132" rx="3" transform="rotate(45,110,110)" stroke="#DAA520" strokeWidth="1.5" fill="none" />
-                <rect x="66" y="66" width="88" height="88" rx="2" transform="rotate(45,110,110)" stroke="#DAA520" strokeWidth="1" fill="none" />
-                <rect x="86" y="86" width="48" height="48" rx="1" transform="rotate(45,110,110)" stroke="#DAA520" strokeWidth="0.75" fill="none" />
-              </svg>
-
-              {/* Center content */}
-              <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:13 }}>
-                {/* Initials ring */}
-                <div style={{ position:"relative", width:70, height:70 }}>
-                  <div style={{ position:"absolute", inset:0, borderRadius:"50%", border:"1px solid rgba(218,165,32,0.4)" }} />
-                  <div style={{ position:"absolute", inset:5, borderRadius:"50%", border:"1px solid rgba(218,165,32,0.15)" }} />
-                  <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                    <span style={{ fontFamily:"'Playfair Display',serif", fontSize:23, fontWeight:500, color:"rgba(218,165,32,0.88)", letterSpacing:"0.05em" }}>
-                      {initials}
+                  <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-end", gap:7, flexShrink:0, paddingBottom:2, width:100 }}>
+                    <div style={{ background:"#fff", borderRadius:12, padding:8, border:"1px solid rgba(184,134,11,0.35)", boxShadow:"0 2px 12px rgba(0,0,0,0.12)" }}>
+                      <div style={{ width:82, height:82, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <QRCode value={website} size={82} bgColor="#ffffff" fgColor="#1a1208" level="M" />
+                      </div>
+                    </div>
+                    <span style={{ fontFamily:"'DM Mono',monospace", fontSize:7, letterSpacing:"0.2em", textTransform:"uppercase", color:"#B8860B" }}>
+                      scan profile
                     </span>
                   </div>
                 </div>
 
-                {/* Company */}
-                <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:21, fontWeight:400, color:"rgba(240,228,200,0.82)", letterSpacing:"0.18em", textTransform:"uppercase", textAlign:"center" }}>
-                  {company}
+                <div style={{ position:"absolute", bottom:7, left:"50%", transform:"translateX(-50%)" }}>
+                  <span style={{ fontFamily:"'DM Mono',monospace", fontSize:7, color:"rgba(150,110,30,0.25)", letterSpacing:"0.22em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+                    tap to flip
+                  </span>
                 </div>
+              </div>
+            </div>
 
-                {/* Gold ornament divider */}
-                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <div style={{ width:36, height:1, background:"linear-gradient(90deg,transparent,rgba(218,165,32,0.5))" }} />
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <rect x="1" y="1" width="8" height="8" transform="rotate(45,5,5)" stroke="rgba(218,165,32,0.6)" strokeWidth="1" fill="rgba(218,165,32,0.15)" />
-                  </svg>
-                  <div style={{ width:36, height:1, background:"linear-gradient(90deg,rgba(218,165,32,0.5),transparent)" }} />
-                </div>
+            {/* ── BACK ── */}
+            <div
+              className="bc-face bc-back-face"
+              style={{ background:"#080604", boxShadow:`0 0 0 1px rgba(196,168,60,0.3),0 ${Math.round(20*scale)}px ${Math.round(60*scale)}px rgba(0,0,0,0.8)` }}
+            >
+              <div style={{ position:"absolute", inset:0, transformOrigin:"top left", transform:`scale(${scale})`, width:BASE_W, height:BASE_H }}>
+                <DiamondPattern width={BASE_W} height={BASE_H} />
 
-                {/* Profile ID */}
-                <div style={{ fontFamily:"'DM Mono',monospace", fontSize:8, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(218,165,32,0.35)" }}>
-                  {profileId}
+                <div style={{ position:"absolute", top:0, left:0, right:0, height:4, background:"linear-gradient(90deg,#3d2800 0%,#B8860B 20%,#FFD700 40%,#DAA520 50%,#FFD700 60%,#B8860B 80%,#3d2800 100%)", borderRadius:"20px 20px 0 0" }} />
+                <div style={{ position:"absolute", bottom:0, left:0, right:0, height:4, background:"linear-gradient(90deg,#3d2800 0%,#B8860B 20%,#FFD700 40%,#DAA520 50%,#FFD700 60%,#B8860B 80%,#3d2800 100%)", borderRadius:"0 0 20px 20px" }} />
+                <div style={{ position:"absolute", inset:12, borderRadius:12, border:"1px solid rgba(196,168,60,0.12)" }} />
+                <div style={{ position:"absolute", inset:18, borderRadius:8, border:"0.5px solid rgba(196,168,60,0.06)" }} />
+
+                <svg style={{ position:"absolute", top:16, left:16 }} width="32" height="32" viewBox="0 0 32 32" fill="none">
+                  <path d="M2 30L2 2L30 2" stroke="rgba(218,165,32,0.35)" strokeWidth="1.5" fill="none" />
+                  <circle cx="2" cy="2" r="1.5" fill="rgba(218,165,32,0.5)" />
+                </svg>
+                <svg style={{ position:"absolute", bottom:16, right:16 }} width="32" height="32" viewBox="0 0 32 32" fill="none">
+                  <path d="M30 2L30 30L2 30" stroke="rgba(218,165,32,0.35)" strokeWidth="1.5" fill="none" />
+                  <circle cx="30" cy="30" r="1.5" fill="rgba(218,165,32,0.5)" />
+                </svg>
+
+                <svg style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", opacity:0.055 }} width="220" height="220" viewBox="0 0 220 220" fill="none">
+                  <rect x="20" y="20" width="180" height="180" rx="4" transform="rotate(45,110,110)" stroke="#DAA520" strokeWidth="2" fill="none" />
+                  <rect x="44" y="44" width="132" height="132" rx="3" transform="rotate(45,110,110)" stroke="#DAA520" strokeWidth="1.5" fill="none" />
+                  <rect x="66" y="66" width="88" height="88" rx="2" transform="rotate(45,110,110)" stroke="#DAA520" strokeWidth="1" fill="none" />
+                  <rect x="86" y="86" width="48" height="48" rx="1" transform="rotate(45,110,110)" stroke="#DAA520" strokeWidth="0.75" fill="none" />
+                </svg>
+
+                <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:13 }}>
+                  <div style={{ position:"relative", width:70, height:70 }}>
+                    <div style={{ position:"absolute", inset:0, borderRadius:"50%", border:"1px solid rgba(218,165,32,0.4)" }} />
+                    <div style={{ position:"absolute", inset:5, borderRadius:"50%", border:"1px solid rgba(218,165,32,0.15)" }} />
+                    <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <span style={{ fontFamily:"'Playfair Display',serif", fontSize:23, fontWeight:500, color:"rgba(218,165,32,0.88)", letterSpacing:"0.05em" }}>
+                        {initials}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:21, fontWeight:400, color:"rgba(240,228,200,0.82)", letterSpacing:"0.18em", textTransform:"uppercase", textAlign:"center" }}>
+                    {company}
+                  </div>
+
+                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                    <div style={{ width:36, height:1, background:"linear-gradient(90deg,transparent,rgba(218,165,32,0.5))" }} />
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <rect x="1" y="1" width="8" height="8" transform="rotate(45,5,5)" stroke="rgba(218,165,32,0.6)" strokeWidth="1" fill="rgba(218,165,32,0.15)" />
+                    </svg>
+                    <div style={{ width:36, height:1, background:"linear-gradient(90deg,rgba(218,165,32,0.5),transparent)" }} />
+                  </div>
+
+                  <div style={{ fontFamily:"'DM Mono',monospace", fontSize:8, letterSpacing:"0.3em", textTransform:"uppercase", color:"rgba(218,165,32,0.35)" }}>
+                    {profileId}
+                  </div>
                 </div>
               </div>
             </div>
@@ -512,12 +563,12 @@ export default function BusinessCard({ name, designation, company, phone, email,
         </div>
 
         {/* Hint */}
-        <p style={{ color:"rgba(196,168,80,0.35)", fontSize:9, letterSpacing:"0.22em", textTransform:"uppercase", margin:0, fontFamily:"'DM Mono',monospace" }}>
+        <p style={{ color:"rgba(196,168,80,0.35)", fontSize:9, letterSpacing:"0.22em", textTransform:"uppercase", margin:0, fontFamily:"'DM Mono',monospace", textAlign:"center" }}>
           tap card · flip · scan qr for profile
         </p>
 
-        {/* Buttons */}
-        <div style={{ display:"flex", gap:12, flexWrap:"wrap", justifyContent:"center" }}>
+        {/* Buttons — full width, flex row (stacks to column on very small screens) */}
+        <div className="bc-buttons" style={{ maxWidth: Math.max(displayW, 280) }}>
           <button className="bc-btn bc-btn-dl" onClick={handleDownload} disabled={capturing}>
             {capturing ? <span className="bc-spin" style={{ border:"1.5px solid rgba(212,180,80,0.3)", borderTopColor:"rgba(212,180,80,0.85)" }} /> : <DownloadIcon />}
             {capturing ? "Capturing…" : "Download PNG"}
@@ -528,7 +579,7 @@ export default function BusinessCard({ name, designation, company, phone, email,
           </button>
         </div>
 
-        <p style={{ color:"rgba(196,168,80,0.22)", fontSize:9, letterSpacing:"0.12em", textTransform:"uppercase", textAlign:"center", maxWidth:340, lineHeight:2, margin:0, fontFamily:"'DM Mono',monospace" }}>
+        <p style={{ color:"rgba(196,168,80,0.22)", fontSize:9, letterSpacing:"0.12em", textTransform:"uppercase", textAlign:"center", maxWidth: Math.max(displayW, 280), lineHeight:2, margin:0, fontFamily:"'DM Mono',monospace" }}>
           mobile shares image directly · desktop downloads + opens whatsapp
         </p>
       </div>

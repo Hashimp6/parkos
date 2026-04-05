@@ -15,6 +15,7 @@ router.post("/forgot-password", companyController.forgotPassword);
 router.post("/reset-password", companyController.resetPassword);
 router.put("/update-layout", companyController.updateLayout);
 router.get("/search", companyController.searchCompanies);
+router.get("/filter", companyController.getCompaniesByFilter);
 router.get("/search/by-tags", companyController.getCompaniesByTag);
 // PRIVATE ROUTES
 router.get("/me/profile", companyController.getMe);

@@ -840,4 +840,93 @@ exports.getCompaniesByTag = async (req, res) => {
     });
   }
 };
+
+exports.getCompaniesByFilter = async (req, res) => {
+  try {
+    const {
+      q = "",
+      category = "",
+      tags = "",
+      businessPark = "",
+      page = 1,
+      limit = 10,
+      sort = "newest",
+    } = req.query;
+ 
+    /* ── Sanitise / clamp pagination ──────────────────────────────── */
+    const pageNum  = Math.max(1, parseInt(page, 10)  || 1);
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 10));
+    const skip     = (pageNum - 1) * limitNum;
+ 
+    /* ── Build filter ─────────────────────────────────────────────── */
+    const filter = { isActive: true };
+ 
+    // Full-text search (uses the { companyName:"text", about:"text" } index)
+    // We also want tags to match, so we extend with a $or when there is no
+    // text index on tags – or you can add tags:"text" to the index.
+    if (q.trim()) {
+      const regex = new RegExp(q.trim(), "i"); // case-insensitive fallback
+      filter.$or = [
+        { $text: { $search: q.trim() } },   // hits the text index
+        { companyName: regex },              // extra safety for partial matches
+        { tags: regex },
+        { category: regex },
+      ];
+    }
+ 
+    if (category.trim()) {
+      filter.category = new RegExp(`^${category.trim()}$`, "i");
+    }
+ 
+    if (tags.trim()) {
+      const tagArray = tags.split(",").map((t) => t.trim()).filter(Boolean);
+      if (tagArray.length) filter.tags = { $in: tagArray.map((t) => new RegExp(`^${t}$`, "i")) };
+    }
+ 
+    if (businessPark.trim()) {
+      filter.businessPark = businessPark.trim();
+    }
+ 
+    /* ── Sort ─────────────────────────────────────────────────────── */
+    let sortObj = { createdAt: -1 }; // default: newest
+    if (sort === "name_asc")  sortObj = { companyName: 1 };
+    if (sort === "name_desc") sortObj = { companyName: -1 };
+    if (sort === "oldest")    sortObj = { createdAt: 1 };
+    // If text search is active, also factor in text score
+    const projection = q.trim() ? { score: { $meta: "textScore" } } : {};
+    if (q.trim() && sort === "newest") sortObj = { score: { $meta: "textScore" }, createdAt: -1 };
+ 
+    /* ── Query ────────────────────────────────────────────────────── */
+    const [companies, total] = await Promise.all([
+      Company.find(filter, projection)
+        .select(
+          "companyName category logo tagline tags businessPark address website contacts foundedYear industry companySize"
+        )
+        .sort(sortObj)
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
+      Company.countDocuments(filter),
+    ]);
+ 
+    /* ── Response ─────────────────────────────────────────────────── */
+    return res.status(200).json({
+      success: true,
+      data: companies,
+      pagination: {
+        total,
+        page:       pageNum,
+        limit:      limitNum,
+        totalPages: Math.ceil(total / limitNum),
+        hasNext:    pageNum < Math.ceil(total / limitNum),
+        hasPrev:    pageNum > 1,
+      },
+    });
+  } catch (err) {
+    console.error("Company search error:", err);
+    return res.status(500).json({ success: false, message: "Search failed", error: err.message });
+  }
+};
+ 
+
  

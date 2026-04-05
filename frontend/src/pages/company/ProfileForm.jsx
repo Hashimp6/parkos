@@ -541,18 +541,18 @@ const cleanArray = (arr) =>
                     <input className={inputCls} placeholder="e.g. Information Technology" value={form.industry}
                       onChange={e => set("industry", e.target.value)} />
                   </div>
-                  <div>
+                  {/* <div>
                     <label className={labelCls}>Company Size</label>
                     <select className={inputCls} value={form.companySize} onChange={e => set("companySize", e.target.value)}>
                       <option value="">Select size</option>
                       {COMPANY_SIZES.map(s => <option key={s} value={s}>{s} employees</option>)}
                     </select>
-                  </div>
-                  <div className="sm:col-span-2">
+                  </div> */}
+                  {/* <div className="sm:col-span-2">
                     <label className={labelCls}>Website</label>
                     <input className={inputCls} type="url" placeholder="https://yourcompany.com" value={form.website}
                       onChange={e => set("website", e.target.value)} />
-                  </div>
+                  </div> */}
                 </div>
               </Card>
 

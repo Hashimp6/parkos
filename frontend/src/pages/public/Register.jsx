@@ -410,7 +410,7 @@ export default function RegisterPage() {
 
                   {/* Password */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">Password</label>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">Create New Password</label>
                     <div className="relative">
                       <input
                         type={showPass ? "text" : "password"}

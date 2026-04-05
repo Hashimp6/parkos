@@ -60,6 +60,7 @@ import Company2 from "../components/company/Layout2";
 import Company1 from "../components/company/Layout1";
 import Company9 from "../components/company/Company9";
 import TermsAndConditions from "../pages/public/Termsandcondition";
+import Filter from "../pages/company/Filter";
 
 function AppRoutes() {
   return (
@@ -70,8 +71,9 @@ function AppRoutes() {
         <Route path="/"                    element={<Home />} />
         <Route path="/jobs"                element={<JobListings />} />
         <Route path="/freelance"           element={<FreelancerCategories />} />
-        <Route path="/company/category-grid"             element={<CompanyServices />} />
-        <Route path="/clock"                    element={<ClockScroll3D/>} />
+        <Route path="/company/search"             element={<CompanyServices />} />
+        <Route path="/company/filter"             element={<Filter />} />
+         <Route path="/clock"                    element={<ClockScroll3D/>} />
         <Route path="/terms" element={<TermsAndConditions />} />
         </Route>
 
@@ -118,6 +120,7 @@ function AppRoutes() {
           <Route path="/jobslist"              element={<CompanyJobsAdmin />} />
           <Route path="/jobs/form"             element={<JobForm />} />
           <Route path="/company/jobs/:id"      element={<JobDashboard />} />
+
         </Route>
 
    
