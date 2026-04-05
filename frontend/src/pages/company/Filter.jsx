@@ -609,8 +609,11 @@ export default function Filter() {
 
   /* ── Fetch filter options once ── */
   useEffect(() => {
-    axios.get(`${API_BASE}/companies/filters`)
-      .then(res => { if (res.data.success) setFilterOpts(res.data.data); })
+    axios.get(`${API_BASE}/companies/filter`)
+      .then(res => { if (res.data.success) setFilterOpts(res.data.data); 
+        console.log("ddd",res.data.data);
+        
+      })
       .catch(() => {});
   }, []);
 
