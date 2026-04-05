@@ -629,7 +629,7 @@ export default function Filter() {
 
     setLoading(true);
     axios
-      .get(`${API_BASE}/companies/search`, { params, signal: controller.signal })
+      .get(`${API_BASE}/companies/filter`, { params, signal: controller.signal })
       .then(res => {
         if (res.data.success) {
           setCompanies(res.data.data);

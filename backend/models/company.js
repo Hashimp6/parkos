@@ -73,6 +73,8 @@ const companySchema = new mongoose.Schema(
     },
     category: {
       type: String,
+      lowercase: true,
+      trim: true,
     },
     email:       { type: String, unique: true, lowercase: true, trim: true },
     phone:       { type: String },
@@ -100,7 +102,7 @@ const companySchema = new mongoose.Schema(
       default: false
     },
     // ── Tags ─────────────────────────────────────────────────────────────────
-    tags: [{ type: String }],
+    tags: [{ type: String, lowercase: true, trim: true }],
 
     // ── Location ─────────────────────────────────────────────────────────────
     businessPark: {
@@ -151,7 +153,20 @@ companySchema.index({ tags: 1 });                  // category filter (your use 
 companySchema.index({ isActive: 1 });              // active company filter
 companySchema.index({ businessPark: 1 });          // filter by park
 companySchema.index({ location: "2dsphere" });     // geo queries (nearby companies)
-companySchema.index({ companyName: "text", about: "text" }); // search by name/about
+companySchema.index(
+  {
+    companyName: "text",
+    category: "text",
+    tags: "text",
+  },
+  {
+    weights: {
+      companyName: 5,
+      category: 3,
+      tags: 2,
+    },
+  }
+); // search by name/about
 // ─── Password hashing ────────────────────────────────────────────────────────
 companySchema.pre("save", async function () {
   if (!this.password) return;
