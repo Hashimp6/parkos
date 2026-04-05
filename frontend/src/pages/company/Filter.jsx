@@ -453,7 +453,25 @@ function Card({ company, index, onConnect, listView }) {
             {c.instagram&& <a href={`https://instagram.com/${c.instagram}`} target="_blank" rel="noreferrer" className="cs-soc-btn"><Instagram size={12} /></a>}
             {company.website && <a href={company.website} target="_blank" rel="noreferrer" className="cs-soc-btn"><Globe size={12} /></a>}
           </div>
-          <button className="cs-view-btn" onClick={() => navigate(`/company/id/${company._id}`)}>View Profile</button>
+          <div style={{ display: "flex", gap: 8 }}>
+  <button
+    className="cs-view-btn"
+    onClick={() => navigate(`/company/id/${company._id}`)}
+  >
+    View {company.companyName.split(" ")[0]}
+  </button>
+
+  <button
+    className="cs-view-btn"
+    style={{
+      borderColor: "#ccc",
+      color: "#555"
+    }}
+    onClick={() => navigate(`/company-jobs/${company._id}`)}
+  >
+    Jobs
+  </button>
+</div>
         </div>
       </div>
     );
@@ -510,10 +528,25 @@ function Card({ company, index, onConnect, listView }) {
           {c.instagram&& <a href={`https://instagram.com/${c.instagram}`} target="_blank" rel="noreferrer" className="cs-soc-btn" onClick={e => e.stopPropagation()}><Instagram size={12} /></a>}
           {company.website && <a href={company.website} target="_blank" rel="noreferrer" className="cs-soc-btn" onClick={e => e.stopPropagation()}><Globe size={12} /></a>}
         </div>
-        <button className="cs-view-btn" onClick={() => navigate(`/company/id/${company._id}`)}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          View {company.companyName.split(" ")[0]}
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+  <button
+    className="cs-view-btn"
+    onClick={() => navigate(`/company/id/${company._id}`)}
+  >
+    View Profile
+  </button>
+
+  <button
+    className="cs-view-btn"
+    style={{
+      borderColor: "#ccc",
+      color: "#555"
+    }}
+    onClick={() => navigate(`/company-jobs/${company._id}`)}
+  >
+    Jobs
+  </button>
+</div>
       </div>
     </div>
   );
@@ -609,7 +642,7 @@ export default function Filter() {
 
   /* ── Fetch filter options once ── */
   useEffect(() => {
-    axios.get(`${API_BASE}/companies/filter`)
+    axios.get(`${API_BASE}/companies/filters`)
       .then(res => { if (res.data.success) setFilterOpts(res.data.data); 
         console.log("ddd",res.data.data);
         

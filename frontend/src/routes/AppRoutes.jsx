@@ -61,6 +61,7 @@ import Company1 from "../components/company/Layout1";
 import Company9 from "../components/company/Company9";
 import TermsAndConditions from "../pages/public/Termsandcondition";
 import Filter from "../pages/company/Filter";
+import CompanyJobListings from "../pages/public/Jobs";
 
 function AppRoutes() {
   return (
@@ -74,7 +75,8 @@ function AppRoutes() {
         <Route path="/company/search"             element={<CompanyServices />} />
         <Route path="/company/filter"             element={<Filter />} />
          <Route path="/clock"                    element={<ClockScroll3D/>} />
-        <Route path="/terms" element={<TermsAndConditions />} />
+         <Route path="/company-jobs/:companyId"                    element={<CompanyJobListings/>} />
+          <Route path="/terms" element={<TermsAndConditions />} />
         </Route>
 
 

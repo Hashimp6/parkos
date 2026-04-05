@@ -340,7 +340,7 @@ export default function BusinessCard({ name, designation, company, phone, email,
           const a = document.createElement("a");
           a.download = `${name.replace(/\s+/g, "_")}_card.png`;
           a.href = canvas.toDataURL("image/png"); a.click();
-          const t = encodeURIComponent(`👤 *${name}*\n💼 ${designation} @ ${company}\n📞 ${phone}\n✉️ ${email}\n🔗 ${website}`);
+          const t = encodeURIComponent(`👤 *${name}*\n💼 ${designation} @ ${company}\n🔗 ${website}`);
           setTimeout(() => window.open(`https://wa.me/?text=${t}`, "_blank"), 800);
         }
       }, "image/png");
