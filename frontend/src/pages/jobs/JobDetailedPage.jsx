@@ -255,7 +255,7 @@ export default function JobDetailPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    axios.get(`${API_BASE}/jobs/${id}`)
+    axios.get(`${API_BASE}/jobs/details/${id}`)
       .then(res => {
         const raw = res.data?.data ?? res.data;
         setJob(normalizeJob(raw));

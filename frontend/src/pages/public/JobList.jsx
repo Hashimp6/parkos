@@ -82,31 +82,7 @@ function useIsMobile() {
   return m;
 }
 
-/* ─── Markdown renderer ───────────────────────────────────────────────── */
-function RenderDesc({ text }) {
-  if (!text?.trim()) return null;
-  return (
-    <div style={{ fontFamily: "'Manrope', sans-serif" }}>
-      {text.split("\n").map((line, i) => {
-        if (!line.trim()) return <div key={i} style={{ height: 10 }} />;
-        if (/^\*\*(.+)\*\*$/.test(line))
-          return (
-            <p key={i} style={{ fontWeight: 700, fontSize: 13, color: T.black, margin: "18px 0 8px", letterSpacing: "-0.01em" }}>
-              {line.replace(/\*\*/g, "")}
-            </p>
-          );
-        if (line.startsWith("- "))
-          return (
-            <div key={i} style={{ display: "flex", gap: 10, marginBottom: 6, alignItems: "flex-start" }}>
-              <div style={{ width: 4, height: 4, borderRadius: "50%", background: T.g400, flexShrink: 0, marginTop: 8 }} />
-              <p style={{ fontSize: 13, color: T.g600, lineHeight: 1.75, margin: 0 }}>{line.slice(2)}</p>
-            </div>
-          );
-        return <p key={i} style={{ fontSize: 13, color: T.g600, lineHeight: 1.8, margin: "0 0 4px" }}>{line}</p>;
-      })}
-    </div>
-  );
-}
+
 
 /* ─── Logo ────────────────────────────────────────────────────────────── */
 function Logo({ company, logo, size = 44 }) {
@@ -163,200 +139,7 @@ function Tag({ children }) {
   );
 }
 
-/* ─── Pill ────────────────────────────────────────────────────────────── */
-function Pill({ children, dark }) {
-  return (
-    <span style={{
-      padding: "3px 9px", borderRadius: 5,
-      background: dark ? T.black : T.g50,
-      border: dark ? "none" : `1px solid ${T.g100}`,
-      fontFamily: "'Manrope',sans-serif",
-      fontSize: 11, fontWeight: dark ? 700 : 400,
-      color: dark ? T.white : T.g600,
-      whiteSpace: "nowrap",
-    }}>
-      {children}
-    </span>
-  );
-}
 
-/* ─── Detail Panel ────────────────────────────────────────────────────── */
-function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile }) {
-  const min    = job.salary ?? job.salary;
-  const handleShare = async () => {
-    const url = `${window.location.origin}/jobs/${job._id}`;
-    const shareData = {
-      title: job.title,
-      text: `Check out this job: ${job.title} at ${job.company?.name ?? job.company}`,
-      url,
-    };
-    if (navigator.share) {
-      try { await navigator.share(shareData); } catch (_) {}
-    } else {
-      await navigator.clipboard.writeText(url);
-      // optionally show a small toast
-    }
-  };
-  const salary = !min? "Not mentioned" : min;
-  const posted = timeAgo(job.postedDate ?? job.postedAt);
-
-  useEffect(() => {
-    const fn = e => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", fn);
-    return () => document.removeEventListener("keydown", fn);
-  }, [onClose]);
-
-  const MetaRow = ({ icon, label, value }) =>
-    value ? (
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0", borderBottom: `1px solid ${T.g100}` }}>
-        <span style={{ fontSize: 15, width: 22, textAlign: "center", flexShrink: 0 }}>{icon}</span>
-        <span style={{ fontFamily: "'Manrope',sans-serif", fontSize: 11, color: T.g400, minWidth: 88, flexShrink: 0, fontWeight: 500 }}>{label}</span>
-        <span style={{ fontFamily: "'Manrope',sans-serif", fontSize: 13, fontWeight: 700, color: T.black }}>{value}</span>
-      </div>
-    ) : null;
-
-  const SLabel = ({ children }) => (
-    <p style={{ fontFamily: "'Manrope',sans-serif", fontSize: 9.5, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: T.g400, margin: "0 0 12px" }}>
-      {children}
-    </p>
-  );
-
-  const body = (
-    <>
-      {/* Header */}
-      <div style={{ padding: isMobile ? "20px 20px 18px" : "28px 30px 22px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
-          <Logo company={job.company} logo={job.company?.logo ?? job.companyLogo} size={isMobile ? 44 : 52} />
-          <div style={{ display: "flex", gap: 8 }}>
-            {/* <button onClick={() => onToggleSave(job._id)} title={isSaved ? "Unsave" : "Save"}
-              style={{ width: 34, height: 34, borderRadius: 8, border: `1.5px solid ${isSaved ? T.black : T.g200}`, background: isSaved ? T.black : T.white, cursor: "pointer", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}>
-              <span style={{ filter: isSaved ? "invert(1)" : "none" }}>🤍</span>
-            </button> */}
-           <button
-  onClick={handleShare}
-  title="Share job"
-  style={{ 
-    width: 34, height: 34, borderRadius: 8,
-    border: `1.5px solid ${T.g200}`,
-    background: T.white, cursor: "pointer",
-    color: T.g400, fontSize: 15,
-    display: "flex", alignItems: "center",
-    justifyContent: "center", transition: "border-color .15s",
-  }}
->
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-  <circle cx="18" cy="5" r="3"/>
-  <circle cx="6" cy="12" r="3"/>
-  <circle cx="18" cy="19" r="3"/>
-  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-</svg>
-</button> <button onClick={onClose}
-              style={{ width: 34, height: 34, borderRadius: 8, border: `1.5px solid ${T.g200}`, background: T.white, cursor: "pointer", color: T.g400, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", transition: "border-color .15s" }}>
-              ✕
-            </button>
-          </div>
-        </div>
-
-        <h2 style={{ fontFamily: "'DM Serif Display',serif", fontWeight: 400, fontSize: isMobile ? 22 : 26, color: T.black, margin: "0 0 5px", letterSpacing: "-0.03em", lineHeight: 1.15 }}>
-          {job.title}
-        </h2>
-
-        {((job.company?.name ?? job.company) || job.location) && (
-          <p style={{ fontFamily: "'Manrope',sans-serif", fontSize: 13, color: T.g400, margin: "0 0 16px", fontWeight: 500 }}>
-            {[job.company?.name ?? (typeof job.company === "string" ? job.company : null), job.location].filter(Boolean).join("  ·  ")}
-          </p>
-        )}
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          <WorkBadge type={job.workMode ?? job.workType} />
-          {job.jobType && <Pill>{job.jobType}</Pill>}
-          {job.businessPark && <Pill>{job.businessPark}</Pill>}
-          {job.isUrgent && (
-            <span style={{ padding: "3px 9px", borderRadius: 5, border: `1.5px solid ${T.black}`, fontFamily: "'Manrope',sans-serif", fontSize: 10, fontWeight: 700, color: T.black, letterSpacing: "0.07em", textTransform: "uppercase" }}>
-              Urgent
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Meta grid */}
-      <div style={{ padding: isMobile ? "18px 20px" : "20px 30px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
-        <SLabel>Job Details</SLabel>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
-          <div>
-            <MetaRow icon="💰" label="Salary"     value={salary} />
-            <MetaRow icon="💼" label="Type"       value={job.jobType} />
-            <MetaRow icon="🏢" label="Work mode"  value={job.workMode ?? job.workType} />
-          </div>
-          <div>
-            <MetaRow icon="🕐" label="Experience" value={job.experienceRequired ? `${job.experienceRequired} yr${Number(job.experienceRequired) !== 1 ? "s" : ""}` : null} />
-            <MetaRow icon="🏙️" label="Park"       value={job.businessPark} />
-            <MetaRow icon="📍" label="Location"   value={job.location} />
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 14, marginTop: 8, flexWrap: "wrap" }}>
-          {posted && <span style={{ fontFamily: "'Manrope',sans-serif", fontSize: 11, color: T.g400 }}>🕓 Posted {posted}</span>}
-          {job.lastDateToApply && (
-            <span style={{ fontFamily: "'Manrope',sans-serif", fontSize: 11, color: T.g400 }}>
-              ⏳ Deadline {new Date(job.lastDateToApply).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Skills */}
-      {(job.tags?.length > 0 || job.skills?.length > 0) && (
-        <div style={{ padding: isMobile ? "14px 20px" : "16px 30px", borderBottom: `1px solid ${T.g100}`, flexShrink: 0 }}>
-          <SLabel>Skills &amp; Tags</SLabel>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {(job.skills?.length ? job.skills : job.tags ?? []).map((t, i) => <Tag key={i}>{t}</Tag>)}
-          </div>
-        </div>
-      )}
-
-      {/* Description */}
-      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "18px 20px" : "24px 30px" }}>
-        <SLabel>About the role</SLabel>
-        {(job.description || job.shortDescription)
-          ? <RenderDesc text={job.description || job.shortDescription} />
-          : <p style={{ fontFamily: "'Manrope',sans-serif", fontSize: 13, color: T.g400 }}>No description available.</p>
-        }
-      </div>
-
-      {/* CTA */}
-      <div style={{ padding: isMobile ? "14px 20px" : "20px 30px", borderTop: `1px solid ${T.g100}`, flexShrink: 0, background: T.white }}>
-        <button onClick={() => onApply(job)}
-          onMouseEnter={e => e.currentTarget.style.opacity = ".82"}
-          onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-          style={{ width: "100%", padding: "14px", background: T.black, color: T.white, border: "none", borderRadius: 12, fontFamily: "'Manrope',sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer", letterSpacing: "-0.01em", transition: "opacity .15s" }}>
-          Apply Now →
-        </button>
-      </div>
-    </>
-  );
-
-  if (isMobile) {
-    return (
-      <>
-        <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)", animation: "fdIn .2s ease" }} />
-        <div style={{ position: "fixed", inset: "5vh 0 0 0", zIndex: 201, background: T.white, borderRadius: "20px 20px 0 0", display: "flex", flexDirection: "column", animation: "sheetUp .3s cubic-bezier(0.22,1,0.36,1)", overflow: "hidden" }}>
-          <div style={{ width: 36, height: 4, borderRadius: 99, background: T.g200, margin: "12px auto 0", flexShrink: 0 }} />
-          {body}
-        </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.25)", backdropFilter: "blur(3px)", animation: "fdIn .2s ease" }} />
-      <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "min(560px, 54vw)", zIndex: 201, background: T.white, borderLeft: `1px solid ${T.g100}`, display: "flex", flexDirection: "column", animation: "panelIn .3s cubic-bezier(0.22,1,0.36,1)", boxShadow: "-16px 0 48px rgba(0,0,0,0.07)" }}>
-        {body}
-      </div>
-    </>
-  );
-}
 
 /* ─── Job Card ────────────────────────────────────────────────────────── */
 function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, isSelected }) {
@@ -366,7 +149,7 @@ function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile,
   const active    = isSelected || hov;
   const shownTags = (job.tags || []).slice(0, isMobile ? 2 : 3);
   const extra     = (job.tags?.length || 0) - shownTags.length;
-console.log("KKK",job);
+
 
   return (
     <div
@@ -864,13 +647,7 @@ export default function JobListings({
         )}
       </div>
 
-      {openJob && (
-        <DetailPanel
-          job={openJob} isMobile={isMobile}
-          onClose={() => setOpenJob(null)} onApply={handleApply}
-          isSaved={savedIds.has(openJob._id)} onToggleSave={toggleSave}
-        />
-      )}
+     
 
 {toast && <Toast data={toast} onClose={() => setToast(null)} />}
     </div>
