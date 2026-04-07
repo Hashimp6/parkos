@@ -221,7 +221,7 @@ exports.getJobById = async (req, res) => {
         .json({ success: false, message: "Invalid job ID." });
     }
 
-    const job = await Job.findById(id).populate("company", "name logo website");
+    const job = await Job.findById(id).populate("company", "companyName logo website");
 
     if (!job) {
       return res

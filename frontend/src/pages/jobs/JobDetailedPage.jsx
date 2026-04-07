@@ -299,6 +299,8 @@ export default function JobDetailPage() {
 
   /* ── Share ── */
   const handleShare = async () => {
+    console.log("ss",job);
+    
     const url = window.location.href;
     const shareData = { title: job?.title, text: `Check out: ${job?.title} at ${job?.company}`, url };
     if (navigator.share) {
