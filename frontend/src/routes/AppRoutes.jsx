@@ -72,6 +72,7 @@ function AppRoutes() {
         {/* ── Fully public ─────────────────────────────────────────────────── */}
         <Route path="/"                    element={<Home />} />
         <Route path="/jobs"                element={<JobListings />} />
+        <Route path="/jobs/details/:id"             element={<JobDetailPage />} />
         <Route path="/freelance"           element={<FreelancerCategories />} />
         <Route path="/company/search"             element={<CompanyServices />} />
         <Route path="/company/filter"             element={<Filter />} />
@@ -122,7 +123,6 @@ function AppRoutes() {
           <Route path="/companyjobs"           element={<CompanyJobsAdmin />} />
           <Route path="/jobslist"              element={<CompanyJobsAdmin />} />
           <Route path="/jobs/form"             element={<JobForm />} />
-          <Route path="/jobs/details/:id"             element={<JobDetailPage />} />
           <Route path="/company/jobs/:id"      element={<JobDashboard />} />
 
         </Route>
