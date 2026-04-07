@@ -62,6 +62,7 @@ import Company9 from "../components/company/Company9";
 import TermsAndConditions from "../pages/public/Termsandcondition";
 import Filter from "../pages/company/Filter";
 import CompanyJobListings from "../pages/public/Jobs";
+import JobDetailPage from "../pages/jobs/JobDetailedPage";
 
 function AppRoutes() {
   return (
@@ -121,6 +122,7 @@ function AppRoutes() {
           <Route path="/companyjobs"           element={<CompanyJobsAdmin />} />
           <Route path="/jobslist"              element={<CompanyJobsAdmin />} />
           <Route path="/jobs/form"             element={<JobForm />} />
+          <Route path="/jobs/details/:id"             element={<JobDetailPage />} />
           <Route path="/company/jobs/:id"      element={<JobDashboard />} />
 
         </Route>

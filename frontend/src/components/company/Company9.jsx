@@ -263,8 +263,8 @@ function Hero({ company }) {
           display: "flex", justifyContent: "center", gap: "3rem", flexWrap: "wrap",
           animation: "fadeUp 0.9s 0.45s ease both",
         }}>
-          {company.foundedYear && <HeroStat label="Est." val={company.foundedYear} />}
-          {company.companySize && <HeroStat label="Team" val={company.companySize} />}
+          {/* {company.foundedYear && <HeroStat label="Est." val={company.foundedYear} />}
+          {company.companySize && <HeroStat label="Team" val={company.companySize} />} */}
           {company.services?.length > 0 && <HeroStat label="Services" val={`${company.services.length}+`} />}
         </div>
       </div>

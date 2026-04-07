@@ -594,8 +594,8 @@ export default function Company5({ data: rawData }) {
             {/* Info cards grid */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               {[
-                has(D.industry)     && { l: "Industry",   v: D.industry     },
-                has(D.companySize)  && { l: "Team Size",  v: D.companySize  },
+                // has(D.industry)     && { l: "Industry",   v: D.industry     },
+                // has(D.companySize)  && { l: "Team Size",  v: D.companySize  },
                 has(D.foundedYear)  && { l: "Founded",    v: D.foundedYear  },
                 has(D.businessPark) && D.businessPark !== "Other" && { l: "Location", v: D.businessPark },
               ].filter(Boolean).map(({ l, v }) => (
@@ -736,7 +736,7 @@ export default function Company5({ data: rawData }) {
       {/* ══════════════════════════════════════════
           CLIENTS
       ══════════════════════════════════════════ */}
-      {has(D.clients) && (
+      {/* {has(D.clients) && (
         <section id="sec-clients" className="section-pad" style={{ ...sectionPad, background: W.soft }}>
           <div style={maxW}>
             <div style={{ textAlign: "center", marginBottom: 56 }}>
@@ -764,12 +764,12 @@ export default function Company5({ data: rawData }) {
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* ══════════════════════════════════════════
           GALLERY
       ══════════════════════════════════════════ */}
-      {has(D.gallery) && (
+      {/* {has(D.gallery) && (
         <section id="sec-gallery" className="section-pad" style={{ ...sectionPad, background: W.off }}>
           <div style={maxW}>
             <div style={{ textAlign: "center", marginBottom: 56 }}>
@@ -805,7 +805,7 @@ export default function Company5({ data: rawData }) {
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* ══════════════════════════════════════════
           CONTACT

@@ -133,7 +133,16 @@ function NavBar({ company }) {
   }, []);
 
   const links = ["About", "Services", "Projects", "Team", "Clients", "Contact"];
+  const hasLogo = (logo) => logo && logo.trim() !== "";
 
+  const getInitials = (name = "") => {
+    return name
+      .split(" ")
+      .map(word => word[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
   return (
     <nav
       style={{
@@ -155,24 +164,39 @@ function NavBar({ company }) {
     >
       {/* Logo */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            background: `linear-gradient(135deg, ${COLORS.tealBright}, ${COLORS.tealDark})`,
-            borderRadius: 8,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontWeight: 800,
-            fontSize: 14,
-            color: "#fff",
-            fontFamily: "serif",
-            letterSpacing: 1,
-          }}
-        >
-          {company.companyName.slice(0, 2).toUpperCase()}
-        </div>
+      <div
+  style={{
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    overflow: "hidden",
+    background: hasLogo(company.logo)
+      ? "#fff"
+      : `linear-gradient(135deg, ${COLORS.tealBright}, ${COLORS.tealDark})`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: 800,
+    fontSize: 14,
+    color: "#fff",
+    fontFamily: "serif",
+    letterSpacing: 1,
+  }}
+>
+  {hasLogo(company.logo) ? (
+    <img
+      src={company.logo}
+      alt={company.companyName}
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      }}
+    />
+  ) : (
+    getInitials(company.companyName)
+  )}
+</div>
         <span
           style={{
             color: COLORS.light,
@@ -386,12 +410,12 @@ function Hero({ company }) {
             flexWrap: "wrap",
           }}
         >
-          {company.foundedYear && (
+          {/* {company.foundedYear && (
             <Stat label="Founded" value={company.foundedYear} />
           )}
           {company.companySize && (
             <Stat label="Team Size" value={company.companySize} />
-          )}
+          )} */}
           {company.services?.length > 0 && (
             <Stat label="Services" value={company.services.length + "+"} />
           )}

@@ -973,8 +973,8 @@ export default function Company3({ data }) {
       <Projects company={companyData} />
       <Team company={companyData} />
       <Clients company={companyData} />
-      <Gallery company={companyData} />
-      <Contact company={companyData} />
+      {/* <Gallery company={companyData} />
+      <Contact company={companyData} /> */}
       <Footer company={companyData} />
     </div>
   );

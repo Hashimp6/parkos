@@ -80,6 +80,16 @@ const avatarGradients = [
 function Nav({ company }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const hasLogo = (logo) => logo && logo.trim() !== "";
+
+const getInitials = (name = "") => {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+};
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handler);
@@ -93,12 +103,29 @@ function Nav({ company }) {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 bg-amber-400 rounded-sm flex items-center justify-center">
-            <span className="text-zinc-950 font-black text-sm tracking-tighter">NC</span>
-          </div>
-          <span className="text-white font-bold text-lg tracking-tight">{company.companyName}</span>
-        </a>
+      <a href="#" className="flex items-center gap-3 group">
+  <div className="w-8 h-8 rounded-sm overflow-hidden flex items-center justify-center
+                  bg-gradient-to-br from-amber-400 to-amber-500">
+    
+    {hasLogo(company.logo) ? (
+      <img
+        src={company.logo}
+        alt={company.companyName}
+        className="w-full h-full object-cover"
+        onError={(e) => (e.target.style.display = "none")}
+      />
+    ) : (
+      <span className="text-zinc-950 font-black text-sm tracking-tighter">
+        {getInitials(company.companyName)}
+      </span>
+    )}
+    
+  </div>
+
+  <span className="text-white font-bold text-lg tracking-tight">
+    {company.companyName}
+  </span>
+</a>
         <ul className="hidden md:flex gap-8">
           {links.map((l) => (
             <li key={l}>
@@ -207,8 +234,8 @@ function Hero({ company }) {
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 {[
-                  { label: "Founded", value: company.foundedYear },
-                  { label: "Team Size", value: company.companySize },
+                  // { label: "Founded", value: company.foundedYear },
+                  // { label: "Team Size", value: company.companySize },
                   { label: "Industry", value: company.industry },
                   { label: "Location", value: company.address.city },
                 ].map((s) => (
@@ -634,8 +661,8 @@ export default function Company2({ data}) {
       <Services company={companyData} />
       <Projects company={companyData} />
       <Team company={companyData} />
-      <Clients company={companyData} />
-      <Gallery company={companyData} />
+      {/* <Clients company={companyData} />
+      <Gallery company={companyData} /> */}
       <Contact company={companyData} />
       <Footer company={companyData} />
 

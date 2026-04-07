@@ -1284,8 +1284,8 @@ export default function Company6({ data }) {
       {has(company.services) && <Services company={company} />}
       {has(company.projects) && <Projects company={company} />}
       {has(company.members)  && <Team     company={company} />}
-      {has(company.clients)  && <Clients  company={company} />}
-      {has(company.gallery)  && <Gallery  company={company} />}
+      {/* {has(company.clients)  && <Clients  company={company} />} */}
+      {/* {has(company.gallery)  && <Gallery  company={company} />} */}
       <Contact company={company} />
       <Footer  company={company} />
     </>

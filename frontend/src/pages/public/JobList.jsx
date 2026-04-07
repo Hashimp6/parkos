@@ -361,6 +361,7 @@ function DetailPanel({ job, onClose, onApply, isSaved, onToggleSave, isMobile })
 /* ─── Job Card ────────────────────────────────────────────────────────── */
 function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile, isSelected }) {
   const [hov, setHov] = useState(false);
+  const navigate = useNavigate();
   const posted    = timeAgo(job.postedAt);
   const active    = isSelected || hov;
   const shownTags = (job.tags || []).slice(0, isMobile ? 2 : 3);
@@ -371,7 +372,7 @@ console.log("KKK",job);
     <div
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
-      onClick={() => onOpen(job)}
+      onClick={() => navigate(`/jobs/details/${job._id}`)}
       style={{
         position: "relative",
         background: T.white,
