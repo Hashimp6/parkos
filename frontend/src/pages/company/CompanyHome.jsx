@@ -518,7 +518,7 @@ export default function CompanyHome({ onNavigate }) {
                 <p className="cx-quick-title">Post a Job Opening</p>
                 <p className="cx-quick-sub">Reach thousands of qualified candidates today</p>
               </div>
-              <button className="cx-quick-btn" onClick={()=>goto("/jobs/form")}>
+              <button className="cx-quick-btn" onClick={()=>goto("/jobs/post-job")}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Post Now
               </button>

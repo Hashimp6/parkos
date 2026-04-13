@@ -338,7 +338,7 @@ export default function CompanyJobsAdmin() {
           </div>
 
           <button
-            onClick={() => navigate("/jobs/form")}
+            onClick={() => navigate("/jobs/post-job")}
             className="flex items-center gap-1.5 px-3.5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-800 active:scale-[0.98] transition-all"
           >
             <IconPlus />
@@ -382,7 +382,7 @@ export default function CompanyJobsAdmin() {
                 key={job._id}
                 job={job}
                 onView={() => navigate(`/company/jobs/${job._id}`, { state: { job } })}
-                onEdit={() => navigate("/jobs/form", { state: { job } })}
+                onEdit={() => navigate("/jobs/post-job", { state: { job } })}
                 onDelete={() => setDeleteTarget(job)}
                 onToggle={() => toggleActive(job._id, job.isActive)}
               />

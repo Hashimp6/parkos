@@ -122,7 +122,7 @@ function AppRoutes() {
           <Route path="/company/layout-select" element={<CompanyLayoutSelector />} />
           <Route path="/companyjobs"           element={<CompanyJobsAdmin />} />
           <Route path="/jobslist"              element={<CompanyJobsAdmin />} />
-          <Route path="/jobs/form"             element={<JobForm />} />
+          <Route path="/jobs/post-job"             element={<JobForm />} />
           <Route path="/company/jobs/:id"      element={<JobDashboard />} />
 
         </Route>

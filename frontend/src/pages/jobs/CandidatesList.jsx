@@ -185,7 +185,7 @@ function JobDetailsPage({ job, applications, onViewApplicants, loadingApps, onBa
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
-              onClick={() => navigate("/jobs/form", { state: { job } })}
+              onClick={() => navigate("/jobs/post-job", { state: { job } })}
               className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors font-medium"
             >
               <IconEdit size={12} />
