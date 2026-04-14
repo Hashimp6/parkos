@@ -299,7 +299,8 @@ console.log("candidateId:", candidateId);
     if (req.files?.cv) {
       const result = await uploadToCloudinary(
         req.files.cv[0].buffer,
-        "candidate_cvs"
+        "candidate_cvs",
+        "raw" // ✅ THIS FIXES YOUR ISSUE
       );
       setPayload.cv = result.secure_url;
     }

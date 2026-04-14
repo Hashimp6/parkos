@@ -268,7 +268,7 @@ function JobDetailsPage({ job, applications, onViewApplicants, loadingApps, onBa
             <p className="text-xs text-white/40 mt-0.5">
               {loadingApps
                 ? "Fetching from server"
-                : `${applications.length > 0 ? applications.length : "0"} people applied for this role`}
+                : `${job.applicationsCount > 0 ? job.applicationsCount : "0"} people applied for this role`}
             </p>
           </div>
         </div>
@@ -344,19 +344,30 @@ function ApplicantDrawer({ app, onClose, onStatusChange }) {
 
           {/* CV */}
           <div>
-            <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Resume / CV</p>
-            <button
-              onClick={() => alert(`Downloading: ${app.candidate.cv}\n\nReplace with real download URL from your backend.`)}
-              className="w-full flex items-center gap-3 p-3 rounded-xl border border-zinc-200 hover:bg-zinc-50 transition-colors text-left"
-            >
-              <div className="w-9 h-9 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center text-xs font-bold text-red-500 flex-shrink-0">PDF</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-zinc-800 truncate">{app.candidate.cv}</p>
-                <p className="text-xs text-zinc-400">Click to download</p>
-              </div>
-              <span className="text-zinc-400 text-sm">↓</span>
-            </button>
-          </div>
+  <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+    Resume / CV
+  </p>
+
+  <a
+    href={app.candidate.cv}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-full flex items-center gap-3 p-3 rounded-xl border border-zinc-200 hover:bg-zinc-50 transition-colors text-left"
+  >
+    <div className="w-9 h-9 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center text-xs font-bold text-red-500 flex-shrink-0">
+      PDF
+    </div>
+
+    <div className="flex-1 min-w-0">
+      <p className="text-sm font-medium text-zinc-800 truncate">
+        {app.candidate.cv}
+      </p>
+      <p className="text-xs text-zinc-400">Click to view / download</p>
+    </div>
+
+    <span className="text-zinc-400 text-sm">↓</span>
+  </a>
+</div>
 
           {/* Cover Letter */}
           <div>
