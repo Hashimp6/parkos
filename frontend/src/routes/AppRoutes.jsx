@@ -46,23 +46,13 @@ import AddServiceForm from "../pages/freelance/Form";
 import FreelanceDashboard from "../pages/freelance/Dashbord";
 
 // Layout components
-import Company4 from "../components/company/Layout4";
-import Company6 from "../components/company/Company6";
-import Company7 from "../components/company/Company7";
-import Portfolio1 from "../components/candidate/Layout1";
-import Portfolio2 from "../components/candidate/Layout2";
-import Portfolio3 from "../components/candidate/Layout3";
-import Portfolio4 from "../components/candidate/Layout4";
-import Company8 from "../components/company/Company8";
-import Company5 from "../components/company/Layout5";
-import Layout3 from "../components/company/Layout3";
-import Company2 from "../components/company/Layout2";
-import Company1 from "../components/company/Layout1";
+
 import Company9 from "../components/company/Company9";
 import TermsAndConditions from "../pages/public/Termsandcondition";
 import Filter from "../pages/company/Filter";
 import CompanyJobListings from "../pages/public/Jobs";
 import JobDetailPage from "../pages/jobs/JobDetailedPage";
+import AdminJobsPanel from "../pages/admin/JobsDash";
 
 function AppRoutes() {
   return (
@@ -89,7 +79,7 @@ function AppRoutes() {
         <Route path="/preview/:layoutId"   element={<PreviewPage />} />
         <Route path="/company-preview/:id" element={<CmpnyPreviewPage />} />
         <Route path="/profile12"           element={<Company9/>} />
-
+        <Route path="/admin-jobdash"           element={<AdminJobsPanel/>} />
         {/* ── Guest-only (redirect if already logged in) ───────────────────── */}
         <Route element={<GuestRoute />}>
           <Route path="/login"                      element={<Login />} />
