@@ -57,7 +57,7 @@ exports.createJob = async (req, res) => {
 
     const job = await Job.create({
       company,
-      companyName: secondName || "",
+      secondName: secondName || "",
       role,
       department,
       jobCode,
@@ -109,6 +109,7 @@ exports.updateJob = async (req, res) => {
       salary,
       role,
       department,
+      secondName ,
       jobCode,
       description,
       skills,
@@ -130,6 +131,7 @@ exports.updateJob = async (req, res) => {
       department,
       jobCode,
       description,
+      secondName: secondName || "",
       skills,
       salary,
       currency,

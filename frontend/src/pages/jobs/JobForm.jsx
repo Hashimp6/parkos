@@ -418,7 +418,7 @@ export default function JobForm({ onSuccess, onCancel }) {
     setLoading(true);
   
     try {
-      console.log("cmmmee",company);
+     
       
       const payload = {
         company: company._id,
@@ -439,6 +439,7 @@ export default function JobForm({ onSuccess, onCancel }) {
         isActive: form.isActive,
         businessPark: form.businessPark,
       };
+
   
       const isEdit = !!initialData?._id;
   
