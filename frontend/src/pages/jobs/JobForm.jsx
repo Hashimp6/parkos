@@ -21,6 +21,7 @@ const INITIAL_FORM = {
   experienceRequired: "", location: "",
   businessPark: "Other",
   openings: 1, lastDateToApply: "", isActive: true,
+    secondName: ""
 };
 
 const JOB_TYPES = ["Full-time", "Part-time", "Internship", "Contract"];
@@ -423,6 +424,7 @@ export default function JobForm({ onSuccess, onCancel }) {
         company: company._id,
         role: form.role.trim(),
         department: form.department.trim(),
+        secondName:  form.secondName.trim() ,
         jobCode: form.jobCode.trim() || undefined,
         description: form.description.trim(),
         skills: form.skills,
@@ -510,6 +512,17 @@ Hi-{company?.companyName}
                   </div>
                  
                 </div>
+                {company?.companyName === "Admin" && (
+  <div className="field">
+    <Label required>Company Name</Label>
+    <input
+      className="jf-input"
+      placeholder="Enter company name"
+      value={form.secondName}
+      onChange={(e) => set("secondName", e.target.value)}
+    />
+  </div>
+)}
                 <div className="field">
                   <Label>Description</Label>
                   <textarea className="jf-input" rows={5}

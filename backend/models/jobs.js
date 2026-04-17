@@ -53,7 +53,11 @@ const jobSchema = new mongoose.Schema(
       min: 0,
     },
 
-   
+    secondName: {
+      type: String,
+      trim: true,
+      default: "", // for unregistered companies (poster-based jobs)
+    },
 
     currency: {
       type: String,

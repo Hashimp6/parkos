@@ -150,6 +150,7 @@ function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile,
   const shownTags = (job.tags || []).slice(0, isMobile ? 2 : 3);
   const extra     = (job.tags?.length || 0) - shownTags.length;
 
+console.log("nnnn",job);
 
   return (
     <div
@@ -207,7 +208,7 @@ function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile,
         )}
       </h3>
 
-      {(job.company?.companyName || job.location) && (
+      {(job.company || job.secondName || job.location) && (
   <p
     style={{
       fontFamily: "'Manrope',sans-serif",
@@ -217,16 +218,18 @@ function JobCard({ job, index, onOpen, onApply, isSaved, onToggleSave, isMobile,
       fontWeight: 500,
     }}
   >
-    {job.company && (
+    {/* ✅ Company Name Logic */}
+    {(job.company || job.secondName) && (
       <strong style={{ color: T.g600, fontWeight: 600 }}>
-        {job.company}
+        {job.company === "Admin"
+          ? job.secondName
+          : job.company?.companyName || job.company}
       </strong>
     )}
 
-    {job.company && job.location && (
-      <span style={{ margin: "0 6px", color: T.g300 }}>•</span>
-    )}
+  
 
+    {/* ✅ Location */}
     {job.location && <span>{job.location}</span>}
   </p>
 )}
@@ -416,7 +419,6 @@ function SectionLabel({ children, count }) {
 export default function JobListings({
   onApply,
   title  = "Open Positions",
-  apiUrl = `${API_BASE}/jobs`,
 }) {
   const isMobile = useIsMobile();
   const { user } = useUser();

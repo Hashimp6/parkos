@@ -23,6 +23,7 @@ exports.createJob = async (req, res) => {
   try {
     const {
       company,
+      secondName,
       role,
       department,
       jobCode,
@@ -56,6 +57,7 @@ exports.createJob = async (req, res) => {
 
     const job = await Job.create({
       company,
+      companyName: secondName || "",
       role,
       department,
       jobCode,
