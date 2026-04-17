@@ -412,7 +412,14 @@ export default function JobDetailPage() {
                     fontFamily: "'Manrope',sans-serif", fontSize: 13,
                     color: T.g400, fontWeight: 500, margin: 0,
                   }}>
-                    {[job.company, job.location].filter(Boolean).join("  ·  ")}
+                    {
+                    [
+                      job.company === "Admin" ? job.secondName : job.company,
+                      job.location
+                    ]
+                      .filter(Boolean)
+                      .join("  ·  ")
+                    }
                   </p>
                 </div>
               </div>

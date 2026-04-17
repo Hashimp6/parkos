@@ -218,19 +218,20 @@ console.log("nnnn",job);
       fontWeight: 500,
     }}
   >
-    {/* ✅ Company Name Logic */}
     {(job.company || job.secondName) && (
       <strong style={{ color: T.g600, fontWeight: 600 }}>
         {job.company === "Admin"
           ? job.secondName
-          : job.company?.companyName || job.company}
+          : job.company}
       </strong>
     )}
 
-  
-
-    {/* ✅ Location */}
-    {job.location && <span>{job.location}</span>}
+    {job.location && (
+      <span style={{ marginLeft: 6 }}>
+        {(job.company || job.secondName) && "• "}
+        {job.location}
+      </span>
+    )}
   </p>
 )}
 
