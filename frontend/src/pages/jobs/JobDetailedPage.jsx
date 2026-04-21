@@ -302,7 +302,7 @@ export default function JobDetailPage() {
    
     
     const url = window.location.href;
-    const shareData = { title: job?.title, text: `Looking for a ${job?.title} role? 🚀 Apply now at ${job?.company}!`, url };
+    const shareData = { title: job?.title, text: `Are you looking for a job as a ${job?.title}?\n\nApply now at ${job?.company}.\n\nClick here: ${url}`, url };
     if (navigator.share) {
       try { await navigator.share(shareData); } catch (_) {}
     } else {

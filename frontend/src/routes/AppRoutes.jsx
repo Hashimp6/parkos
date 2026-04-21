@@ -53,6 +53,7 @@ import Filter from "../pages/company/Filter";
 import CompanyJobListings from "../pages/public/Jobs";
 import JobDetailPage from "../pages/jobs/JobDetailedPage";
 import AdminJobsPanel from "../pages/admin/JobsDash";
+import CVBuilderPage from "../pages/cv/PreviewPage";
 
 function AppRoutes() {
   return (
@@ -69,6 +70,7 @@ function AppRoutes() {
          <Route path="/clock"                    element={<ClockScroll3D/>} />
          <Route path="/company-jobs/:companyId"                    element={<CompanyJobListings/>} />
           <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/cv" element={<CVBuilderPage/>} />
         </Route>
 
 

@@ -70,7 +70,7 @@ const candidateSchema = new mongoose.Schema(
     },
     layoutType: {
       type: Number,
-      default: 1,
+      default: 2,
     },
     profileId: {
       type: String,

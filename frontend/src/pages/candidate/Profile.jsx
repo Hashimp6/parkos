@@ -560,6 +560,13 @@ export default function CandidateHomeSection({ onNavigate }) {
                   </button>
                 
                 </div>
+                <div className="hx-btns" style={{ marginTop: "12px" }}>
+  <button className="hx-btn hx-btn-dark" onClick={()=>navigate("/cv", {
+  state: { candidate: user } // 👈 pass full user object
+})}>
+    CV download
+  </button>
+</div>
               </div>
             </div>
 
