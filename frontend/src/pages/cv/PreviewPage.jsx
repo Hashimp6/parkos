@@ -2293,180 +2293,224 @@ function SectionDivider({ children }) { return (<div className="flex items-cente
 // ─── MAIN PAGE COMPONENT ──────────────────────────────────────────────────────
 export default function CVBuilderPage() {
     const { state } = useLocation();
-
+  
     const candidate =
       state?.candidate ||
       JSON.parse(localStorage.getItem("candidate"));
-      const hasRealData = !!candidate;
-      const [cvData, setCvData] = useState(() =>
+    const hasRealData = !!candidate;
+  
+    const [cvData, setCvData] = useState(() =>
       candidate ? normalizeCandidateData(candidate) : {
-        name: "",
-        title: "",
-        email: "",
-        phone: "",
-        location: "",
-        linkedin: "",
-        photo: "",
-        summary: "",
-        skills: "",
-        experience: [],
-        education: [],
+        name: "", title: "", email: "", phone: "",
+        location: "", linkedin: "", photo: "", summary: "",
+        skills: "", experience: [], education: [],
       }
     );
-    
+  
     const [showEdit, setShowEdit] = useState(!hasRealData);
-  const [activeLayout, setActiveLayout] = useState( 2);
-
-  const previewRef = useRef(null);
-  const ActiveLayout = LAYOUT_COMPONENTS[activeLayout] || Layout3;
-
-  const handleDownload = () => {
-    const html = previewRef.current?.innerHTML || "";
-    const win = window.open("", "_blank");
+    const [activeLayout, setActiveLayout] = useState(2);
+    const [showLayoutPicker, setShowLayoutPicker] = useState(false);
   
-    win.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${cvData.name || "CV"}</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-     <style>
-  * {
-    box-sizing: border-box;
-  }
-
-  @page {
-    size: A4;
-    margin: 0; /* 🔥 removes browser margins */
-  }
-
-  body {
-    margin: 0;
-    padding: 0;
-    background: white;
-  }
-
-  #cv-print {
-    width: 794px;
-    height: 1123px; /* 🔥 exact A4 height */
-    overflow: hidden; /* 🔥 prevents spill to next page */
-  }
-
-  /* Prevent page breaking inside */
-  * {
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-
-  /* Fix flex breaking */
-  .flex {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-  }
-
-  @media print {
-    html, body {
-      width: 794px;
-      height: 1123px;
-      overflow: hidden;
-    }
-
-    body {
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-  }
-</style>
-      </head>
-      <body>
-        <div id="cv-print">
-          ${html}
-        </div>
-      </body>
-      </html>
-    `);
+    const previewRef = useRef(null);
+    const ActiveLayout = LAYOUT_COMPONENTS[activeLayout] || Layout3;
   
-    win.document.close();
+    const handleDownload = () => {
+      const html = previewRef.current?.innerHTML || "";
+      const win = window.open("", "_blank");
+      win.document.write(`
+        <!DOCTYPE html><html><head>
+          <title>${cvData.name || "CV"}</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>
+            * { box-sizing: border-box; }
+            @page { size: A4; margin: 0; }
+            body { margin: 0; padding: 0; background: white; }
+            #cv-print { width: 794px; height: 1123px; overflow: hidden; }
+            * { page-break-inside: avoid; break-inside: avoid; }
+            .flex { display: flex !important; flex-wrap: nowrap !important; }
+            @media print {
+              html, body { width: 794px; height: 1123px; overflow: hidden; }
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+          </style>
+        </head>
+        <body><div id="cv-print">${html}</div></body></html>
+      `);
+      win.document.close();
+      setTimeout(() => { win.focus(); win.print(); }, 500);
+    };
   
-    setTimeout(() => {
-      win.focus();
-      win.print();
-    }, 500);
-  };
-
-  return (
-    <div style={{ display: "flex", height: "100vh", background: "#f3f4f6", fontFamily: "sans-serif", overflow: "hidden" }}>
-
-      {/* ── Left Sidebar: 220px wide ── */}
-      <aside style={{
-        width: 220,
-        flexShrink: 0,
-        background: "#fff",
-        borderRight: "1px solid #e5e7eb",
+    return (
+      <div style={{
         display: "flex",
-        flexDirection: "column",
+        height: "100dvh",          // dvh for mobile (no address bar overlap)
+        background: "#f3f4f6",
+        fontFamily: "sans-serif",
         overflow: "hidden",
+        flexDirection: "column",   // stack vertically on all sizes
       }}>
-        <div style={{ padding: "14px 10px 10px", borderBottom: "1px solid #f0f0f0" }}>
-          <p style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: 2, textTransform: "uppercase", margin: 0 }}>Layouts</p>
-        </div>
-        {/* List of square thumbnails */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "10px", display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
-          {LAYOUTS.map((layout) => (
-            <LayoutThumb
-              key={layout.id}
-              layout={layout}
-              cvData={defaultData} 
-              active={activeLayout === layout.id}
-              onClick={() => setActiveLayout(layout.id)}
-            />
-          ))}
-        </div>
-      </aside>
-
-      {/* ── Main right area ── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        {/* Header */}
-        <header style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "10px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#111" }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>{LAYOUTS.find((l) => l.id === activeLayout)?.name}</span>
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
+  
+        {/* ── Header ── */}
+        <header style={{
+          background: "#fff",
+          borderBottom: "1px solid #e5e7eb",
+          padding: "10px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexShrink: 0,
+          gap: 8,
+        }}>
+          {/* Layout picker toggle (replaces sidebar on mobile) */}
+          <button
+            onClick={() => setShowLayoutPicker(v => !v)}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "8px 12px", fontSize: 13, fontWeight: 500,
+              color: "#374151", background: "#f9fafb",
+              border: "1px solid #d1d5db", borderRadius: 8, cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <svg width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            <span style={{ display: "none", "@media (min-width: 480px)": { display: "inline" } }}>
+              {LAYOUTS.find((l) => l.id === activeLayout)?.name || "Layout"}
+            </span>
+            Layouts
+          </button>
+  
+          {/* Action buttons */}
+          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
             <button
               onClick={() => setShowEdit(true)}
-              style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", fontSize: 13, fontWeight: 500, color: "#374151", background: "#fff", border: "1px solid #d1d5db", borderRadius: 8, cursor: "pointer" }}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "8px 12px", fontSize: 13, fontWeight: 500,
+                color: "#374151", background: "#fff",
+                border: "1px solid #d1d5db", borderRadius: 8, cursor: "pointer",
+              }}
             >
-              <svg width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>
-              Edit Details
+              <svg width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+              </svg>
+              <span>Edit</span>
             </button>
             <button
               onClick={handleDownload}
-              style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", fontSize: 13, fontWeight: 600, color: "#fff", background: "#111", border: "none", borderRadius: 8, cursor: "pointer" }}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "8px 14px", fontSize: 13, fontWeight: 600,
+                color: "#fff", background: "#111",
+                border: "none", borderRadius: 8, cursor: "pointer",
+              }}
             >
-              <svg width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-              Download PDF
+              <svg width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              <span>PDF</span>
             </button>
           </div>
         </header>
-
-        {/* CV Preview */}
-        <main style={{ flex: 1, overflow: "auto", background: "#f3f4f6", display: "flex", justifyContent: "center", padding: "32px 16px" }}>
-          <div style={{ width: 794, flexShrink: 0 }}>
-            <div ref={previewRef} style={{ width: 794, minHeight: 1050, background: "#fff", boxShadow: "0 4px 24px rgba(0,0,0,0.12)" }}>
-            <ActiveLayout d={hasRealData ? cvData : (cvData.name ? cvData : defaultData)} />
+  
+        {/* ── Layout Picker Dropdown (replaces sidebar) ── */}
+        {showLayoutPicker && (
+          <>
+            {/* Backdrop */}
+            <div
+              onClick={() => setShowLayoutPicker(false)}
+              style={{
+                position: "fixed", inset: 0, zIndex: 40,
+                background: "rgba(0,0,0,0.2)",
+              }}
+            />
+            {/* Drawer */}
+            <div style={{
+              position: "fixed", top: 53, left: 0, right: 0, zIndex: 50,
+              background: "#fff", borderBottom: "1px solid #e5e7eb",
+              padding: "12px 16px",
+              display: "flex", gap: 12, overflowX: "auto",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            }}>
+              {LAYOUTS.map((layout) => (
+                <div
+                  key={layout.id}
+                  onClick={() => { setActiveLayout(layout.id); setShowLayoutPicker(false); }}
+                  style={{ flexShrink: 0, cursor: "pointer" }}
+                >
+                  <LayoutThumb
+                    layout={layout}
+                    cvData={defaultData}
+                    active={activeLayout === layout.id}
+                    onClick={() => {}}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+  
+        {/* ── CV Preview ── */}
+        <main style={{
+          flex: 1,
+          overflow: "auto",
+          background: "#f3f4f6",
+          display: "flex",
+          justifyContent: "center",
+          padding: "24px 12px",
+          WebkitOverflowScrolling: "touch",  // smooth scroll on iOS
+        }}>
+          {/*
+            On mobile the 794px CV is wider than the screen.
+            We scale it down with transform so it fits visually,
+            while keeping the real pixel size for PDF accuracy.
+          */}
+          <div style={{
+            width: "min(794px, 100%)",
+            display: "flex",
+            justifyContent: "center",
+          }}>
+            <div style={{
+              width: 794,
+              transformOrigin: "top center",
+              // Scale down on small screens so the CV fits without horizontal scroll
+              transform: "scale(var(--cv-scale, 1))",
+            }}
+              ref={el => {
+                // Dynamically compute scale so CV always fills available width
+                if (el) {
+                  const parent = el.parentElement;
+                  const scale = Math.min(1, parent.clientWidth / 794);
+                  el.style.setProperty("--cv-scale", scale);
+                  // Shrink the wrapper height to match scaled height
+                  parent.style.height = `${1050 * scale}px`;
+                }
+              }}
+            >
+              <div
+                ref={previewRef}
+                style={{
+                  width: 794,
+                  minHeight: 1050,
+                  background: "#fff",
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+                }}
+              >
+                <ActiveLayout d={hasRealData ? cvData : (cvData.name ? cvData : defaultData)} />
+              </div>
             </div>
           </div>
         </main>
+  
+        {showEdit && (
+          <EditModal
+            data={cvData}
+            onSave={(updated) => { setCvData(updated); setShowEdit(false); }}
+            onClose={() => setShowEdit(false)}
+          />
+        )}
       </div>
-
-      {showEdit && (
-        <EditModal
-          data={cvData}
-          onSave={(updated) => { setCvData(updated); setShowEdit(false); }}
-          onClose={() => setShowEdit(false)}
-        />
-      )}
-    </div>
-  );
-}
+    );
+  }
