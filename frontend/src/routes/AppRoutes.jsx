@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 import { CandidateRoute, CompanyRoute, GuestCompanyRoute, GuestRoute } from "../components/candidate/ProtectedUserRoute"; // adjust path
@@ -54,6 +54,7 @@ import CompanyJobListings from "../pages/public/Jobs";
 import JobDetailPage from "../pages/jobs/JobDetailedPage";
 import AdminJobsPanel from "../pages/admin/JobsDash";
 import CVBuilderPage from "../pages/cv/PreviewPage";
+import LinkedInJobsMonitor from "../pages/admin/Fetchjobs";
 
 function AppRoutes() {
   return (
@@ -71,6 +72,7 @@ function AppRoutes() {
          <Route path="/company-jobs/:companyId"                    element={<CompanyJobListings/>} />
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/cv" element={<CVBuilderPage/>} />
+          <Route path="/fetch" element={<LinkedInJobsMonitor/>} />
         </Route>
 
 
@@ -120,7 +122,7 @@ function AppRoutes() {
         </Route>
 
    
-
+        <Route path="/resume-builder" element={<Navigate to="/cv" replace />} />
       {/* 404 — outside MainLayout so it's truly a fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -490,7 +490,15 @@ const portfolio=data || Demo
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem" }}>
           {/* Experience */}
           <div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 400, color: "#4fb8c8", marginBottom: "3rem", fontFamily: "'Space Mono', monospace", fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>Experience</h3>
+          <h3 style={{
+  fontWeight: 400,
+  color: "#4fb8c8",
+  marginBottom: "3rem",
+  fontFamily: "'Space Mono', monospace",
+  fontSize: "0.75rem",
+  letterSpacing: "0.2em",
+  textTransform: "uppercase"
+}}>Experience</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
              
             {portfolio.experience?.length > 0 && (

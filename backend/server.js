@@ -33,7 +33,7 @@ app.use("/api/companies", require("./routes/company"));
 app.use("/api/jobs", require("./routes/jobs"));
 app.use("/api/jobs-application", require("./routes/JobApplication"));
 app.use("/api/freelance", require("./routes/freelancer"));
-
+app.use('/api/linked', require('./routes/linkedIn'));
 // Health check
 app.get("/", (req, res) => {
   res.send("Business Park Job Platform API is running...");
