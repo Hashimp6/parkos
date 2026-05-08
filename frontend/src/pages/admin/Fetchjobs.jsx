@@ -175,7 +175,7 @@ export default function LinkedInJobsMonitor() {
         hours: selectedTime.value,
       });
      // Change the endpoint in your fetch call
-const res = await fetch(`${API_BASE}/api/linked/linkedin-jobs?${params}`);
+const res = await fetch(`${API_BASE}/linked/linkedin-jobs?${params}`);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       if (!data.success) throw new Error(data.error || "Unknown error");
