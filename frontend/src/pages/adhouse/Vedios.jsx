@@ -158,8 +158,8 @@ function HeroSection({ onScrollToReel }) {
   
     // choose video based on device
     const videoSrc = isMobile
-      ? "/adhouse/potrait-1.mp4"
-      : "/adhouse/landscape-1.mp4";
+      ? "https://res.cloudinary.com/dvnifq2mi/video/upload/v1782391247/potrait_2_dbhoav.mp4"
+      : "https://res.cloudinary.com/dvnifq2mi/video/upload/v1782391191/landscape_2_gvyyaj.mp4";
   
     return (
       <section
