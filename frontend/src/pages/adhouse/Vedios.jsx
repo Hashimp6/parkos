@@ -22,15 +22,15 @@ const T = {
   };
 
   const FEATURED_PRODUCTIONS = [
-    { id:1, title:"MOMZ CARE",       category:"",    thumbnail:"adhouse/Momzcare.png",          youtubeId:"Ll16FhXEwuA" },
-    { id:2, title:"NIRMAL HAIR OIL",      category:"",          thumbnail:"adhouse/Nirmal.png",   youtubeId:"ZS4mOBXzQBo"    },
-    { id:3, title:"CAPKON",category:"", thumbnail:"/adhouse/capkon.jpeg",  youtubeId:"pPpvVY3iunU" },
-    { id:4, title:"NELLY",   category:"",            thumbnail:"/adhouse/nelly2.png",     youtubeId:"BKg6x36pJSQ"  },
-    { id:5, title:"LOTZ",   category:"LED Screen Advertisement",   thumbnail:"/adhouse/Lotz1.png",     youtubeId:"9B5geLLP89Y"  },
-    { id:6, title:"JEWELS",    category:"Cinematic Brand Film",       thumbnail:"/adhouse/jewels.png",      youtubeId:"v=rK_z1bq3hRk"  },
-    { id:7, title:"LOTZ",    category:"Cinematic Brand Film",       thumbnail:"/adhouse/Lotz2.png",      youtubeId:"D1THhqIjrsE"  },
-    { id:8, title:"AGREEMENT",    category:"",       thumbnail:"/adhouse/agreement.png",      youtubeId:"Hkzu9Ek-PIA"  },
-    { id:9, title:"LOTZ",    category:"Cinematic Brand Film",       thumbnail:"/adhouse/Lotz3.png",      youtubeId:"4fScfBwd3B0"  },
+    { id:1, title:"MOMZ CARE",       category:"",    thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656541/adhouse/Momzcare_z6ykxx.png",          youtubeId:"Ll16FhXEwuA" },
+    { id:2, title:"NIRMAL HAIR OIL",      category:"",          thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656539/adhouse/Nirmal_gkbx3s.png",   youtubeId:"ZS4mOBXzQBo"    },
+    { id:3, title:"CAPKON",category:"", thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656533/adhouse/capkon_hrvsxj.jpg",  youtubeId:"pPpvVY3iunU" },
+    { id:4, title:"NELLY",   category:"",            thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656534/adhouse/nelly2_clojwv.png",     youtubeId:"BKg6x36pJSQ"  },
+    { id:5, title:"LOTZ",   category:"",   thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656539/adhouse/Lotz1_yajhnh.png",     youtubeId:"9B5geLLP89Y"  },
+    { id:6, title:"JEWELS",    category:"",       thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656539/adhouse/jewels_verzle.png",      youtubeId:"v=rK_z1bq3hRk"  },
+    { id:7, title:"LOTZ",    category:"",       thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656537/adhouse/Lotz2_cuh5pg.png",      youtubeId:"D1THhqIjrsE"  },
+    { id:8, title:"AGREEMENT",    category:"",       thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656534/adhouse/agreement_rvixmx.png",      youtubeId:"Hkzu9Ek-PIA"  },
+    { id:9, title:"LOTZ",    category:"",       thumbnail:"https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656542/adhouse/Lotz3_jbzugq.png",      youtubeId:"4fScfBwd3B0"  },
 ];
 
 const BRAND = "#6c63ff";
@@ -158,8 +158,8 @@ function HeroSection({ onScrollToReel }) {
   
     // choose video based on device
     const videoSrc = isMobile
-      ? "https://res.cloudinary.com/dvnifq2mi/video/upload/v1782391247/potrait_2_dbhoav.mp4"
-      : "https://res.cloudinary.com/dvnifq2mi/video/upload/v1782391191/landscape_2_gvyyaj.mp4";
+      ? "https://res.cloudinary.com/dvnifq2mi/video/upload/v1782631029/showreel_potrait_a3ecyo.mp4"
+      : "https://res.cloudinary.com/dvnifq2mi/video/upload/v1782631024/showreel_landscape_kh2jzi.mp4";
   
     return (
       <section
@@ -346,7 +346,7 @@ const SERVICES_ROW_A = [
     id: "s1", label: "01", tag: "Broadcast",
     title: "TVC ADS",
     desc: "15 to 60 second brand stories built for television impact",
-    thumbnail: "/adhouse/tvc.png",
+    thumbnail: "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656533/adhouse/tvc_rbqghj.png",
   },
 
   
@@ -354,40 +354,30 @@ const SERVICES_ROW_A = [
     id: "s2", label: "02", tag: "Out-of-home",
     title: "THEATRE ADS",
     desc: "Full-screen immersive films made for the big cinema experience",
-    thumbnail: "/adhouse/Theater.png",
+    thumbnail: "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656535/adhouse/Theater_psfet0.png",
   },
   {
     id: "s3", label: "01", tag: "Broadcast",
-    title: "Cinimatic videos",
+    title: "AI videos",
     desc: "15 to 60 second brand stories built for television impact",
-    thumbnail: "/adhouse/Cinimatic.png",
+    thumbnail: "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656540/adhouse/Cinimatic_f9a0ne.png",
   },
  
 
   {
     id: "s4", label: "08", tag: "Outdoor",
-    title: "LED CAMPAIGNS",
-    desc: "High-brightness visuals optimised for outdoor LED billboard screens",
-    thumbnail: "/adhouse/Motion.png"
-  },
-  {
-    id: "s5", label: "08", tag: "Outdoor",
-    title: "MOTION VIDEO",
-    desc: "High-brightness visuals optimised for outdoor LED billboard screens",
-    thumbnail: "/adhouse/Motionvideo.png"
-  },
-  {
-    id: "s5", label: "08", tag: "Outdoor",
-    title: "MOTION VIDEO",
-    desc: "High-brightness visuals optimised for outdoor LED billboard screens",
-    thumbnail: "/adhouse/Motionvideo.png"
-  },
-  {
-    id: "s5", label: "08", tag: "Outdoor",
     title: "LED Screen Videos",
     desc: "High-brightness visuals optimised for outdoor LED billboard screens",
-    thumbnail: "/adhouse/Led.png"
+    thumbnail: "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656539/adhouse/Led_cz0ahg.png"
   },
+  {
+    id: "s5", label: "08", tag: "Outdoor",
+    title: "MOTION VIDEO",
+    desc: "High-brightness visuals optimised for outdoor LED billboard screens",
+    thumbnail: "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656538/adhouse/Motionvideo_fodjow.png"
+  },
+
+  
 ];
 
 
@@ -784,7 +774,7 @@ function ClientsSection() {
           style={{ padding: "0 clamp(20px,5vw,48px)" }}
         >
           <img
-            src="/adhouse/client.png"
+            src="https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656534/adhouse/client_v4m6kb.png"
             alt="Our Clients"
             style={{
               width: "100%",
@@ -848,13 +838,13 @@ const CAMPAIGN = {
       "A city-wide outdoor campaign spanning hoardings, store boards, and holdings — designed to dominate every key touchpoint across Calicut.",
     year: "",
     scope: ["Hoardings", "Store Boards", "Holdings", "Transit"],
-    hero: "adhouse/Shobhika1.png",
+    hero: "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656534/adhouse/Shobhika1_uqgydh.png",
     thumbnails: [
-      "adhouse/Shobhika2.png",
-      "adhouse/Shobhika3.png",
-      "adhouse/shobhika4.png",
-      "adhouse/Shobhika5.png",
-      "adhouse/Shobhika6.png",
+      "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656533/adhouse/Shobhika2_dzpgrn.png",
+      "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656532/adhouse/Shobhika3_jzmtum.png",
+      "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656538/adhouse/shobhika4_xfptj1.png",
+      "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656535/adhouse/Shobhika5_n7k5rt.png",
+      "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656536/adhouse/Shobhika6_xrlpb9.png",
       
     ],
   };
@@ -1073,9 +1063,9 @@ const BRANDING_CLIENT = {
     scope: ["Logo Design", "Visual Identity", "Brand Guidelines", "Collateral"],
     // First image = full-width hero. Rest = big grid below.
     images: [
-      "adhouse/Branding1.png",   // hero — full width
-      "adhouse/Branding2.png",   // big grid
-      "adhouse/Branding3.png", 
+      "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656534/adhouse/Branding1_zgdjns.png",   // hero — full width
+      "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656533/adhouse/Branding2_ikmybt.png",   // big grid
+      "https://res.cloudinary.com/dvnifq2mi/image/upload/v1782656533/adhouse/Branding3_e0xi4a.png", 
     ],
   };
   
