@@ -57,12 +57,17 @@ import CVBuilderPage from "../pages/cv/PreviewPage";
 import LinkedInJobsMonitor from "../pages/admin/Fetchjobs";
 import AdHousePortfolio from "../pages/adhouse/Vedios";
 import Works from "../pages/adhouse/Sample";
+import AboutPage from "../pages/adhouse/Niyas";
+import BelleLusture from "../pages/jewellery/belle";
 
 function AppRoutes() {
   return (
     <Routes>
         <Route path="/adhouse"                    element={<AdHousePortfolio />} />
         <Route path="/vedios"                    element={<Works/>} />
+        <Route path="/kfm"                    element={<AboutPage/>} />
+        <Route path="/BelleLusture"                    element={<BelleLusture/>} />
+       
       <Route element={<MainLayout />}>
 
         {/* ── Fully public ─────────────────────────────────────────────────── */}
